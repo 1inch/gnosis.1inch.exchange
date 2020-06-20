@@ -1,0 +1,6 @@
+{
+    "name": "1inch",
+    "description": "Best dex aggregator",
+    "iconPath": "assets/1inch.png",
+    "providedBy": {"name": "1inch", "url": "https://1inch.exchange"}
+  }
