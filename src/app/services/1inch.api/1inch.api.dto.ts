@@ -1,15 +1,8 @@
-export interface FromToken {
+export interface Token {
   symbol: string;
   name: string;
   decimals: number;
   address: string;
-}
-
-export interface ToToken {
-  symbol: string;
-  name: string;
-  address: string;
-  decimals: number;
 }
 
 export interface Exchange {
@@ -18,8 +11,8 @@ export interface Exchange {
 }
 
 export interface Quote {
-  fromToken: FromToken;
-  toToken: ToToken;
+  fromToken: Token;
+  toToken: Token;
   toTokenAmount: string;
   fromTokenAmount: string;
   exchanges: Exchange[];

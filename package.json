@@ -20,9 +20,10 @@
     "@angular/platform-browser-dynamic": "~9.0.7",
     "@angular/router": "~9.0.7",
     "@gnosis.pm/safe-apps-sdk": "^0.1.1",
-    "ethers": "^5.0.2",
+    "ethers": "^4.0.44",
     "rxjs": "^6.5.5",
     "tslib": "^1.10.0",
+    "web3": "^2.0.0-alpha.1",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
@@ -45,5 +46,10 @@
     "ts-node": "~8.3.0",
     "tslint": "~5.18.0",
     "typescript": "~3.7.5"
+  },
+  "browser": {
+    "child_process": false,
+    "net": false,
+    "fs": false
   }
 }

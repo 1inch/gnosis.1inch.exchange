@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { delay, mergeMap, retryWhen } from 'rxjs/operators';
 import { Observable, of, throwError } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { exchanges, Quote, SupportedExchanges, SwapData } from './1inch.api.dto';
+import { exchanges, Quote, SupportedExchanges, SwapData, Token } from './1inch.api.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -60,6 +60,14 @@ export class OneInchApiService {
     );
   }
 
+  public getTokens$(): Observable<Token[]> {
+
+    const url = 'https://api.1inch.exchange/v1.1/tokens';
+
+    return this.http.get<Token[]>(url).pipe(
+      delayedRetry(1000)
+    );
+  }
 }
 
 const DEFAULT_MAX_RETRIES = 1;

@@ -1,6 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { OneInchApiService } from './services/1inch.api/1inch.api.service';
 import { GnosisService } from './services/gnosis.service';
+import { TokenPriceService } from './services/token-price.service';
 
 @Component({
   selector: 'app-root',
@@ -12,12 +13,15 @@ export class AppComponent implements OnDestroy {
 
   constructor(
     private oneInchApiService: OneInchApiService,
-    private gnosisService: GnosisService
+    private gnosisService: GnosisService,
+    private tokenPriceService: TokenPriceService
   ) {
 
     this.gnosisService.addListeners();
     this.gnosisService.isMainNet$.subscribe(console.log);
     this.gnosisService.walletAddress$.subscribe(console.log);
+
+    this.tokenPriceService.getTokenPriceBN('0x0000000000000000000000000000000000000000', 18).subscribe(console.log);
 
     // oneInchApiService.getQuote$('ETH', 'DAI', '10000000000000').subscribe(console.log);
     oneInchApiService.getSwapData$(

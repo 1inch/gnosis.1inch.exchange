@@ -21,17 +21,16 @@ export class GnosisService {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  // todo: add alert for rinkeby
+  // todo: add alert for testnet (not supported)
   private isMainNet = new Subject<boolean>();
   public isMainNet$ = this.isMainNet.pipe(
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
   constructor() {
-
   }
 
-  public sendTransaction(tx: Tx) {
+  public sendTransaction(tx: Tx): void {
     appsSdk.sendTransactions([tx]);
   }
 
