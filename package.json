@@ -51,6 +51,7 @@
   "browser": {
     "child_process": false,
     "net": false,
-    "fs": false
+    "fs": false,
+    "crypto": false
   }
 }

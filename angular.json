@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "gnosis-app"
+    }
+  },
+  "defaultProject": "gnosis-app",
+  "cli": {
+    "analytics": false
+  }
 }
