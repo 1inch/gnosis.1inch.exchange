@@ -33,4 +33,12 @@ export class Web3Service {
       })
     );
   }
+
+  public getInstanceWithoutNetwork(abi: any[]): Contract {
+
+    const web3 = new Web3('');
+
+    // @ts-ignore
+    return new web3.eth.Contract(abi) as Contract;
+  }
 }

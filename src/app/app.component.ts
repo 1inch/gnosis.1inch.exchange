@@ -21,24 +21,26 @@ export class AppComponent implements OnDestroy {
     this.gnosisService.isMainNet$.subscribe(console.log);
     this.gnosisService.walletAddress$.subscribe(console.log);
 
-    this.tokenPriceService.getTokenPriceBN('0x0000000000000000000000000000000000000000', 18).subscribe(console.log);
+
+
+    // this.tokenPriceService.getTokenPriceBN('0x0000000000000000000000000000000000000000', 18).subscribe(console.log);
 
     // oneInchApiService.getQuote$('ETH', 'DAI', '10000000000000').subscribe(console.log);
-    oneInchApiService.getSwapData$(
-      'ETH',
-      'DAI',
-      String(1e12),
-      '0x66666600E43c6d9e1a249D29d58639DEdFcD9adE'
-      // '1',
-      // false
-    ).subscribe((x) => {
-      console.log(x);
-      // gnosisService.sendTransaction({
-      //   to: x.to,
-      //   data: x.data,
-      //   value: x.value
-      // });
-    });
+    // oneInchApiService.getSwapData$(
+    //   'ETH',
+    //   'DAI',
+    //   String(1e12),
+    //   '0x66666600E43c6d9e1a249D29d58639DEdFcD9adE'
+    //   // '1',
+    //   // false
+    // ).subscribe((x) => {
+    //   console.log(x);
+    //   // gnosisService.sendTransaction({
+    //   //   to: x.to,
+    //   //   data: x.data,
+    //   //   value: x.value
+    //   // });
+    // });
   }
 
   ngOnDestroy() {

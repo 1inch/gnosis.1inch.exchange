@@ -9,6 +9,7 @@ import { Web3Service } from './web3.service';
 
 import ChainLinkDaiUsdAggregatorABI from '../abi/ChainLinkDaiUsdAggregatorABI.json';
 import TokenHelperABI from '../abi/TokenHelperABI.json';
+import { zeroValueBN } from '../utils';
 
 const DAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
@@ -88,7 +89,7 @@ export class TokenPriceService {
       tokenAddress,
       bigNumberify(10).pow(18),
       bigNumberify(10),
-      bigNumberify(0),
+      zeroValueBN,
       oneSplitAddress,
       blockNumber
     );
@@ -104,7 +105,7 @@ export class TokenPriceService {
       }),
       catchError(() => {
 
-        return of(bigNumberify(0));
+        return of(zeroValueBN);
       }),
       take(1)
     );

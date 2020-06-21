@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import OneSplitABI from '../abi/OneSplitABI.json';
 import { Web3Service } from './web3.service';
+import { zeroValueBN } from '../utils';
 
 export type GetExpectedReturnResponse = {
     returnAmount: BigNumber,
@@ -27,7 +28,7 @@ export class OneSplitService {
         toToken: string,
         amount: BigNumber,
         parts: BigNumber = bigNumberify(10),
-        disableFlags: BigNumber = bigNumberify(0),
+        disableFlags: BigNumber = zeroValueBN,
         oneSplitAddress = environment.ONE_SPLIT_CONTRACT_ADDRESS,
         blockNumber?: number | 'latest'
     ): Observable<GetExpectedReturnResponse> {
@@ -52,7 +53,7 @@ export class OneSplitService {
             catchError(() => {
 
                 return of({
-                    returnAmount: bigNumberify(0),
+                    returnAmount: zeroValueBN,
                     distribution: []
                 });
             }),
