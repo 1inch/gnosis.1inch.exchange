@@ -1,6 +1,8 @@
 <div class="m-1">
 
-  <img src="assets/settings.svg" style="width: 24px">
+  <button mat-icon-button aria-label="settings" (click)="toggleSlippage()">
+    <mat-icon svgIcon="settings" [color]="displaySlippageSettings ? 'primary' : ''"></mat-icon>
+  </button>
 
   <form class="example-form">
     <div class="swap-controls">
@@ -51,9 +53,9 @@
         <input matInput placeholder="Amount" value="0.0001">
       </mat-form-field>
 
-      <div class="content-center col-span-all m-t m-b">
-        <!--      <h4>Price slippage: 0.1%</h4>-->
-        <oi-slippage-settings></oi-slippage-settings>
+      <h4 *ngIf="!displaySlippageSettings" class="content-center col-span-all">Price slippage: {{slippage.toString()}} %</h4>
+      <div *ngIf="displaySlippageSettings" class="content-center col-span-all m-t m-b">
+        <oi-slippage-settings [(slippage)]="slippage"></oi-slippage-settings>
       </div>
 
       <div class="content-center col-span-all">

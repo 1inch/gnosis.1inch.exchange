@@ -37,6 +37,16 @@ export class SlippageSettingsComponent implements OnInit, OnDestroy {
         return this.form.controls.slippageSelect;
     }
 
+    // error2text(errors: any): string {
+    //   let text = '';
+    //   if(errors.pattern){
+    //     text += 'Not valid value!. Only numeric value is allowed!'
+    //   }
+    //   if() {
+    //
+    //   }
+    // }
+
 
     // Be aware, it's not actual double way binding at the moment.
     // Because component read value only once at initTime

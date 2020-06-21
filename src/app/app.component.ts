@@ -5,7 +5,9 @@ import { TokenPriceService } from './services/token-price.service';
 import { TokenService } from './services/token.service';
 import { tap } from 'rxjs/operators';
 import { FormControl, FormGroup } from "@angular/forms";
-
+import { MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
+import { LocalStorage } from "ngx-webstorage";
 
 
 @Component({
@@ -17,11 +19,18 @@ export class AppComponent implements OnDestroy {
 
   public title = '1inch';
 
+  @LocalStorage('displaySlippageSettings', false)
+  displaySlippageSettings;
+
+  @LocalStorage('slippage', 0.1)
+  slippage;
+
   selectedValue = 1;
   foods = [
     {viewValue: 'USDC', value: 1},
     {viewValue: 'WBTC', value: 2},
   ];
+
 
   swapForm = new FormGroup({
     firstName: new FormControl(''),
@@ -32,8 +41,12 @@ export class AppComponent implements OnDestroy {
     private oneInchApiService: OneInchApiService,
     private gnosisService: GnosisService,
     private tokenPriceService: TokenPriceService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer
   ) {
+
+    iconRegistry.addSvgIcon('settings', sanitizer.bypassSecurityTrustResourceUrl('assets/settings.svg'));
 
     this.gnosisService.addListeners();
     this.gnosisService.isMainNet$.subscribe(console.log);
@@ -68,4 +81,7 @@ export class AppComponent implements OnDestroy {
     this.gnosisService.removeListeners();
   }
 
+  toggleSlippage() {
+    this.displaySlippageSettings = !this.displaySlippageSettings;
+  }
 }

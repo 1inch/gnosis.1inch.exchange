@@ -1,14 +1,20 @@
 .form-group {
   display: flex;
   flex-direction: row;
-  height: 50px;
+  height: 55px;
   * {
     margin: 5px;
   }
+  button {
+    margin-top: 5px;
+    margin-bottom: 0;
+  }
 }
 
-.d-block {
+.slippage-header {
   display: block;
   width: 100%;
   text-align: center;
+  margin-bottom: 8px;
 }
+
