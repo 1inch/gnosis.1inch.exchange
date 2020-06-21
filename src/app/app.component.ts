@@ -20,7 +20,7 @@ export class AppComponent implements OnDestroy {
   selectedValue = 1;
   foods = [
     {viewValue: 'USDC', value: 1},
-    {viewValue: 'WBTC', value: 2}
+    {viewValue: 'WBTC', value: 2},
   ];
 
   swapForm = new FormGroup({

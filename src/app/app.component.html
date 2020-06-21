@@ -1,67 +1,76 @@
-<form class="example-form">
-  <div class="swap-controls">
-    <!--
-    <div class="example-label">Flat</div>
-    <div class="example-button-row">
-      <button mat-flat-button>Basic</button>
-      <button mat-flat-button color="primary">Primary</button>
+<div class="m-1">
+
+  <img src="assets/settings.svg" style="width: 24px">
+
+  <form class="example-form">
+    <div class="swap-controls">
+
+      <!--
+      <div class="example-label">Flat</div>
+      <div class="example-button-row">
+        <button mat-flat-button>Basic</button>
+        <button mat-flat-button color="primary">Primary</button>
+        <button mat-flat-button color="accent">Accent</button>
+        <button mat-flat-button color="warn">Warn</button>
+        <button mat-flat-button disabled>Disabled</button>
+        <a mat-flat-button href="https://www.google.com/" target="_blank">Link</a>
+      </div>
+      -->
+
+      <mat-form-field appearance="fill">
+        <mat-label>From</mat-label>
+        <mat-select>
+          <mat-option *ngFor="let food of foods" [value]="food.value">
+            {{food.viewValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+
+      <mat-form-field appearance="fill">
+        <mat-label>Amount</mat-label>
+        <input matInput placeholder="Amount" value="0.0001" class="mat-input-wrapper">
+      </mat-form-field>
+
+
+      <div class="content-center">
+        <img src="assets/swap.svg" class="r90 m-b" width="24" height="24">
+      </div>
+
+      <mat-form-field appearance="fill">
+        <mat-label>To</mat-label>
+        <mat-select>
+          <mat-option *ngFor="let food of foods" [value]="food.value">
+            {{food.viewValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Amount</mat-label>
+        <input matInput placeholder="Amount" value="0.0001">
+      </mat-form-field>
+
+      <div class="content-center col-span-all m-t m-b">
+        <!--      <h4>Price slippage: 0.1%</h4>-->
+        <oi-slippage-settings></oi-slippage-settings>
+      </div>
+
+      <div class="content-center col-span-all">
+        <!--      <span class="t-center">some message</span>-->
+        <button mat-flat-button color="primary">SWAP NOW</button>
+      </div>
+
+    </div>
+
+  </form>
+
+  <!--
+      <button mat-flat-button>Basic</button>-->
+  <!--
       <button mat-flat-button color="accent">Accent</button>
       <button mat-flat-button color="warn">Warn</button>
       <button mat-flat-button disabled>Disabled</button>
       <a mat-flat-button href="https://www.google.com/" target="_blank">Link</a>
-    </div>
-    -->
-
-
-    <mat-form-field appearance="fill">
-      <mat-label>From</mat-label>
-      <mat-select>
-        <mat-option *ngFor="let food of foods" [value]="food.value">
-          {{food.viewValue}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-
-    <mat-form-field appearance="fill">
-      <mat-label>Amount</mat-label>
-      <input matInput placeholder="Amount" value="0.0001" class="mat-input-wrapper">
-    </mat-form-field>
-
-
-    <div class="content-center">
-      <img src="assets/swap.svg" class="r90 m-b" width="24" height="24">
-    </div>
-
-    <mat-form-field appearance="fill">
-      <mat-label>To</mat-label>
-      <mat-select>
-        <mat-option *ngFor="let food of foods" [value]="food.value">
-          {{food.viewValue}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Amount</mat-label>
-      <input matInput placeholder="Amount" value="0.0001">
-    </mat-form-field>
-
-
-    <div class="content-center col-span-all">
-      <span class="t-center">some message</span>
-      <button mat-flat-button color="primary" >SWAP NOW</button>
-    </div>
-
-  </div>
-
-</form>
-
-<!--
-    <button mat-flat-button>Basic</button>-->
-<!--
-    <button mat-flat-button color="accent">Accent</button>
-    <button mat-flat-button color="warn">Warn</button>
-    <button mat-flat-button disabled>Disabled</button>
-    <a mat-flat-button href="https://www.google.com/" target="_blank">Link</a>
-    -->
+      -->
+</div>
