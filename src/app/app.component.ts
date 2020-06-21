@@ -4,6 +4,9 @@ import { GnosisService } from './services/gnosis.service';
 import { TokenPriceService } from './services/token-price.service';
 import { TokenService } from './services/token.service';
 import { tap } from 'rxjs/operators';
+import { FormControl, FormGroup } from "@angular/forms";
+
+
 
 @Component({
   selector: 'app-root',
@@ -13,6 +16,17 @@ import { tap } from 'rxjs/operators';
 export class AppComponent implements OnDestroy {
 
   public title = '1inch';
+
+  selectedValue = 1;
+  foods = [
+    {viewValue: 'USDC', value: 1},
+    {viewValue: 'WBTC', value: 2}
+  ];
+
+  swapForm = new FormGroup({
+    firstName: new FormControl(''),
+    lastName: new FormControl(''),
+  });
 
   constructor(
     private oneInchApiService: OneInchApiService,

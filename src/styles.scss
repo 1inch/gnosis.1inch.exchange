@@ -1,1 +1,147 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+
+$gnosis-green: (
+  50 : #e0f1ee,
+  100 : #b3ddd5,
+  200 : #80c6b9,
+  300 : #4daf9d,
+  400 : #269d88,
+  500 : #008c73,
+  600 : #00846b,
+  700 : #007960,
+  800 : #006f56,
+  900 : #005c43,
+  A100 : #8dffda,
+  A200 : #5affc9,
+  A400 : #27ffb8,
+  A700 : #0effb0,
+  contrast: (
+    50 : #000000,
+    100 : #000000,
+    200 : #000000,
+    300 : #000000,
+    400 : #ffffff,
+    500 : #ffffff,
+    600 : #ffffff,
+    700 : #ffffff,
+    800 : #ffffff,
+    900 : #ffffff,
+    A100 : #000000,
+    A200 : #000000,
+    A400 : #000000,
+    A700 : #000000,
+  )
+);
+
+
+$gnosis-black: (
+  50 : #e0e3e5,
+  100 : #b3b9bf,
+  200 : #808a94,
+  300 : #4d5b69,
+  400 : #263748,
+  500 : #001428,
+  600 : #001224,
+  700 : #000e1e,
+  800 : #000b18,
+  900 : #00060f,
+  A100 : #5274ff,
+  A200 : #1f4bff,
+  A400 : #002eeb,
+  A700 : #0029d1,
+  contrast: (
+    50 : #000000,
+    100 : #000000,
+    200 : #000000,
+    300 : #ffffff,
+    400 : #ffffff,
+    500 : #ffffff,
+    600 : #ffffff,
+    700 : #ffffff,
+    800 : #ffffff,
+    900 : #ffffff,
+    A100 : #ffffff,
+    A200 : #ffffff,
+    A400 : #ffffff,
+    A700 : #ffffff,
+  )
+);
+
+$gnosis-red: (
+  50 : #fbe7e8,
+  100 : #f4c4c5,
+  200 : #ed9d9e,
+  300 : #e67577,
+  400 : #e0585a,
+  500 : #db3a3d,
+  600 : #d73437,
+  700 : #d22c2f,
+  800 : #cd2527,
+  900 : #c4181a,
+  A100 : #fff7f7,
+  A200 : #ffc4c5,
+  A400 : #ff9192,
+  A700 : #ff7879,
+  contrast: (
+    50 : #000000,
+    100 : #000000,
+    200 : #000000,
+    300 : #000000,
+    400 : #000000,
+    500 : #ffffff,
+    600 : #ffffff,
+    700 : #ffffff,
+    800 : #ffffff,
+    900 : #ffffff,
+    A100 : #000000,
+    A200 : #000000,
+    A400 : #000000,
+    A700 : #000000,
+  )
+);
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$gnosis-primary: mat-palette($gnosis-green);
+$gnosis-accent: mat-palette($gnosis-black);
+
+// The warn palette is optional (defaults to red).
+$gnosis-warn: mat-palette($gnosis-red);
+
+
+//$primary: mat-palette($mat-blue,200);
+//$accent: mat-palette($mat-orange,200);
+//$theme: mat-light-theme($primary, $accent);
+
+// Primary
+// #008C73
+
+// Secondary
+// #001428
+
+// Error
+// #DB3A3D
+
+// Create the theme object (a Sass map containing all of the palettes).
+$gnosis-theme: mat-light-theme($gnosis-primary, $gnosis-accent, $gnosis-warn);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($gnosis-theme);
+
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
