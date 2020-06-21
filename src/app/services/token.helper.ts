@@ -1,8 +1,5 @@
 import { ethers } from 'ethers';
 import { BigNumber } from 'ethers/utils';
-import { environment } from '../../environments/environment';
-
-import TokenHelperABI from '../abi/TokenHelperABI.json';
 
 export interface ITokenDescriptor {
   symbol: string;
