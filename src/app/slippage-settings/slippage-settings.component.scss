@@ -1,0 +1,14 @@
+.form-group {
+  display: flex;
+  flex-direction: row;
+  height: 50px;
+  * {
+    margin: 5px;
+  }
+}
+
+.d-block {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
