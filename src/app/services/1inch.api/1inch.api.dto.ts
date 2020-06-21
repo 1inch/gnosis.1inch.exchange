@@ -5,6 +5,10 @@ export interface Token {
   address: string;
 }
 
+export interface ISymbol2Token {
+  [symbol: string]: Token;
+}
+
 export interface Exchange {
   name: string;
   part: number;
