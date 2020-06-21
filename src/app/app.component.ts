@@ -3,9 +3,7 @@ import { OneInchApiService } from './services/1inch.api/1inch.api.service';
 import { GnosisService } from './services/gnosis.service';
 import { TokenPriceService } from './services/token-price.service';
 import { TokenService } from './services/token.service';
-import { tap } from 'rxjs/operators';
-import { FormControl, FormGroup } from "@angular/forms";
-
+import { FormControl, FormGroup } from '@angular/forms';
 
 
 @Component({
@@ -19,8 +17,8 @@ export class AppComponent implements OnDestroy {
 
   selectedValue = 1;
   foods = [
-    {viewValue: 'USDC', value: 1},
-    {viewValue: 'WBTC', value: 2}
+    { viewValue: 'USDC', value: 1 },
+    { viewValue: 'WBTC', value: 2 }
   ];
 
   swapForm = new FormGroup({
@@ -35,9 +33,15 @@ export class AppComponent implements OnDestroy {
     private tokenService: TokenService
   ) {
 
-    this.gnosisService.addListeners();
-    this.gnosisService.isMainNet$.subscribe(console.log);
-    this.gnosisService.walletAddress$.subscribe(console.log);
+      // this.gnosisService.addListeners();
+      // this.gnosisService.isMainNet$.subscribe(console.log);
+      // this.gnosisService.walletAddress$.subscribe(console.log);
+
+    this.tokenService.setTokenData('0x66666600E43c6d9e1a249D29d58639DEdFcD9adE');
+    this.tokenService.getSortedTokens().subscribe(console.log)
+
+
+
 
     // this.tokenService.tokenHelper$.pipe(
     //   tap((tokenHelper) => {

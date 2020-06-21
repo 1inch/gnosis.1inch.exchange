@@ -1,22 +1,27 @@
-import { Observable, of } from 'rxjs';
+import { defer, Observable, of } from 'rxjs';
 import { Contract } from 'web3-eth-contract';
 import { Injectable } from '@angular/core';
-import { map, mergeMap } from 'rxjs/operators';
+import { exhaustMap, map } from 'rxjs/operators';
 import Web3 from 'web3';
 import { fromPromise } from 'rxjs/internal-compatibility';
+
+const w = window as any;
 
 @Injectable({
   providedIn: 'root'
 })
 export class Web3Service {
 
-  public web3$ = of(window).pipe(
-    mergeMap((w: any) => {
-      w.web3 = new Web3(w.ethereum);
-      if (!w.web3) {
-        return fromPromise(w.ethereum.enable()).pipe(map(() => w.web3));
+  public web3$ = defer(() => {
+
+    return of(new Web3(w.ethereum));
+  }).pipe(
+    exhaustMap((web3: Web3) => {
+
+      if (!web3.defaultAccount) {
+        return fromPromise(w.ethereum.enable()).pipe(map(() => web3));
       }
-      return of(w.web3);
+      return of(web3);
     })
   );
 
