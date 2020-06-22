@@ -27,15 +27,41 @@
             <small>&nbsp;</small>
             <mat-form-field appearance="fill" class="w-100">
               <mat-label>From</mat-label>
+
               <mat-select [(value)]="fromTokenSymbol">
                 <mat-option *ngFor="let token of tokens" [value]="token.symbol">
-                  <img
-                    [src]="getTokenLogoImage(token.address)"
-                    style="height: 16px; position: relative; top: 3px;"
-                  >
-                  <span style="margin-left: 2px; ">{{token.symbol}}<sup class="o-7">{{token.name}}</sup></span>
-                  <p class="o-7">{{ token.formatedUSD }}</p>
-                  <p class="o-7">{{ token.formatedTokenBalance }}</p>
+
+                  <div *ngIf="token.symbol === fromTokenSymbol"
+                       class="token-preview-grid">
+
+                    <img
+                      [src]="getTokenLogoImage(token.address)"
+                      style="height: 24px;">
+
+                    <span *ngIf="token.symbol === fromTokenSymbol">{{token.symbol}}</span>
+                    <span></span>
+                  </div>
+
+                  <div *ngIf="token.symbol !== fromTokenSymbol"
+                       class="token-preview-grid">
+
+                    <img
+                      [src]="getTokenLogoImage(token.address)"
+                      style="height: 24px; ">
+
+                    <div style="display: flex; flex-direction: column; height:36px">
+                      <span style="line-height:20px">{{token.symbol}}</span>
+                      <small style="line-height:16px" *ngIf="token.symbol !== fromTokenSymbol"
+                             class="token-annotation">{{token.name}}</small>
+                    </div>
+
+                    <span *ngIf="token.symbol !== fromTokenSymbol">
+                      <small class="token-annotation">{{ token.formatedTokenBalance }}</small>
+                      <small class="token-annotation">{{ token.formatedUSD }}</small>
+                    </span>
+
+                  </div>
+
                 </mat-option>
               </mat-select>
             </mat-form-field>
