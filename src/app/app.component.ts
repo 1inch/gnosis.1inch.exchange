@@ -3,13 +3,12 @@ import { OneInchApiService } from './services/1inch.api/1inch.api.service';
 import { GnosisService } from './services/gnosis.service';
 import { TokenPriceService } from './services/token-price.service';
 import { TokenService } from './services/token.service';
-import { tap } from 'rxjs/operators';
-import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { MatIconRegistry } from "@angular/material/icon";
-import { DomSanitizer } from "@angular/platform-browser";
-import { LocalStorage } from "ngx-webstorage";
-import { Observable } from "rxjs";
-import { ITokenDescriptor } from "./services/token.helper";
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
+import { LocalStorage } from 'ngx-webstorage';
+import { Observable } from 'rxjs';
+import { ITokenDescriptor } from './services/token.helper';
 
 @Component({
   selector: 'app-root',
@@ -33,7 +32,7 @@ export class AppComponent implements OnDestroy {
 
   loading = false;
 
-  sortedTokens: Observable<ITokenDescriptor[]>
+  sortedTokens: Observable<ITokenDescriptor[]>;
 
   constructor(
     private oneInchApiService: OneInchApiService,
@@ -47,15 +46,13 @@ export class AppComponent implements OnDestroy {
     iconRegistry.addSvgIcon('settings', sanitizer.bypassSecurityTrustResourceUrl('assets/settings.svg'));
     iconRegistry.addSvgIcon('swap', sanitizer.bypassSecurityTrustResourceUrl('assets/swap.svg'));
 
-      // this.gnosisService.addListeners();
-      // this.gnosisService.isMainNet$.subscribe(console.log);
-      // this.gnosisService.walletAddress$.subscribe(console.log);
+    // this.gnosisService.addListeners();
+    // this.gnosisService.isMainNet$.subscribe(console.log);
+    // this.gnosisService.walletAddress$.subscribe(console.log);
 
     this.sortedTokens = this.tokenService.getSortedTokens();
     this.tokenService.setTokenData('0x66666600E43c6d9e1a249D29d58639DEdFcD9adE');
     //this.tokenService.getSortedTokens().subscribe(console.log)
-
-
 
 
     // this.tokenService.tokenHelper$.pipe(
@@ -93,6 +90,8 @@ export class AppComponent implements OnDestroy {
 
   swapTokenPlaces() {
     this.loading = true;
-    setTimeout(() => {this.loading = false}, 1500)
+    setTimeout(() => {
+      this.loading = false;
+    }, 1500);
   }
 }

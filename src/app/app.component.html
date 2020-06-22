@@ -1,4 +1,4 @@
-<div class="m-1">
+<div class="m-1" *ngIf="tokenService.getSortedTokens() | async; let tokens">
 
   <button mat-icon-button aria-label="settings" (click)="toggleSlippage()">
     <mat-icon svgIcon="settings" [color]="displaySlippageSettings ? 'primary' : ''"></mat-icon>
@@ -24,7 +24,7 @@
         <mat-form-field appearance="fill" class="w-100">
           <mat-label>From</mat-label>
           <mat-select>
-            <mat-option *ngFor="let token of tokenService.getSortedTokens() | async" [value]="token.address">
+            <mat-option *ngFor="let token of tokens" [value]="token.address">
               {{token.symbol}}
             </mat-option>
           </mat-select>
@@ -49,18 +49,6 @@
         </button>
       </div>
 
-      <div>
-        <small>&nbsp;</small>
-        <mat-form-field appearance="fill" class="w-100">
-          <mat-label>To</mat-label>
-          <mat-select>
-            <mat-option *ngFor="let food of foods" [value]="food.value">
-              {{food.viewValue}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
 
       <div>
         <small class="w-100">&nbsp;</small>
@@ -68,6 +56,18 @@
           <mat-label>Amount</mat-label>
           <input matInput placeholder="Amount" value="0.0001">
           <mat-hint align="end">≈ $890.03 ( -11.07% ) ⚠️️</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <small>&nbsp;</small>
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>To</mat-label>
+          <mat-select>
+            <mat-option *ngFor="let token of tokens" [value]="token.address">
+              {{token.symbol}}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
       </div>
 
