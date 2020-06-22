@@ -51,17 +51,6 @@ export class TokenDataHelperService {
           ).call();
 
           return fromPromise(call$);
-        }),
-        tap((value: any) => {
-
-          try {
-
-            result.usdBalances = result.usdBalances.concat(...value.usdBalances);
-            result.balances = result.balances.concat(...value.balances);
-          } catch (e) {
-
-            console.error(e);
-          }
         })
       );
 
@@ -70,6 +59,19 @@ export class TokenDataHelperService {
     } while (addresses.slice(index, index + step).length);
 
     return combineLatest(requests).pipe(
+      tap((res) => {
+
+        for (const data of res) {
+
+          try {
+            result.usdBalances = result.usdBalances.concat(...data.usdBalances);
+            result.balances = result.balances.concat(...data.balances);
+          } catch (e) {
+
+            console.error(e);
+          }
+        }
+      }),
       map(() => result)
     );
   }
