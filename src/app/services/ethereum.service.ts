@@ -13,9 +13,7 @@ import { ethAddresses, zeroValueBN } from '../utils';
 })
 export class EthereumService extends Erc20Helper {
 
-    constructor(
-      web3Service: Web3Service
-    ) {
+    constructor(web3Service: Web3Service) {
       super(web3Service);
     }
 

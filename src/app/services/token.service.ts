@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { combineLatest, Observable, throwError } from 'rxjs';
 import { ISymbol2Token, ITokenDescriptor, TokenHelper } from './token.helper';
 import { OneInchApiService } from './1inch.api/1inch.api.service';
-import { map, mergeMap, shareReplay } from 'rxjs/operators';
+import { map, mergeMap, share, shareReplay } from 'rxjs/operators';
 import { TokenData, TokenDataHelperService } from './token-data-helper.service';
 import { zeroValueBN } from '../utils';
 import { BigNumber } from 'ethers/utils';
@@ -50,9 +50,9 @@ export class TokenService {
 
     return combineLatest([this.tokenHelper$, this.tokens$, this.tokenData$]).pipe(
       map(([tokenHelper, symbols2Tokens, tokenData]) => {
-
         return this.sortTokens(tokenHelper, tokenData, symbols2Tokens, '');
-      })
+      }),
+      shareReplay(1)
     );
   }
 

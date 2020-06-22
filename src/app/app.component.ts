@@ -8,6 +8,8 @@ import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { LocalStorage } from "ngx-webstorage";
+import { Observable } from "rxjs";
+import { ITokenDescriptor } from "./services/token.helper";
 
 @Component({
   selector: 'app-root',
@@ -24,19 +26,14 @@ export class AppComponent implements OnDestroy {
   @LocalStorage('slippage', 0.1)
   slippage;
 
-  selectedValue = 1;
-  foods = [
-    { viewValue: 'USDC', value: 1 },
-    { viewValue: 'WBTC', value: 2 }
-  ];
-
-
   swapForm = new FormGroup({
     firstName: new FormControl(''),
     lastName: new FormControl(''),
   });
 
   loading = false;
+
+  sortedTokens: Observable<ITokenDescriptor[]>
 
   constructor(
     private oneInchApiService: OneInchApiService,
@@ -54,8 +51,9 @@ export class AppComponent implements OnDestroy {
       // this.gnosisService.isMainNet$.subscribe(console.log);
       // this.gnosisService.walletAddress$.subscribe(console.log);
 
+    this.sortedTokens = this.tokenService.getSortedTokens();
     this.tokenService.setTokenData('0x66666600E43c6d9e1a249D29d58639DEdFcD9adE');
-    this.tokenService.getSortedTokens().subscribe(console.log)
+    //this.tokenService.getSortedTokens().subscribe(console.log)
 
 
 
