@@ -12,30 +12,27 @@ const w = window as any;
 })
 export class Web3Service {
 
-  public web3$ = defer(() => {
-
-    return of(new Web3(w.ethereum));
-  }).pipe(
-    exhaustMap((web3: Web3) => {
-
-      if (!web3.defaultAccount) {
-        return fromPromise(w.ethereum.enable()).pipe(map(() => web3));
-      }
-      return of(web3);
-    })
-  );
+  public async activateWeb3(): Promise<Web3> {
+    const web3 = new Web3(w.ethereum);
+    if (!web3.defaultAccount) {
+      await w.ethereum.enable();
+    }
+    return web3;
+  }
 
   public getInstance(abi: any[], address: string): Observable<Contract> {
 
-    return this.web3$.pipe(
+    return fromPromise(
+      this.activateWeb3()
+    ).pipe(
       map((web3) => {
-
         // @ts-ignore
         return (new web3.eth.Contract(
           abi,
           address
         )) as Contract;
-      })
+      }),
+      // catchError( () => { }) ???
     );
   }
 
