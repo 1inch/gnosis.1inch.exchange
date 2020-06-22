@@ -57,7 +57,7 @@
 
                     <span *ngIf="token.symbol !== fromTokenSymbol">
                       <small class="token-annotation">{{ token.formatedTokenBalance }}</small>
-                      <small class="token-annotation">{{ token.formatedTokenBalance }}</small>
+                      <small class="token-annotation">{{ token.formatedUSDBalance }}</small>
                     </span>
 
                   </div>
@@ -103,10 +103,42 @@
           <div>
             <small>&nbsp;</small>
             <mat-form-field appearance="fill" class="w-100">
-              <mat-label>To</mat-label>
+              <mat-label>From</mat-label>
+
               <mat-select [(value)]="toTokenSymbol">
                 <mat-option *ngFor="let token of tokens" [value]="token.symbol">
-                  {{token.symbol}}
+
+                  <div *ngIf="token.symbol === toTokenSymbol"
+                       class="token-preview-grid">
+
+                    <img
+                      [src]="getTokenLogoImage(token.address)"
+                      style="height: 24px;">
+
+                    <span *ngIf="token.symbol === toTokenSymbol">{{token.symbol}}</span>
+                    <span></span>
+                  </div>
+
+                  <div *ngIf="token.symbol !== toTokenSymbol"
+                       class="token-preview-grid">
+
+                    <img
+                      [src]="getTokenLogoImage(token.address)"
+                      style="height: 24px; ">
+
+                    <div style="display: flex; flex-direction: column; height:36px">
+                      <span style="line-height:20px">{{token.symbol}}</span>
+                      <small style="line-height:16px" *ngIf="token.symbol !== toTokenSymbol"
+                             class="token-annotation">{{token.name}}</small>
+                    </div>
+
+                    <span *ngIf="token.symbol !== toTokenSymbol">
+                      <small class="token-annotation">{{ token.formatedTokenBalance }}</small>
+                      <small class="token-annotation">{{ token.formatedUSDBalance }}</small>
+                    </span>
+
+                  </div>
+
                 </mat-option>
               </mat-select>
             </mat-form-field>
