@@ -9,15 +9,19 @@ import { Web3Service } from './web3.service';
 
 import ChainLinkDaiUsdAggregatorABI from '../abi/ChainLinkDaiUsdAggregatorABI.json';
 import TokenHelperABI from '../abi/TokenHelperABI.json';
-import { zeroValueBN } from '../utils';
+import { RefreshingReplaySubject, zeroValueBN } from '../utils';
 
 const DAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
+
+type UsdPriceCache = { [tokenAddress: string]: RefreshingReplaySubject<BigNumber> };
 
 @Injectable({
   providedIn: 'root'
 })
 export class TokenPriceService {
+
+  private usdPriceCache$: UsdPriceCache = {};
 
   private daiUsdPriceBN$: Observable<BigNumber> = this.getChainLinkAggregatorInstance(
     environment.DAI_USD_CHAINLINK_ORACLE_CONTRACT_ADDRESS
@@ -38,6 +42,32 @@ export class TokenPriceService {
   ) {
   }
 
+  public getUsdTokenPrice(
+    tokenAddress: string,
+    tokenDecimals: number,
+    blockNumber?: number | 'latest',
+    oneSplitAddress = environment.ONE_SPLIT_CONTRACT_ADDRESS
+  ): Observable<BigNumber> {
+
+    if (this.usdPriceCache$[tokenAddress]) {
+      return this.usdPriceCache$[tokenAddress];
+    }
+
+    const tokenPrice$ = this.getTokenPriceBN(
+      tokenAddress,
+      tokenDecimals,
+      blockNumber,
+      oneSplitAddress
+    );
+
+    this.usdPriceCache$[tokenAddress] = new RefreshingReplaySubject<BigNumber>(
+      () => tokenPrice$,
+      10000
+    );
+
+    return this.usdPriceCache$[tokenAddress];
+  }
+
   public getTokenPriceBN(
     tokenAddress: string,
     tokenDecimals: number,
@@ -53,7 +83,7 @@ export class TokenPriceService {
     ).pipe(
       mergeMap((price: BigNumber) => {
 
-        if (price.eq(0)) {
+          if (price.eq(0)) {
           return throwError('try fetch price directly from OneSplit');
         }
 
@@ -138,7 +168,7 @@ export class TokenPriceService {
 
     return this.web3Service.getInstance(
       TokenHelperABI,
-      environment.ONE_SPLIT_CONTRACT_ADDRESS
+      environment.TOKEN_HELPER_CONTRACT_ADDRESS
     );
   }
 

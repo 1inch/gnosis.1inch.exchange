@@ -7,9 +7,9 @@ export interface ITokenDescriptor {
   address: string;
   decimals: number;
   balance?: string | number | BigNumber;
-  usd?: number;
+  usdBalance?: number;
   // TODO: fix typos server side
-  formatedUSD?: string | number;
+  formatedUSDBalance?: string | number;
   formatedTokenBalance?: string
 }
 

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { combineLatest, Observable, throwError } from 'rxjs';
 import { ISymbol2Token, ITokenDescriptor, TokenHelper } from './token.helper';
 import { OneInchApiService } from './1inch.api/1inch.api.service';
-import { map, mergeMap, share, shareReplay, startWith } from 'rxjs/operators';
+import { map, mergeMap, shareReplay } from 'rxjs/operators';
 import { TokenData, TokenDataHelperService } from './token-data-helper.service';
 import { zeroValueBN } from '../utils';
 import { BigNumber } from 'ethers/utils';
@@ -14,7 +14,7 @@ export class TokenService {
 
   public tokenHelper$: Observable<TokenHelper> = this.oneInchApiService.getTokens$()
     .pipe(
-      startWith([]),
+      // startWith([]),
       map((tokens: ISymbol2Token) => {
 
         return new TokenHelper(tokens);
@@ -53,7 +53,7 @@ export class TokenService {
       map(([tokenHelper, symbols2Tokens, tokenData]) => {
         return this.sortTokens(tokenHelper, tokenData, symbols2Tokens, '');
       }),
-      shareReplay(1)
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
@@ -126,13 +126,13 @@ export class TokenService {
       );
 
       if (usdBalance.isZero()) {
-        token.usd = 0;
-        token.formatedUSD = 0;
+        token.usdBalance = 0;
+        token.formatedUSDBalance = 0;
         continue;
       }
 
-      token.usd = +tokenHelper.formatUnits(usdBalance, 8);
-      token.formatedUSD = this.usdFormatter.format(token.usd);
+      token.usdBalance = +tokenHelper.formatUnits(usdBalance, 8);
+      token.formatedUSDBalance = this.usdFormatter.format(token.usdBalance);
     }
   }
 
@@ -140,12 +140,12 @@ export class TokenService {
 
 function sortSearchResults(term, firstEl: ITokenDescriptor, secondEl: ITokenDescriptor) {
 
-  if (!firstEl.usd) {
-    firstEl.usd = 0;
+  if (!firstEl.usdBalance) {
+    firstEl.usdBalance = 0;
   }
 
-  if (!secondEl.usd) {
-    secondEl.usd = 0;
+  if (!secondEl.usdBalance) {
+    secondEl.usdBalance = 0;
   }
 
   if (!firstEl.balance) {
@@ -161,12 +161,12 @@ function sortSearchResults(term, firstEl: ITokenDescriptor, secondEl: ITokenDesc
     return -1;
   }
 
-  if (Number(firstEl.usd) > Number(secondEl.usd)) {
+  if (Number(firstEl.usdBalance) > Number(secondEl.usdBalance)) {
 
     return -1;
   }
 
-  if (Number(firstEl.usd) < Number(secondEl.usd)) {
+  if (Number(firstEl.usdBalance) < Number(secondEl.usdBalance)) {
 
     return 1;
   }

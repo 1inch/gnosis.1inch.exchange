@@ -7,8 +7,14 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LocalStorage } from 'ngx-webstorage';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ITokenDescriptor } from './services/token.helper';
+import { map, mergeMap, startWith, switchMap, tap } from 'rxjs/operators';
+import { Quote } from './services/1inch.api/1inch.api.dto';
+import { BigNumber } from 'ethers/utils';
+import { bnToNumberSafe } from './utils';
+
+type TokenCost = { tokenUsdCost: number, tokenUsdCostView: string };
 
 const tokenAmountInputValidator = [
   Validators.pattern('^[0-9.]*$'),
@@ -21,7 +27,9 @@ const tokenAmountInputValidator = [
 })
 export class AppComponent implements OnDestroy {
 
-  public title = '1inch';
+  public title = '1inch.exchange';
+
+  private subscription = new Subscription();
 
   @LocalStorage('displaySlippageSettings', false)
   displaySlippageSettings;
@@ -29,13 +37,25 @@ export class AppComponent implements OnDestroy {
   @LocalStorage('slippage', 0.1)
   slippage;
 
-  @LocalStorage('fromTokenSymbol', 'ETH') fromTokenSymbol;
-  @LocalStorage('toTokenSymbol', 'DAI') toTokenSymbol;
-  @LocalStorage('fromAmount', 1) fromAmount;
+  @LocalStorage('fromTokenSymbol', 'ETH') fromTokenSymbol: string;
+  @LocalStorage('toTokenSymbol', 'DAI') toTokenSymbol: string;
+  @LocalStorage('fromAmount', '1') fromAmount: string;
+  fromAmountBN: BigNumber;
+  toAmountBN: BigNumber;
+
+  fromTokenUsdCost: number;
+  fromTokenUsdCostView: string;
+  toTokenUsdCost: number;
+  toTokenUsdCostView: string | undefined;
 
   swapForm = new FormGroup({
     fromAmount: new FormControl('', tokenAmountInputValidator),
     toAmount: new FormControl('', tokenAmountInputValidator),
+  });
+
+  usdFormatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
   });
 
   loading = false;
@@ -51,6 +71,65 @@ export class AppComponent implements OnDestroy {
     sanitizer: DomSanitizer
   ) {
 
+    this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
+    const fromAmountListener$ = this.swapForm.controls.fromAmount.valueChanges.pipe(
+      startWith(this.fromAmount),
+      switchMap((value: string) => {
+
+        this.fromAmount = value;
+        return this.tokenService.tokenHelper$.pipe(
+          mergeMap((tokenHelper) => {
+
+            const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
+            return this.getTokenCost(token, +value).pipe(
+              map(({ tokenUsdCost, tokenUsdCostView }) => {
+                this.fromTokenUsdCost = tokenUsdCost;
+                this.fromTokenUsdCostView = tokenUsdCostView;
+                return tokenHelper.parseAsset(this.fromTokenSymbol, value);
+              })
+            );
+          }),
+        );
+      }),
+      switchMap((valueBN: BigNumber) => {
+
+        this.loading = true;
+        this.fromAmountBN = valueBN;
+        this.swapForm.controls.toAmount.reset();
+        this.toTokenUsdCostView = undefined;
+        return this.oneInchApiService.getQuote$(
+          this.fromTokenSymbol,
+          this.toTokenSymbol,
+          this.fromAmountBN.toString()
+        );
+      }),
+      switchMap((quote: Quote) => {
+
+        this.toAmountBN = new BigNumber(quote.toTokenAmount);
+        return this.tokenService.tokenHelper$.pipe(
+          mergeMap((tokenHelper) => {
+
+            const token = tokenHelper.getTokenBySymbol(this.toTokenSymbol);
+            const formattedAsset = tokenHelper.formatUnits(this.toAmountBN, token.decimals);
+            return this.getTokenCost(token, +formattedAsset).pipe(
+              map(({ tokenUsdCost, tokenUsdCostView }) => {
+                this.toTokenUsdCost = tokenUsdCost;
+                this.toTokenUsdCostView = tokenUsdCostView;
+                return formattedAsset;
+              })
+            );
+          })
+        );
+      }),
+      tap((toAmount: string) => {
+
+        this.swapForm.controls.toAmount.setValue(toAmount);
+        this.loading = false;
+      })
+    );
+
+    this.subscription.add(fromAmountListener$.subscribe());
+
     iconRegistry.addSvgIcon('settings', sanitizer.bypassSecurityTrustResourceUrl('assets/settings.svg'));
     iconRegistry.addSvgIcon('swap', sanitizer.bypassSecurityTrustResourceUrl('assets/swap.svg'));
 
@@ -60,7 +139,7 @@ export class AppComponent implements OnDestroy {
 
     this.tokenService.setTokenData('0x66666600E43c6d9e1a249D29d58639DEdFcD9adE');
     this.sortedTokens = this.tokenService.getSortedTokens();
-    //this.tokenService.getSortedTokens().subscribe(console.log)
+    // this.tokenService.getSortedTokens().subscribe(console.log)
 
 
     // this.tokenService.tokenHelper$.pipe(
@@ -90,6 +169,7 @@ export class AppComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.gnosisService.removeListeners();
+    this.subscription.unsubscribe();
   }
 
   toggleSlippage() {
@@ -103,7 +183,46 @@ export class AppComponent implements OnDestroy {
     }, 1500);
   }
 
+  get fromToDiffInPercent() {
+
+    const diff = this.fromTokenUsdCost - this.toTokenUsdCost;
+    if (!this.fromTokenUsdCost || +(diff.toFixed(2)) <= 0) {
+      return '';
+    }
+
+    const percent = Math.abs((diff / this.fromTokenUsdCost) * 100);
+    return `( -${ percent.toFixed(2) }% )`;
+  }
+
+  private getTokenCost(
+    token: ITokenDescriptor,
+    tokenAmount: number
+  ): Observable<TokenCost> {
+
+    return this.tokenPriceService.getUsdTokenPrice(
+      token.address,
+      token.decimals
+    ).pipe(
+      map((priceBN: BigNumber) => {
+
+        const usdPrice = bnToNumberSafe(priceBN) / 1e8;
+        token.usdBalance = usdPrice;
+        return this.calcTokenCost(tokenAmount, usdPrice);
+      })
+    );
+  }
+
+  private calcTokenCost(tokenAmount: number, tokenPrice: number): TokenCost {
+    try {
+      const tokenUsdCost = tokenAmount * tokenPrice;
+      const tokenUsdCostView = this.usdFormatter.format(tokenUsdCost);
+      return { tokenUsdCost, tokenUsdCostView };
+    } catch (e) {
+      return { tokenUsdCost: 0, tokenUsdCostView: '0' };
+    }
+  }
+
   getTokenLogoImage(tokenAddress: string): string {
-    return `https://1inch.exchange/assets/tokens/${tokenAddress.toLowerCase()}.png`;
+    return `https://1inch.exchange/assets/tokens/${ tokenAddress.toLowerCase() }.png`;
   }
 }
