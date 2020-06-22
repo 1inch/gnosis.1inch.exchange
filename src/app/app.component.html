@@ -43,7 +43,10 @@
 
 
       <div class="content-center">
-        <img src="assets/swap.svg" class="r90" width="24" height="24">
+        <img *ngIf="loading" src="assets/loading.svg" width="50">
+        <button *ngIf="!loading" mat-icon-button aria-label="settings" (click)="swapTokenPlaces()">
+          <mat-icon svgIcon="swap"></mat-icon>
+        </button>
       </div>
 
       <div>

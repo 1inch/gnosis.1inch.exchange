@@ -6,12 +6,9 @@
 
   @media (min-width: 768px) {
     display: grid;
-    grid-template-columns: 90px 180px 40px 90px 180px;
+    grid-template-columns: 90px 200px 40px 90px 200px;
     grid-template-rows: auto auto auto;
     grid-column-gap: 10px;
-    //div * {
-    //  width: 100%;
-    //}
     .col-span-all {
       grid-column: 1 / 6;
     }
@@ -20,6 +17,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    div {
+      width: 100%;
+
+      * {
+        width: 100%;
+      }
+    }
   }
 
 }
@@ -57,14 +61,6 @@
 
 .w-100 {
   width: 100%;
-}
-
-//.icon-color {
-//  fill: rgb(178, 181, 178);
-//}
-
-.r90 {
-  transform: rotate(90deg);
 }
 
 //width: 100%;

@@ -36,6 +36,8 @@ export class AppComponent implements OnDestroy {
     lastName: new FormControl(''),
   });
 
+  loading = false;
+
   constructor(
     private oneInchApiService: OneInchApiService,
     private gnosisService: GnosisService,
@@ -46,6 +48,7 @@ export class AppComponent implements OnDestroy {
   ) {
 
     iconRegistry.addSvgIcon('settings', sanitizer.bypassSecurityTrustResourceUrl('assets/settings.svg'));
+    iconRegistry.addSvgIcon('swap', sanitizer.bypassSecurityTrustResourceUrl('assets/swap.svg'));
 
       // this.gnosisService.addListeners();
       // this.gnosisService.isMainNet$.subscribe(console.log);
@@ -88,5 +91,10 @@ export class AppComponent implements OnDestroy {
 
   toggleSlippage() {
     this.displaySlippageSettings = !this.displaySlippageSettings;
+  }
+
+  swapTokenPlaces() {
+    this.loading = true;
+    setTimeout(() => {this.loading = false}, 1500)
   }
 }
