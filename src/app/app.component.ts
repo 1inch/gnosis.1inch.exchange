@@ -3,12 +3,16 @@ import { OneInchApiService } from './services/1inch.api/1inch.api.service';
 import { GnosisService } from './services/gnosis.service';
 import { TokenPriceService } from './services/token-price.service';
 import { TokenService } from './services/token.service';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LocalStorage } from 'ngx-webstorage';
 import { Observable } from 'rxjs';
 import { ITokenDescriptor } from './services/token.helper';
+
+const tokenAmountInputValidator = [
+  Validators.pattern('^[0-9.]*$'),
+];
 
 @Component({
   selector: 'app-root',
@@ -30,8 +34,8 @@ export class AppComponent implements OnDestroy {
   @LocalStorage('fromAmount', 1) fromAmount;
 
   swapForm = new FormGroup({
-    firstName: new FormControl(''),
-    lastName: new FormControl(''),
+    fromAmount: new FormControl('', tokenAmountInputValidator),
+    toAmount: new FormControl('', tokenAmountInputValidator),
   });
 
   loading = false;
@@ -97,5 +101,9 @@ export class AppComponent implements OnDestroy {
     setTimeout(() => {
       this.loading = false;
     }, 1500);
+  }
+
+  getTokenLogoImage(tokenAddress: string): string {
+    return `https://1inch.exchange/assets/tokens/${tokenAddress.toLowerCase()}.png`;
   }
 }

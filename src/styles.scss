@@ -145,3 +145,12 @@ $gnosis-theme: mat-light-theme($gnosis-primary, $gnosis-accent, $gnosis-warn);
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+.mat-select-panel mat-option.mat-option {
+  height: unset;
+}
+
+.mat-option-text.mat-option-text {
+  white-space: normal;
+}

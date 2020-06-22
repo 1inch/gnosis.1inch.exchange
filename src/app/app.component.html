@@ -29,7 +29,14 @@
               <mat-label>From</mat-label>
               <mat-select [(value)]="fromTokenSymbol">
                 <mat-option *ngFor="let token of tokens" [value]="token.symbol">
-                  {{token.symbol}}
+                  <img
+                    class="m-t"
+                    [src]="getTokenLogoImage(token.address)"
+                    style="height: 16px; position: relative; top: 3px;"
+                  >
+                  <span>{{token.symbol}}<sup class="o-7">{{token.name}}</sup></span>
+                  <p class="o-7">{{ token.formatedUSD }}</p>
+                  <p class="o-7">{{ token.formatedTokenBalance }}</p>
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -37,7 +44,9 @@
 
 
           <div class="t-left">
-            <small class="w-100 t-center" style="color: rgba(0, 0, 0, 0.6);">Set Max: 1000</small>
+            <small class="w-100 t-center max-balance" style="color: rgba(0, 0, 0, 0.6);">
+              Max: {{ tokenHelper.toPrecision(fromToken.formatedTokenBalance || '0', 12) }}
+            </small>
             <mat-form-field appearance="fill" class="w-100">
               <mat-label>Amount</mat-label>
               <input matInput placeholder="Amount" [value]="fromAmount" class="mat-input-wrapper">
@@ -62,7 +71,7 @@
               <mat-label>Amount</mat-label>
               <input matInput placeholder="Amount" value="0.0001">
               <mat-hint *ngIf="toToken.formatedUSD" align="end">≈ {{toToken.formatedUSD}}</mat-hint>
-<!--              <mat-hint align="end">≈ $890.03 ( -11.07% ) ⚠️️</mat-hint>-->
+              <!--              <mat-hint align="end">≈ $890.03 ( -11.07% ) ⚠️️</mat-hint>-->
             </mat-form-field>
           </div>
 

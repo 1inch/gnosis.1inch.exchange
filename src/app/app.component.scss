@@ -6,7 +6,7 @@
 
   @media (min-width: 768px) {
     display: grid;
-    grid-template-columns: 90px 200px 40px 200px 90p;
+    grid-template-columns: 90px 200px 40px 200px 90px;
     grid-template-rows: auto auto auto;
     grid-column-gap: 10px;
     .col-span-all {
@@ -61,6 +61,18 @@
 
 .w-100 {
   width: 100%;
+}
+
+.max-balance {
+  cursor: pointer;
+}
+
+.max-balance:hover {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6)
+}
+
+.o-7 {
+  opacity: 0.7
 }
 
 //width: 100%;

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { combineLatest, Observable, throwError } from 'rxjs';
 import { ISymbol2Token, ITokenDescriptor, TokenHelper } from './token.helper';
 import { OneInchApiService } from './1inch.api/1inch.api.service';
-import { map, mergeMap, share, shareReplay } from 'rxjs/operators';
+import { map, mergeMap, share, shareReplay, startWith } from 'rxjs/operators';
 import { TokenData, TokenDataHelperService } from './token-data-helper.service';
 import { zeroValueBN } from '../utils';
 import { BigNumber } from 'ethers/utils';
@@ -14,6 +14,7 @@ export class TokenService {
 
   public tokenHelper$: Observable<TokenHelper> = this.oneInchApiService.getTokens$()
     .pipe(
+      startWith([]),
       map((tokens: ISymbol2Token) => {
 
         return new TokenHelper(tokens);
