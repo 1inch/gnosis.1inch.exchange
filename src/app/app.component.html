@@ -30,11 +30,10 @@
               <mat-select [(value)]="fromTokenSymbol">
                 <mat-option *ngFor="let token of tokens" [value]="token.symbol">
                   <img
-                    class="m-t"
                     [src]="getTokenLogoImage(token.address)"
                     style="height: 16px; position: relative; top: 3px;"
                   >
-                  <span>{{token.symbol}}<sup class="o-7">{{token.name}}</sup></span>
+                  <span style="margin-left: 2px; ">{{token.symbol}}<sup class="o-7">{{token.name}}</sup></span>
                   <p class="o-7">{{ token.formatedUSD }}</p>
                   <p class="o-7">{{ token.formatedTokenBalance }}</p>
                 </mat-option>
