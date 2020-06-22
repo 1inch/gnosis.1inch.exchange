@@ -25,6 +25,12 @@ export class AppComponent implements OnDestroy {
   @LocalStorage('slippage', 0.1)
   slippage;
 
+  @LocalStorage('fromToken', 'ETH')
+  fromToken;
+
+  @LocalStorage('toToken', 'DAI')
+  toToken;
+
   swapForm = new FormGroup({
     firstName: new FormControl(''),
     lastName: new FormControl(''),

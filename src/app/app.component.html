@@ -23,8 +23,8 @@
         <small>&nbsp;</small>
         <mat-form-field appearance="fill" class="w-100">
           <mat-label>From</mat-label>
-          <mat-select>
-            <mat-option *ngFor="let token of tokens" [value]="token.address">
+          <mat-select [(value)]="fromToken">
+            <mat-option *ngFor="let token of tokens" [value]="token.symbol">
               {{token.symbol}}
             </mat-option>
           </mat-select>
@@ -63,8 +63,8 @@
         <small>&nbsp;</small>
         <mat-form-field appearance="fill" class="w-100">
           <mat-label>To</mat-label>
-          <mat-select>
-            <mat-option *ngFor="let token of tokens" [value]="token.address">
+          <mat-select [(value)]="toToken">
+            <mat-option *ngFor="let token of tokens" [value]="token.symbol">
               {{token.symbol}}
             </mat-option>
           </mat-select>
