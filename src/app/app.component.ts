@@ -4,7 +4,7 @@ import { GnosisService } from './services/gnosis.service';
 import { TokenPriceService } from './services/token-price.service';
 import { TokenService } from './services/token.service';
 import { tap } from 'rxjs/operators';
-import { FormControl, FormGroup } from "@angular/forms";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { LocalStorage } from "ngx-webstorage";
@@ -40,7 +40,7 @@ export class AppComponent implements OnDestroy {
     private oneInchApiService: OneInchApiService,
     private gnosisService: GnosisService,
     private tokenPriceService: TokenPriceService,
-    private tokenService: TokenService,
+    public tokenService: TokenService,
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer
   ) {

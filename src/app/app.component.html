@@ -22,8 +22,8 @@
       <mat-form-field appearance="fill">
         <mat-label>From</mat-label>
         <mat-select>
-          <mat-option *ngFor="let food of foods" [value]="food.value">
-            {{food.viewValue}}
+          <mat-option *ngFor="let token of tokenService.getSortedTokens() | async" [value]="token.address">
+            {{token.symbol}}
           </mat-option>
         </mat-select>
       </mat-form-field>
