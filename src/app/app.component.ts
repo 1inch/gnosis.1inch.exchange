@@ -9,7 +9,6 @@ import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { LocalStorage } from "ngx-webstorage";
 
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -27,8 +26,8 @@ export class AppComponent implements OnDestroy {
 
   selectedValue = 1;
   foods = [
-    {viewValue: 'USDC', value: 1},
-    {viewValue: 'WBTC', value: 2},
+    { viewValue: 'USDC', value: 1 },
+    { viewValue: 'WBTC', value: 2 }
   ];
 
 
@@ -48,9 +47,15 @@ export class AppComponent implements OnDestroy {
 
     iconRegistry.addSvgIcon('settings', sanitizer.bypassSecurityTrustResourceUrl('assets/settings.svg'));
 
-    this.gnosisService.addListeners();
-    this.gnosisService.isMainNet$.subscribe(console.log);
-    this.gnosisService.walletAddress$.subscribe(console.log);
+      // this.gnosisService.addListeners();
+      // this.gnosisService.isMainNet$.subscribe(console.log);
+      // this.gnosisService.walletAddress$.subscribe(console.log);
+
+    this.tokenService.setTokenData('0x66666600E43c6d9e1a249D29d58639DEdFcD9adE');
+    this.tokenService.getSortedTokens().subscribe(console.log)
+
+
+
 
     // this.tokenService.tokenHelper$.pipe(
     //   tap((tokenHelper) => {

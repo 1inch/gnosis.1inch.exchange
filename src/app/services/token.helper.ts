@@ -7,8 +7,9 @@ export interface ITokenDescriptor {
   address: string;
   decimals: number;
   balance?: string | number | BigNumber;
-  usd?: string | number;
+  usd?: number;
   formatedUSD?: string | number;
+  formatedTokenBalance?: string
 }
 
 export interface ISymbol2Token {

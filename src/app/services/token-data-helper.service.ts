@@ -6,6 +6,12 @@ import { ISymbol2Token } from './token.helper';
 import { combineLatest, Observable } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
+import { BigNumber } from 'ethers/utils';
+
+export type TokenData = {
+  usdBalances: BigNumber[];
+  balances: BigNumber[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -20,9 +26,9 @@ export class TokenDataHelperService {
   public getTokenBalancesAndPrices(
     userWalletAddress: string,
     tokens: ISymbol2Token
-  ) {
+  ): Observable<TokenData> {
     const addresses = Object.keys(tokens).map(symbol => tokens[symbol].address);
-    const result = {
+    const result: TokenData = {
       usdBalances: [],
       balances: []
     };
@@ -31,14 +37,16 @@ export class TokenDataHelperService {
     let index = 0;
     const tokenHelperContract = this.getTokenHelperContract();
     const requests: Observable<any>[] = [];
+
     do {
 
+      const addressesSlice = addresses.slice(index, index + step);
       const req$ = tokenHelperContract.pipe(
         mergeMap((instance) => {
 
           const call$ = instance.methods.balancesOfTokens(
             userWalletAddress,
-            addresses.slice(index, index + step),
+            addressesSlice,
             environment.ONE_SPLIT_CONTRACT_ADDRESS
           ).call();
 
