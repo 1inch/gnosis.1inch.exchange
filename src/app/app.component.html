@@ -53,7 +53,7 @@
                       <div style="display: flex; flex-direction: column; height:36px">
                         <span style="line-height:20px">{{token.symbol}}</span>
                         <small style="line-height:16px" *ngIf="token.symbol !== fromTokenSymbol"
-                               class="token-annotation">{{token.name}}</small>
+                               class="token-annotation over-hidden">{{token.name}}</small>
                       </div>
 
                       <span *ngIf="token.symbol !== fromTokenSymbol">
@@ -138,7 +138,7 @@
                       <div style="display: flex; flex-direction: column; height:36px">
                         <span style="line-height:20px">{{token.symbol}}</span>
                         <small style="line-height:16px" *ngIf="token.symbol !== toTokenSymbol"
-                               class="token-annotation">{{token.name}}</small>
+                               class="token-annotation over-hidden">{{token.name}}</small>
                       </div>
 
                       <span *ngIf="token.symbol !== toTokenSymbol">

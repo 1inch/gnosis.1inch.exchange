@@ -88,6 +88,13 @@
   align-items: center;
 }
 
+.over-hidden {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
 //width: 100%;
 //grid-template-rows: 40px 1px 40px 1px;
 //grid-template-columns: 120px auto 1fr;
