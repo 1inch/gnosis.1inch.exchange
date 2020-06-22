@@ -9,7 +9,9 @@
     grid-template-columns: 90px 180px 40px 90px 180px;
     grid-template-rows: auto auto auto;
     grid-column-gap: 10px;
-
+    //div * {
+    //  width: 100%;
+    //}
     .col-span-all {
       grid-column: 1 / 6;
     }
@@ -18,10 +20,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    * {
-      width: 100%;
-    }
   }
 
 }
@@ -37,6 +35,14 @@
   text-align: center;
 }
 
+.t-right {
+  text-align: right;
+}
+
+.t-left {
+  text-align: left;
+}
+
 .m-1 {
   margin: 16px;
 }
@@ -44,8 +50,13 @@
 .m-t {
   margin-top: 16px;
 }
+
 .m-b {
   margin-bottom: 16px;
+}
+
+.w-100 {
+  width: 100%;
 }
 
 //.icon-color {

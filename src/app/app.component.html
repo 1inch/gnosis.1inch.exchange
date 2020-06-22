@@ -19,41 +19,57 @@
       </div>
       -->
 
-      <mat-form-field appearance="fill">
-        <mat-label>From</mat-label>
-        <mat-select>
-          <mat-option *ngFor="let token of tokenService.getSortedTokens() | async" [value]="token.address">
-            {{token.symbol}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div>
+        <small>&nbsp;</small>
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>From</mat-label>
+          <mat-select>
+            <mat-option *ngFor="let token of tokenService.getSortedTokens() | async" [value]="token.address">
+              {{token.symbol}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
 
-      <mat-form-field appearance="fill">
-        <mat-label>Amount</mat-label>
-        <input matInput placeholder="Amount" value="0.0001" class="mat-input-wrapper">
-      </mat-form-field>
+      <div class="t-left">
+        <small class="w-100 t-center" style="color: rgba(0, 0, 0, 0.6);">Set Max: 1000</small>
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Amount</mat-label>
+          <input matInput placeholder="Amount" value="0.0001" class="mat-input-wrapper">
+          <mat-hint align="end">≈ $1000.00</mat-hint>
+        </mat-form-field>
+      </div>
 
 
       <div class="content-center">
-        <img src="assets/swap.svg" class="r90 m-b" width="24" height="24">
+        <img src="assets/swap.svg" class="r90" width="24" height="24">
       </div>
 
-      <mat-form-field appearance="fill">
-        <mat-label>To</mat-label>
-        <mat-select>
-          <mat-option *ngFor="let food of foods" [value]="food.value">
-            {{food.viewValue}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div>
+        <small>&nbsp;</small>
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>To</mat-label>
+          <mat-select>
+            <mat-option *ngFor="let food of foods" [value]="food.value">
+              {{food.viewValue}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Amount</mat-label>
-        <input matInput placeholder="Amount" value="0.0001">
-      </mat-form-field>
 
-      <h4 *ngIf="!displaySlippageSettings" class="content-center col-span-all">Price slippage: {{slippage.toString()}} %</h4>
+      <div>
+        <small class="w-100">&nbsp;</small>
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Amount</mat-label>
+          <input matInput placeholder="Amount" value="0.0001">
+          <mat-hint align="end">≈ $890.03 ( -11.07% ) ⚠️️</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <h4 *ngIf="!displaySlippageSettings" class="content-center col-span-all">Price slippage: {{slippage.toString()}}
+        %</h4>
       <div *ngIf="displaySlippageSettings" class="content-center col-span-all m-t m-b">
         <oi-slippage-settings [(slippage)]="slippage"></oi-slippage-settings>
       </div>
