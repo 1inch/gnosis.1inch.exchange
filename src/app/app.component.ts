@@ -7,9 +7,9 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LocalStorage } from 'ngx-webstorage';
-import { Observable, Subscription } from 'rxjs';
+import { merge, Observable, Subject, Subscription } from 'rxjs';
 import { ITokenDescriptor } from './services/token.helper';
-import { map, mergeMap, startWith, switchMap, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, startWith, switchMap, take, tap } from 'rxjs/operators';
 import { Quote } from './services/1inch.api/1inch.api.dto';
 import { BigNumber } from 'ethers/utils';
 import { bnToNumberSafe } from './utils';
@@ -29,6 +29,7 @@ export class AppComponent implements OnDestroy {
 
   public title = '1inch.exchange';
 
+  private updateAmounts = new Subject<string>();
   private subscription = new Subscription();
 
   @LocalStorage('displaySlippageSettings', false)
@@ -40,6 +41,7 @@ export class AppComponent implements OnDestroy {
   @LocalStorage('fromTokenSymbol', 'ETH') fromTokenSymbol: string;
   @LocalStorage('toTokenSymbol', 'DAI') toTokenSymbol: string;
   @LocalStorage('fromAmount', '1') fromAmount: string;
+  toAmount: string;
   fromAmountBN: BigNumber;
   toAmountBN: BigNumber;
 
@@ -71,65 +73,6 @@ export class AppComponent implements OnDestroy {
     sanitizer: DomSanitizer
   ) {
 
-    this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
-    const fromAmountListener$ = this.swapForm.controls.fromAmount.valueChanges.pipe(
-      startWith(this.fromAmount),
-      switchMap((value: string) => {
-
-        this.fromAmount = value;
-        return this.tokenService.tokenHelper$.pipe(
-          mergeMap((tokenHelper) => {
-
-            const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
-            return this.getTokenCost(token, +value).pipe(
-              map(({ tokenUsdCost, tokenUsdCostView }) => {
-                this.fromTokenUsdCost = tokenUsdCost;
-                this.fromTokenUsdCostView = tokenUsdCostView;
-                return tokenHelper.parseAsset(this.fromTokenSymbol, value);
-              })
-            );
-          }),
-        );
-      }),
-      switchMap((valueBN: BigNumber) => {
-
-        this.loading = true;
-        this.fromAmountBN = valueBN;
-        this.swapForm.controls.toAmount.reset();
-        this.toTokenUsdCostView = undefined;
-        return this.oneInchApiService.getQuote$(
-          this.fromTokenSymbol,
-          this.toTokenSymbol,
-          this.fromAmountBN.toString()
-        );
-      }),
-      switchMap((quote: Quote) => {
-
-        this.toAmountBN = new BigNumber(quote.toTokenAmount);
-        return this.tokenService.tokenHelper$.pipe(
-          mergeMap((tokenHelper) => {
-
-            const token = tokenHelper.getTokenBySymbol(this.toTokenSymbol);
-            const formattedAsset = tokenHelper.formatUnits(this.toAmountBN, token.decimals);
-            return this.getTokenCost(token, +formattedAsset).pipe(
-              map(({ tokenUsdCost, tokenUsdCostView }) => {
-                this.toTokenUsdCost = tokenUsdCost;
-                this.toTokenUsdCostView = tokenUsdCostView;
-                return formattedAsset;
-              })
-            );
-          })
-        );
-      }),
-      tap((toAmount: string) => {
-
-        this.swapForm.controls.toAmount.setValue(toAmount);
-        this.loading = false;
-      })
-    );
-
-    this.subscription.add(fromAmountListener$.subscribe());
-
     iconRegistry.addSvgIcon('settings', sanitizer.bypassSecurityTrustResourceUrl('assets/settings.svg'));
     iconRegistry.addSvgIcon('swap', sanitizer.bypassSecurityTrustResourceUrl('assets/swap.svg'));
 
@@ -139,17 +82,21 @@ export class AppComponent implements OnDestroy {
 
     this.tokenService.setTokenData('0x66666600E43c6d9e1a249D29d58639DEdFcD9adE');
     this.sortedTokens = this.tokenService.getSortedTokens();
-    // this.tokenService.getSortedTokens().subscribe(console.log)
 
+    this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
 
-    // this.tokenService.tokenHelper$.pipe(
-    //   tap((tokenHelper) => {
-    //
-    //   })
-    // ).subscribe();
-    // this.tokenPriceService.getTokenPriceBN('0x0000000000000000000000000000000000000000', 18).subscribe(console.log);
+    const fromAmountChange$ = this.swapForm.controls.fromAmount.valueChanges.pipe(
+      startWith(this.fromAmount),
+      distinctUntilChanged()
+    );
 
-    // oneInchApiService.getQuote$('ETH', 'DAI', '10000000000000').subscribe(console.log);
+    const fromAmountListener$ = merge(fromAmountChange$, this.updateAmounts.asObservable())
+      .pipe(
+        switchMap(((value: string) => this.setAmounts(value)))
+      );
+
+    this.subscription.add(fromAmountListener$.subscribe());
+
     // oneInchApiService.getSwapData$(
     //   'ETH',
     //   'DAI',
@@ -176,22 +123,58 @@ export class AppComponent implements OnDestroy {
     this.displaySlippageSettings = !this.displaySlippageSettings;
   }
 
-  swapTokenPlaces() {
+  private setAmounts(value: string): Observable<any> {
+
     this.loading = true;
-    setTimeout(() => {
-      this.loading = false;
-    }, 1500);
-  }
+    this.fromAmount = value;
+    return this.tokenService.tokenHelper$.pipe(
+      switchMap((tokenHelper) => {
 
-  get fromToDiffInPercent() {
+        const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
+        return this.getTokenCost(token, +value).pipe(
+          map(({ tokenUsdCost, tokenUsdCostView }) => {
 
-    const diff = this.fromTokenUsdCost - this.toTokenUsdCost;
-    if (!this.fromTokenUsdCost || +(diff.toFixed(2)) <= 0) {
-      return '';
-    }
+            this.fromTokenUsdCost = tokenUsdCost;
+            this.fromTokenUsdCostView = tokenUsdCostView;
+            return tokenHelper.parseAsset(this.fromTokenSymbol, value);
+          })
+        );
+      }),
+      switchMap((valueBN: BigNumber) => {
 
-    const percent = Math.abs((diff / this.fromTokenUsdCost) * 100);
-    return `( -${ percent.toFixed(2) }% )`;
+        this.fromAmountBN = valueBN;
+        this.resetToTokenAmount();
+        return this.oneInchApiService.getQuote$(
+          this.fromTokenSymbol,
+          this.toTokenSymbol,
+          this.fromAmountBN.toString()
+        );
+      }),
+      switchMap((quote: Quote) => {
+
+        this.toAmountBN = new BigNumber(quote.toTokenAmount);
+        return this.tokenService.tokenHelper$.pipe(
+          switchMap((tokenHelper) => {
+
+            const token = tokenHelper.getTokenBySymbol(this.toTokenSymbol);
+            const formattedAsset = tokenHelper.formatUnits(this.toAmountBN, token.decimals);
+            this.toAmount = formattedAsset;
+            return this.getTokenCost(token, +formattedAsset).pipe(
+              map(({ tokenUsdCost, tokenUsdCostView }) => {
+                this.toTokenUsdCost = tokenUsdCost;
+                this.toTokenUsdCostView = tokenUsdCostView;
+                return formattedAsset;
+              })
+            );
+          })
+        );
+      }),
+      tap((toAmount: string) => {
+
+        this.swapForm.controls.toAmount.setValue(toAmount);
+        this.loading = false;
+      })
+    );
   }
 
   private getTokenCost(
@@ -206,7 +189,6 @@ export class AppComponent implements OnDestroy {
       map((priceBN: BigNumber) => {
 
         const usdPrice = bnToNumberSafe(priceBN) / 1e8;
-        token.usdBalance = usdPrice;
         return this.calcTokenCost(tokenAmount, usdPrice);
       })
     );
@@ -222,7 +204,50 @@ export class AppComponent implements OnDestroy {
     }
   }
 
-  getTokenLogoImage(tokenAddress: string): string {
+  private resetToTokenAmount(): void {
+    this.swapForm.controls.toAmount.reset();
+    this.toTokenUsdCostView = undefined;
+  }
+
+  public onTokenChange(): void {
+    this.resetToTokenAmount();
+    this.tokenService.tokenHelper$.pipe(
+      tap((tokenHelper) => {
+
+        this.fromAmountBN = tokenHelper.parseAsset(this.fromTokenSymbol, this.fromAmount);
+        this.updateAmounts.next(this.fromAmount);
+      }),
+      take(1)
+    ).subscribe();
+  }
+
+  public flipTokens(): void {
+    const fts = this.fromTokenSymbol;
+    this.fromTokenSymbol = this.toTokenSymbol;
+    this.toTokenSymbol = fts;
+    this.fromAmount = this.toAmount;
+    this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
+    this.fromTokenUsdCost = this.toTokenUsdCost;
+    this.fromTokenUsdCostView = this.toTokenUsdCostView;
+    this.onTokenChange();
+  }
+
+  public setMaxAmount(fromToken: ITokenDescriptor): void {
+    this.swapForm.controls.fromAmount.setValue(fromToken.formatedTokenBalance);
+  }
+
+  public getTokenLogoImage(tokenAddress: string): string {
     return `https://1inch.exchange/assets/tokens/${ tokenAddress.toLowerCase() }.png`;
+  }
+
+  get fromToDiffInPercent() {
+
+    const diff = this.fromTokenUsdCost - this.toTokenUsdCost;
+    if (!this.fromTokenUsdCost || +(diff.toFixed(2)) <= 0) {
+      return '';
+    }
+
+    const percent = Math.abs((diff / this.fromTokenUsdCost) * 100);
+    return `( -${ percent.toFixed(2) }% )`;
   }
 }

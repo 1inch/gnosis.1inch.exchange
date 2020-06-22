@@ -28,40 +28,42 @@
             <mat-form-field appearance="fill" class="w-100">
               <mat-label>From</mat-label>
 
-              <mat-select [(value)]="fromTokenSymbol">
+              <mat-select [(value)]="fromTokenSymbol" (selectionChange)="onTokenChange()">
                 <mat-option *ngFor="let token of tokens" [value]="token.symbol">
+                  <ng-container *ngIf="token.symbol !== toTokenSymbol">
 
-                  <div *ngIf="token.symbol === fromTokenSymbol"
-                       class="token-preview-grid">
+                    <div *ngIf="token.symbol === fromTokenSymbol"
+                         class="token-preview-grid">
 
-                    <img
-                      [src]="getTokenLogoImage(token.address)"
-                      style="height: 24px;">
+                      <img
+                        [src]="getTokenLogoImage(token.address)"
+                        style="height: 24px;">
 
-                    <span *ngIf="token.symbol === fromTokenSymbol">{{token.symbol}}</span>
-                    <span></span>
-                  </div>
-
-                  <div *ngIf="token.symbol !== fromTokenSymbol"
-                       class="token-preview-grid">
-
-                    <img
-                      [src]="getTokenLogoImage(token.address)"
-                      style="height: 24px; ">
-
-                    <div style="display: flex; flex-direction: column; height:36px">
-                      <span style="line-height:20px">{{token.symbol}}</span>
-                      <small style="line-height:16px" *ngIf="token.symbol !== fromTokenSymbol"
-                             class="token-annotation">{{token.name}}</small>
+                      <span *ngIf="token.symbol === fromTokenSymbol">{{token.symbol}}</span>
+                      <span></span>
                     </div>
 
-                    <span *ngIf="token.symbol !== fromTokenSymbol">
+                    <div *ngIf="token.symbol !== fromTokenSymbol"
+                         class="token-preview-grid">
+
+                      <img
+                        [src]="getTokenLogoImage(token.address)"
+                        style="height: 24px; ">
+
+                      <div style="display: flex; flex-direction: column; height:36px">
+                        <span style="line-height:20px">{{token.symbol}}</span>
+                        <small style="line-height:16px" *ngIf="token.symbol !== fromTokenSymbol"
+                               class="token-annotation">{{token.name}}</small>
+                      </div>
+
+                      <span *ngIf="token.symbol !== fromTokenSymbol">
                       <small class="token-annotation">{{ token.formatedTokenBalance }}</small>
                       <small class="token-annotation">{{ token.formatedUSDBalance }}</small>
                     </span>
 
-                  </div>
+                    </div>
 
+                  </ng-container>
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -69,7 +71,8 @@
 
 
           <div class="t-left">
-            <small class="w-100 t-center max-balance" style="color: rgba(0, 0, 0, 0.6);">
+            <small class="w-100 t-center max-balance" style="color: rgba(0, 0, 0, 0.6);"
+                   (click)="setMaxAmount(fromToken)">
               Max: {{ tokenHelper.toPrecision(fromToken.formatedTokenBalance || '0', 12) }}
             </small>
             <mat-form-field appearance="fill" class="w-100">
@@ -83,20 +86,25 @@
 
         <div class="content-center">
           <img *ngIf="loading" src="assets/loading.svg" width="50">
-          <button *ngIf="!loading" mat-icon-button aria-label="settings" (click)="swapTokenPlaces()">
+          <button *ngIf="!loading" mat-icon-button aria-label="settings" (click)="flipTokens()">
             <mat-icon svgIcon="swap"></mat-icon>
           </button>
         </div>
 
-        <ng-container *ngIf="tokenHelper.getTokenBySymbol(toTokenSymbol); let toToken">
+        <ng-container>
 
           <div>
             <small class="w-100">&nbsp;</small>
             <mat-form-field appearance="fill" class="w-100">
               <mat-label>Amount</mat-label>
               <input matInput placeholder="Amount" formControlName="toAmount">
-              <mat-hint *ngIf="toTokenUsdCostView" align="end">≈ {{toTokenUsdCostView}}</mat-hint>
-              <!--              <mat-hint align="end">≈ $890.03 ( -11.07% ) ⚠️️</mat-hint>-->
+              <mat-hint *ngIf="toTokenUsdCostView" align="end">
+                ≈ {{toTokenUsdCostView}} {{fromToDiffInPercent}}
+                <span *ngIf="fromTokenUsdCost * 0.9 > toTokenUsdCost"
+                      matTooltip="High slippage! More then 10% price drop."
+                      style="cursor: default; position: relative; top: 1px"
+                >⚠️</span>
+              </mat-hint>
             </mat-form-field>
           </div>
 
@@ -105,39 +113,41 @@
             <mat-form-field appearance="fill" class="w-100">
               <mat-label>From</mat-label>
 
-              <mat-select [(value)]="toTokenSymbol">
+              <mat-select [(value)]="toTokenSymbol" (selectionChange)="onTokenChange()">
                 <mat-option *ngFor="let token of tokens" [value]="token.symbol">
+                  <ng-container *ngIf="token.symbol !== fromTokenSymbol">
 
-                  <div *ngIf="token.symbol === toTokenSymbol"
-                       class="token-preview-grid">
+                    <div *ngIf="token.symbol === toTokenSymbol"
+                         class="token-preview-grid">
 
-                    <img
-                      [src]="getTokenLogoImage(token.address)"
-                      style="height: 24px;">
+                      <img
+                        [src]="getTokenLogoImage(token.address)"
+                        style="height: 24px;">
 
-                    <span *ngIf="token.symbol === toTokenSymbol">{{token.symbol}}</span>
-                    <span></span>
-                  </div>
-
-                  <div *ngIf="token.symbol !== toTokenSymbol"
-                       class="token-preview-grid">
-
-                    <img
-                      [src]="getTokenLogoImage(token.address)"
-                      style="height: 24px; ">
-
-                    <div style="display: flex; flex-direction: column; height:36px">
-                      <span style="line-height:20px">{{token.symbol}}</span>
-                      <small style="line-height:16px" *ngIf="token.symbol !== toTokenSymbol"
-                             class="token-annotation">{{token.name}}</small>
+                      <span *ngIf="token.symbol === toTokenSymbol">{{token.symbol}}</span>
+                      <span></span>
                     </div>
 
-                    <span *ngIf="token.symbol !== toTokenSymbol">
+                    <div *ngIf="token.symbol !== toTokenSymbol"
+                         class="token-preview-grid">
+
+                      <img
+                        [src]="getTokenLogoImage(token.address)"
+                        style="height: 24px; ">
+
+                      <div style="display: flex; flex-direction: column; height:36px">
+                        <span style="line-height:20px">{{token.symbol}}</span>
+                        <small style="line-height:16px" *ngIf="token.symbol !== toTokenSymbol"
+                               class="token-annotation">{{token.name}}</small>
+                      </div>
+
+                      <span *ngIf="token.symbol !== toTokenSymbol">
                       <small class="token-annotation">{{ token.formatedTokenBalance }}</small>
                       <small class="token-annotation">{{ token.formatedUSDBalance }}</small>
                     </span>
 
-                  </div>
+                    </div>
+                  </ng-container>
 
                 </mat-option>
               </mat-select>
