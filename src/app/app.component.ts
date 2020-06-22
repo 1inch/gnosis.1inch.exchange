@@ -25,11 +25,9 @@ export class AppComponent implements OnDestroy {
   @LocalStorage('slippage', 0.1)
   slippage;
 
-  @LocalStorage('fromToken', 'ETH')
-  fromToken;
-
-  @LocalStorage('toToken', 'DAI')
-  toToken;
+  @LocalStorage('fromTokenSymbol', 'ETH') fromTokenSymbol;
+  @LocalStorage('toTokenSymbol', 'DAI') toTokenSymbol;
+  @LocalStorage('fromAmount', 1) fromAmount;
 
   swapForm = new FormGroup({
     firstName: new FormControl(''),
@@ -56,8 +54,8 @@ export class AppComponent implements OnDestroy {
     // this.gnosisService.isMainNet$.subscribe(console.log);
     // this.gnosisService.walletAddress$.subscribe(console.log);
 
-    this.sortedTokens = this.tokenService.getSortedTokens();
     this.tokenService.setTokenData('0x66666600E43c6d9e1a249D29d58639DEdFcD9adE');
+    this.sortedTokens = this.tokenService.getSortedTokens();
     //this.tokenService.getSortedTokens().subscribe(console.log)
 
 

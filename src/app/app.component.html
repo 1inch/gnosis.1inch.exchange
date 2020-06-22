@@ -1,97 +1,107 @@
-<div class="m-1" *ngIf="tokenService.getSortedTokens() | async; let tokens">
+<ng-container *ngIf="(tokenService.tokenHelper$ | async); let tokenHelper">
 
-  <button mat-icon-button aria-label="settings" (click)="toggleSlippage()">
-    <mat-icon svgIcon="settings" [color]="displaySlippageSettings ? 'primary' : ''"></mat-icon>
-  </button>
+  <div class="m-1" *ngIf="(sortedTokens | async); let tokens;">
 
-  <form class="example-form">
-    <div class="swap-controls">
+    <button mat-icon-button aria-label="settings" (click)="toggleSlippage()">
+      <mat-icon svgIcon="settings" [color]="displaySlippageSettings ? 'primary' : ''"></mat-icon>
+    </button>
 
-      <!--
-      <div class="example-label">Flat</div>
-      <div class="example-button-row">
-        <button mat-flat-button>Basic</button>
-        <button mat-flat-button color="primary">Primary</button>
+    <form class="example-form">
+      <div class="swap-controls">
+
+        <!--
+        <div class="example-label">Flat</div>
+        <div class="example-button-row">
+          <button mat-flat-button>Basic</button>
+          <button mat-flat-button color="primary">Primary</button>
+          <button mat-flat-button color="accent">Accent</button>
+          <button mat-flat-button color="warn">Warn</button>
+          <button mat-flat-button disabled>Disabled</button>
+          <a mat-flat-button href="https://www.google.com/" target="_blank">Link</a>
+        </div>
+        -->
+
+        <ng-container *ngIf="tokenHelper.getTokenBySymbol(fromTokenSymbol); let fromToken">
+
+          <div>
+            <small>&nbsp;</small>
+            <mat-form-field appearance="fill" class="w-100">
+              <mat-label>From</mat-label>
+              <mat-select [(value)]="fromTokenSymbol">
+                <mat-option *ngFor="let token of tokens" [value]="token.symbol">
+                  {{token.symbol}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+
+          <div class="t-left">
+            <small class="w-100 t-center" style="color: rgba(0, 0, 0, 0.6);">Set Max: 1000</small>
+            <mat-form-field appearance="fill" class="w-100">
+              <mat-label>Amount</mat-label>
+              <input matInput placeholder="Amount" [value]="fromAmount" class="mat-input-wrapper">
+              <mat-hint *ngIf="fromToken.formatedUSD" align="end">≈ {{fromToken.formatedUSD}}</mat-hint>
+            </mat-form-field>
+          </div>
+
+        </ng-container>
+
+        <div class="content-center">
+          <img *ngIf="loading" src="assets/loading.svg" width="50">
+          <button *ngIf="!loading" mat-icon-button aria-label="settings" (click)="swapTokenPlaces()">
+            <mat-icon svgIcon="swap"></mat-icon>
+          </button>
+        </div>
+
+        <ng-container *ngIf="tokenHelper.getTokenBySymbol(toTokenSymbol); let toToken">
+
+          <div>
+            <small class="w-100">&nbsp;</small>
+            <mat-form-field appearance="fill" class="w-100">
+              <mat-label>Amount</mat-label>
+              <input matInput placeholder="Amount" value="0.0001">
+              <mat-hint *ngIf="toToken.formatedUSD" align="end">≈ {{toToken.formatedUSD}}</mat-hint>
+<!--              <mat-hint align="end">≈ $890.03 ( -11.07% ) ⚠️️</mat-hint>-->
+            </mat-form-field>
+          </div>
+
+          <div>
+            <small>&nbsp;</small>
+            <mat-form-field appearance="fill" class="w-100">
+              <mat-label>To</mat-label>
+              <mat-select [(value)]="toTokenSymbol">
+                <mat-option *ngFor="let token of tokens" [value]="token.symbol">
+                  {{token.symbol}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+        </ng-container>
+
+        <h4 *ngIf="!displaySlippageSettings" class="content-center col-span-all">Price slippage: {{slippage.toString()}}
+          %</h4>
+        <div *ngIf="displaySlippageSettings" class="content-center col-span-all m-t m-b">
+          <oi-slippage-settings [(slippage)]="slippage"></oi-slippage-settings>
+        </div>
+
+        <div class="content-center col-span-all">
+          <!--      <span class="t-center">some message</span>-->
+          <button mat-flat-button color="primary">SWAP NOW</button>
+        </div>
+
+      </div>
+
+    </form>
+
+    <!--
+        <button mat-flat-button>Basic</button>-->
+    <!--
         <button mat-flat-button color="accent">Accent</button>
         <button mat-flat-button color="warn">Warn</button>
         <button mat-flat-button disabled>Disabled</button>
         <a mat-flat-button href="https://www.google.com/" target="_blank">Link</a>
-      </div>
-      -->
-
-      <div>
-        <small>&nbsp;</small>
-        <mat-form-field appearance="fill" class="w-100">
-          <mat-label>From</mat-label>
-          <mat-select [(value)]="fromToken">
-            <mat-option *ngFor="let token of tokens" [value]="token.symbol">
-              {{token.symbol}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-
-      <div class="t-left">
-        <small class="w-100 t-center" style="color: rgba(0, 0, 0, 0.6);">Set Max: 1000</small>
-        <mat-form-field appearance="fill" class="w-100">
-          <mat-label>Amount</mat-label>
-          <input matInput placeholder="Amount" value="0.0001" class="mat-input-wrapper">
-          <mat-hint align="end">≈ $1000.00</mat-hint>
-        </mat-form-field>
-      </div>
-
-
-      <div class="content-center">
-        <img *ngIf="loading" src="assets/loading.svg" width="50">
-        <button *ngIf="!loading" mat-icon-button aria-label="settings" (click)="swapTokenPlaces()">
-          <mat-icon svgIcon="swap"></mat-icon>
-        </button>
-      </div>
-
-
-      <div>
-        <small class="w-100">&nbsp;</small>
-        <mat-form-field appearance="fill" class="w-100">
-          <mat-label>Amount</mat-label>
-          <input matInput placeholder="Amount" value="0.0001">
-          <mat-hint align="end">≈ $890.03 ( -11.07% ) ⚠️️</mat-hint>
-        </mat-form-field>
-      </div>
-
-      <div>
-        <small>&nbsp;</small>
-        <mat-form-field appearance="fill" class="w-100">
-          <mat-label>To</mat-label>
-          <mat-select [(value)]="toToken">
-            <mat-option *ngFor="let token of tokens" [value]="token.symbol">
-              {{token.symbol}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <h4 *ngIf="!displaySlippageSettings" class="content-center col-span-all">Price slippage: {{slippage.toString()}}
-        %</h4>
-      <div *ngIf="displaySlippageSettings" class="content-center col-span-all m-t m-b">
-        <oi-slippage-settings [(slippage)]="slippage"></oi-slippage-settings>
-      </div>
-
-      <div class="content-center col-span-all">
-        <!--      <span class="t-center">some message</span>-->
-        <button mat-flat-button color="primary">SWAP NOW</button>
-      </div>
-
-    </div>
-
-  </form>
-
-  <!--
-      <button mat-flat-button>Basic</button>-->
-  <!--
-      <button mat-flat-button color="accent">Accent</button>
-      <button mat-flat-button color="warn">Warn</button>
-      <button mat-flat-button disabled>Disabled</button>
-      <a mat-flat-button href="https://www.google.com/" target="_blank">Link</a>
-      -->
-</div>
+        -->
+  </div>
+</ng-container>
