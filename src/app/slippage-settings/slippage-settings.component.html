@@ -1,54 +1,80 @@
-<label class="d-block">
-  <span>Limit additional price slippage</span>&nbsp;
-  <span
-    matTooltip="Lowering this limit decreases your risk of front-running.
+<div>
+
+  <label class="slippage-header">
+    <span>Limit additional price slippage</span>&nbsp;
+    <span
+      matTooltip="Lowering this limit decreases your risk of front-running.
           However, this makes it more likely that your transaction will fail due to normal price movements.">
                 <img src="assets/info.svg" style="width: 14px">
             </span>
-</label>
+  </label>
 
-<div class="form-group">
+  <!--
+  <mat-radio-group aria-label="Select an option">
+    <mat-radio-button value="0.1">0.1 %</mat-radio-button>
+    <mat-radio-button value="0.5">0.5 %</mat-radio-button>
+    <mat-radio-button value="1">1 %</mat-radio-button>
+    <mat-radio-button value="3">3 %</mat-radio-button>
+    <mat-radio-button value="custom">Custom</mat-radio-button>
+  </mat-radio-group>
+  -->
 
-    <button mat-stroked-button
-            (click)="selectSlippage(0.1)"
-            class="btn btn-sm mr-2 {{isSelected(0.1) ? 'btn-info' : 'btn-outline-info'}}">
-        0.1%
+  <div class="form-group">
+
+
+    <button *ngIf="isSelected(0.1)" mat-stroked-button
+            (click)="selectSlippage(0.1)">0.1%
+    </button>
+    <button *ngIf="!isSelected(0.1)" mat-button
+            (click)="selectSlippage(0.1)">0.1%
     </button>
 
-    <button (click)="selectSlippage(0.5)"
-            mat-stroked-button
-            class="btn btn-sm mr-2 {{isSelected(0.5) ? 'btn-info' : 'btn-outline-info'}}">
-        0.5%
+
+    <button *ngIf="isSelected(0.5)" mat-stroked-button
+            (click)="selectSlippage(0.5)">0.5%
+    </button>
+    <button *ngIf="!isSelected(0.5)" mat-button
+            (click)="selectSlippage(0.5)">0.5%
     </button>
 
-    <button (click)="selectSlippage(1)"
-            mat-stroked-button
-            class="btn btn-sm mr-2 {{isSelected(1) ? 'btn-info' : 'btn-outline-info'}}">
-        1%
+
+    <button *ngIf="isSelected(1)" mat-stroked-button
+            (click)="selectSlippage(1)">1%
+    </button>
+    <button *ngIf="!isSelected(1)" mat-button
+            (click)="selectSlippage(1)">1%
     </button>
 
-    <button class="btn btn-sm mr-2 {{isSelected(3) ? 'btn-info' : 'btn-outline-info'}}"
-            mat-stroked-button
-            (click)="selectSlippage(3)">
-        3%
+
+    <button *ngIf="isSelected(3)" mat-stroked-button
+            (click)="selectSlippage(3)">3%
+    </button>
+    <button *ngIf="!isSelected(3)" mat-button
+            (click)="selectSlippage(3)">3%
     </button>
 
-    <input [formControl]="slippageInput"
-           [ngClass]="slippageInput.errors ? 'border-warning' : ''"
-           [matTooltip]="slippageInput.errors ? slippageErrorsTemplate : ''"
-           autocomplete="off"
-           class="form-control form-control-sm text-right d-inline-block"
-           placeholder="Custom %"
-           style="width: 100px;"
-           type="text">
 
-    <ng-template #slippageErrorsTemplate>
-        <div *ngIf="slippageInput.errors.pattern" class="text-warning">
-            Not valid value!. Only numeric value is allowed!
-        </div>
-        <div *ngIf="slippageInput.errors.max" class="text-warning">
-            Max price slippage is 50%!
-        </div>
-    </ng-template>
+    <mat-form-field style="width: 100%;">
+      <mat-label>Custom slippage %</mat-label>
+      <input matInput
+             [formControl]="slippageInput"
+             autocomplete="off"
+             placeholder="Custom %"
+             style="width: 100px;"
+             type="text">
+      <mat-error *ngIf="slippageInput.errors?.pattern">Not valid value!. Only numeric value is allowed!</mat-error>
+      <mat-error *ngIf="slippageInput.errors?.max">Max price slippage is 50%!</mat-error>
+    </mat-form-field>
+
+
+  </div>
+
+<!--  <ng-template #slippageErrorsTemplate>-->
+<!--    <div *ngIf="slippageInput.errors.pattern" class="text-warning">-->
+<!--      Not valid value!. Only numeric value is allowed!-->
+<!--    </div>-->
+<!--    <div *ngIf="slippageInput.errors.max" class="text-warning">-->
+<!--      Max price slippage is 50%!-->
+<!--    </div>-->
+<!--  </ng-template>-->
 </div>
-

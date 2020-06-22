@@ -14,6 +14,9 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SlippageSettingsComponent } from "./slippage-settings/slippage-settings.component";
+import { MatIconModule } from "@angular/material/icon";
+import { MatRadioModule } from "@angular/material/radio";
+import { NgxWebstorageModule } from "ngx-webstorage";
 
 
 @NgModule({
@@ -33,6 +36,9 @@ import { SlippageSettingsComponent } from "./slippage-settings/slippage-settings
     MatInputModule,
     MatFormFieldModule,
     MatTooltipModule,
+    MatIconModule,
+    MatRadioModule,
+    NgxWebstorageModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent]

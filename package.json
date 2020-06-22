@@ -23,12 +23,13 @@
     "@angular/platform-browser": "~9.1.11",
     "@angular/platform-browser-dynamic": "~9.1.11",
     "@angular/router": "~9.1.11",
+    "@gnosis.pm/safe-apps-sdk": "^0.1.1",
+    "ethers": "^4.0.44",
+    "ngx-webstorage": "^5.0.0",
     "rxjs": "^6.5.5",
     "tslib": "^1.10.0",
-    "zone.js": "~0.10.2",
-    "@gnosis.pm/safe-apps-sdk": "^0.1.1",
     "web3": "^2.0.0-alpha.1",
-    "ethers": "^4.0.44"
+    "zone.js": "~0.10.2"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "^9.1.0",
