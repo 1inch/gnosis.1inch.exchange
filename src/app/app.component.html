@@ -1,6 +1,6 @@
 <ng-container *ngIf="(tokenService.tokenHelper$ | async); let tokenHelper">
 
-  <div class="m-1" *ngIf="(sortedTokens | async); let tokens;">
+  <div class="m-1" *ngIf="(sortedTokens$ | async); let tokens;">
 
     <button mat-icon-button aria-label="settings" (click)="toggleSlippage()">
       <mat-icon svgIcon="settings" [color]="displaySlippageSettings ? 'primary' : ''"></mat-icon>

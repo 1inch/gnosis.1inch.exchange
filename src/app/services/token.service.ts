@@ -12,6 +12,13 @@ import { BigNumber } from 'ethers/utils';
 })
 export class TokenService {
 
+  public eth: ITokenDescriptor = {
+    address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+    symbol: 'ETH',
+    name: 'Ethereum',
+    decimals: 18
+  };
+
   public tokenHelper$: Observable<TokenHelper> = this.oneInchApiService.getTokens$()
     .pipe(
       // startWith([]),
@@ -91,7 +98,6 @@ export class TokenService {
     return tokens
       .sort((firstEl, secondEl) => sortSearchResults(term, firstEl, secondEl))
       .slice(0, 50);
-
   }
 
   private assignPricesAndBalances2Tokens(

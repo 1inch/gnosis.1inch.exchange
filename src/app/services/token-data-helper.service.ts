@@ -27,6 +27,7 @@ export class TokenDataHelperService {
     userWalletAddress: string,
     tokens: ISymbol2Token
   ): Observable<TokenData> {
+
     const symbols = Object.keys(tokens);
     const addresses = symbols.map(symbol => tokens[symbol].address);
     const result: TokenData = {

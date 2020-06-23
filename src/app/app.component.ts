@@ -65,7 +65,7 @@ export class AppComponent implements OnDestroy {
 
   loading = false;
 
-  sortedTokens: Observable<ITokenDescriptor[]>;
+  sortedTokens$: Observable<ITokenDescriptor[]>;
 
   constructor(
     private oneInchApiService: OneInchApiService,
@@ -83,7 +83,7 @@ export class AppComponent implements OnDestroy {
 
     // this.gnosisService.isMainNet$.subscribe(console.log);
 
-    // this.sortedTokens = this.gnosisService.walletAddress$.pipe(
+    // this.sortedTokens$ = this.gnosisService.walletAddress$.pipe(
     //   switchMap((walletAddress: string) => {
     //
     //     this.tokenService.setTokenData(walletAddress);
@@ -91,8 +91,25 @@ export class AppComponent implements OnDestroy {
     //   })
     // );
 
-    this.tokenService.setTokenData('0x66666600e43c6d9e1a249d29d58639dedfcd9ade');
-    this.sortedTokens = this.tokenService.getSortedTokens();
+    this.tokenService.setTokenData('0x8ff423E6b3b473526A9E18f9056511aE409D3390');
+    this.sortedTokens$ = combineLatest([
+      this.tokenService.getSortedTokens(),
+      this.tokenService.tokenHelper$
+    ]).pipe(
+      map(([tokens, tokenHelper]) => {
+
+        const fromTokenIndex = tokens.findIndex((x) => x.symbol === this.fromTokenSymbol);
+        if (fromTokenIndex === -1) {
+          tokens.push(tokenHelper.getTokenBySymbol(this.fromTokenSymbol));
+        }
+
+        const toTokenIndex = tokens.findIndex((x) => x.symbol === this.toTokenSymbol);
+        if (toTokenIndex === -1) {
+          tokens.push(tokenHelper.getTokenBySymbol(this.toTokenSymbol));
+        }
+        return tokens;
+      })
+    );
 
     this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
 
@@ -164,8 +181,8 @@ export class AppComponent implements OnDestroy {
       }),
       catchError((e) => {
         this.loading = false;
-        console.log(e)
-        return of('')
+        console.log(e);
+        return of('');
       }),
       take(1),
     ).subscribe();
