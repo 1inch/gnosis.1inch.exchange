@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { delay, mergeMap, retryWhen } from 'rxjs/operators';
 import { Observable, of, throwError } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { exchanges, ISymbol2Token, Quote, SupportedExchanges, SwapData, Token } from './1inch.api.dto';
+import { exchanges, ISymbol2Token, Quote, SupportedExchanges, SwapData } from './1inch.api.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -42,8 +42,11 @@ export class OneInchApiService {
     amount: string,
     fromWalletAddress: string,
     slippage = '1',
-    disableEstimate = false
+    disableEstimate = false,
+    disabledExchangesList: SupportedExchanges[] = []
   ): Observable<SwapData> {
+
+    const disableExList = disabledExchangesList.map((i) => exchanges[i]).join(',');
 
     let params = new HttpParams();
     params = params.append('fromTokenSymbol', fromTokenSymbol);
@@ -52,6 +55,7 @@ export class OneInchApiService {
     params = params.append('fromAddress', fromWalletAddress);
     params = params.append('slippage', slippage);
     params = params.append('disableEstimate', String(disableEstimate));
+    params = params.append('disabledExchangesList', disableExList);
 
     const url = 'https://api.1inch.exchange/v1.1/swap';
 

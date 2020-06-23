@@ -10,7 +10,7 @@ import { LocalStorage } from 'ngx-webstorage';
 import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { ITokenDescriptor } from './services/token.helper';
 import { catchError, distinctUntilChanged, map, shareReplay, startWith, switchMap, take, tap } from 'rxjs/operators';
-import { Quote, SwapData } from './services/1inch.api/1inch.api.dto';
+import { Quote, SupportedExchanges, SwapData } from './services/1inch.api/1inch.api.dto';
 import { BigNumber } from 'ethers/utils';
 import { bnToNumberSafe } from './utils';
 import { EthereumService } from './services/ethereum.service';
@@ -38,6 +38,9 @@ export class AppComponent implements OnDestroy {
   @LocalStorage('fromAmount', '1') fromAmount: string;
   @LocalStorage('fromTokenSymbol', 'ETH') _fromTokenSymbol: string;
   @LocalStorage('toTokenSymbol', 'DAI') _toTokenSymbol: string;
+
+  @LocalStorage('disabledExchanges', [SupportedExchanges.AirSwap])
+  disabledExchanges: SupportedExchanges[];
 
   set fromTokenSymbol(symbol: string) {
     if (symbol === this.toTokenSymbol) {
@@ -173,7 +176,8 @@ export class AppComponent implements OnDestroy {
           this.fromAmountBN.toString(),
           walletAddress,
           String(this.slippage),
-          true
+          true,
+          this.disabledExchanges
         );
       }),
       tap((data: SwapData) => {
@@ -227,7 +231,8 @@ export class AppComponent implements OnDestroy {
         return this.oneInchApiService.getQuote$(
           this.fromTokenSymbol,
           this.toTokenSymbol,
-          this.fromAmountBN.toString()
+          this.fromAmountBN.toString(),
+          this.disabledExchanges
         );
       }),
       switchMap((quote: Quote) => {
