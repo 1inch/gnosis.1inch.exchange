@@ -89,7 +89,7 @@ export class TokenPriceService {
 
         return of(price);
       }),
-      catchError(() => {
+      catchError((e) => {
 
         return this.getTokenOneSplitPrice(
           tokenAddress,
