@@ -35,10 +35,33 @@ export class AppComponent implements OnDestroy {
 
   @LocalStorage('displaySlippageSettings', false) displaySlippageSettings;
   @LocalStorage('slippage', 0.1) slippage;
-
-  @LocalStorage('fromTokenSymbol', 'ETH') fromTokenSymbol: string;
-  @LocalStorage('toTokenSymbol', 'DAI') toTokenSymbol: string;
   @LocalStorage('fromAmount', '1') fromAmount: string;
+  @LocalStorage('fromTokenSymbol', 'ETH') _fromTokenSymbol: string;
+  @LocalStorage('toTokenSymbol', 'DAI') _toTokenSymbol: string;
+
+  set fromTokenSymbol(symbol: string) {
+    if (symbol === this.toTokenSymbol) {
+      this.flipTokens();
+      return;
+    }
+    this._fromTokenSymbol = symbol;
+  }
+
+  get fromTokenSymbol(): string {
+    return this._fromTokenSymbol;
+  }
+
+  set toTokenSymbol(symbol: string) {
+    if (symbol === this.fromTokenSymbol) {
+      this.flipTokens();
+      return;
+    }
+    this._toTokenSymbol = symbol;
+  }
+
+  get toTokenSymbol(): string {
+    return this._toTokenSymbol;
+  }
 
   toAmount: string;
   fromAmountBN: BigNumber;
@@ -286,7 +309,9 @@ export class AppComponent implements OnDestroy {
     this.tokenService.tokenHelper$.pipe(
       tap((tokenHelper) => {
 
-        this.fromAmountBN = tokenHelper.parseAsset(this.fromTokenSymbol, this.fromAmount);
+        const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
+        this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixed(this.fromAmount, token.decimals));
+        this.fromAmountBN = tokenHelper.parseUnits(this.fromAmount, token.decimals);
         this.updateAmounts.next(this.fromAmount);
       }),
       take(1)
@@ -294,9 +319,9 @@ export class AppComponent implements OnDestroy {
   }
 
   public flipTokens(): void {
-    const fts = this.fromTokenSymbol;
-    this.fromTokenSymbol = this.toTokenSymbol;
-    this.toTokenSymbol = fts;
+    const fts = this._fromTokenSymbol;
+    this._fromTokenSymbol = this._toTokenSymbol;
+    this._toTokenSymbol = fts;
     this.fromAmount = this.toAmount;
     this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
     this.fromTokenUsdCost = this.toTokenUsdCost;
