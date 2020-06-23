@@ -9,6 +9,8 @@ export type Tx = {
   to: string;
   value: string;
   data: string;
+  gasPrice?: string;
+  gas?: string;
 };
 
 @Injectable({
@@ -30,8 +32,8 @@ export class GnosisService {
   constructor() {
   }
 
-  public sendTransaction(tx: Tx): void {
-    appsSdk.sendTransactions([tx]);
+  public sendTransactions(txs: Tx[]): void {
+    appsSdk.sendTransactions(txs);
   }
 
   public addListeners(): void {
@@ -39,7 +41,7 @@ export class GnosisService {
     appsSdk.addListeners({
       onSafeInfo: ((info: SafeInfo) => {
 
-        this.isMainNet.next(info.network === 'mainnet');
+        this.isMainNet.next(info.network.toLowerCase() === 'mainnet');
         this.walletAddress.next(info.safeAddress);
       }),
     });

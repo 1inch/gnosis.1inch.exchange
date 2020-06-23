@@ -1,18 +1,21 @@
 import { Component, OnDestroy } from '@angular/core';
 import { OneInchApiService } from './services/1inch.api/1inch.api.service';
-import { GnosisService } from './services/gnosis.service';
+import { GnosisService, Tx } from './services/gnosis.service';
 import { TokenPriceService } from './services/token-price.service';
 import { TokenService } from './services/token.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LocalStorage } from 'ngx-webstorage';
-import { merge, Observable, Subject, Subscription } from 'rxjs';
+import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { ITokenDescriptor } from './services/token.helper';
-import { distinctUntilChanged, map, startWith, switchMap, take, tap } from 'rxjs/operators';
-import { Quote } from './services/1inch.api/1inch.api.dto';
+import { catchError, distinctUntilChanged, map, startWith, switchMap, take, tap } from 'rxjs/operators';
+import { Quote, SwapData } from './services/1inch.api/1inch.api.dto';
 import { BigNumber } from 'ethers/utils';
 import { bnToNumberSafe } from './utils';
+import { EthereumService } from './services/ethereum.service';
+import { environment } from '../environments/environment';
+import { ethers } from 'ethers';
 
 type TokenCost = { tokenUsdCost: number, tokenUsdCostView: string };
 
@@ -69,18 +72,26 @@ export class AppComponent implements OnDestroy {
     private gnosisService: GnosisService,
     private tokenPriceService: TokenPriceService,
     public tokenService: TokenService,
+    private ethereumService: EthereumService,
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer
   ) {
 
     iconRegistry.addSvgIcon('settings', sanitizer.bypassSecurityTrustResourceUrl('assets/settings.svg'));
     iconRegistry.addSvgIcon('swap', sanitizer.bypassSecurityTrustResourceUrl('assets/swap.svg'));
-
     // this.gnosisService.addListeners();
-    // this.gnosisService.isMainNet$.subscribe(console.log);
-    // this.gnosisService.walletAddress$.subscribe(console.log);
 
-    this.tokenService.setTokenData('0x66666600E43c6d9e1a249D29d58639DEdFcD9adE');
+    // this.gnosisService.isMainNet$.subscribe(console.log);
+
+    // this.sortedTokens = this.gnosisService.walletAddress$.pipe(
+    //   switchMap((walletAddress: string) => {
+    //
+    //     this.tokenService.setTokenData(walletAddress);
+    //     return this.tokenService.getSortedTokens();
+    //   })
+    // );
+
+    this.tokenService.setTokenData('0x66666600e43c6d9e1a249d29d58639dedfcd9ade');
     this.sortedTokens = this.tokenService.getSortedTokens();
 
     this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
@@ -96,31 +107,73 @@ export class AppComponent implements OnDestroy {
       );
 
     this.subscription.add(fromAmountListener$.subscribe());
+  }
 
-    // oneInchApiService.getSwapData$(
-    //   'ETH',
-    //   'DAI',
-    //   String(1e12),
-    //   '0x66666600E43c6d9e1a249D29d58639DEdFcD9adE'
-    //   // '1',
-    //   // false
-    // ).subscribe((x) => {
-    //   console.log(x);
-    //   // gnosisService.sendTransaction({
-    //   //   to: x.to,
-    //   //   data: x.data,
-    //   //   value: x.value
-    //   // });
-    // });
+  public swap(): void {
+
+    this.loading = true;
+
+    const walletAddress$ = this.gnosisService.walletAddress$;
+    const tokenHelper$ = this.tokenService.tokenHelper$;
+
+    const transactions: Tx[] = [];
+    let token: ITokenDescriptor;
+    let walletAddress: string;
+    combineLatest([walletAddress$, tokenHelper$]).pipe(
+      switchMap(([addr, tokenHelper]) => {
+        walletAddress = addr;
+        token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
+        return this.ethereumService.isTokenApproved(
+          token.address,
+          walletAddress,
+          environment.TOKEN_SPENDER,
+          this.fromAmountBN
+        );
+      }),
+      switchMap((isApproved: boolean) => {
+
+        if (!isApproved) {
+          const tx: Tx = {
+            to: token.address,
+            data: this.ethereumService.getApproveCallData(environment.TOKEN_SPENDER, ethers.constants.MaxUint256),
+            value: '0'
+          };
+          transactions.push(tx);
+        }
+
+        return this.oneInchApiService.getSwapData$(
+          this.fromTokenSymbol,
+          this.toTokenSymbol,
+          this.fromAmountBN.toString(),
+          walletAddress,
+          String(this.slippage),
+          true
+        );
+      }),
+      tap((data: SwapData) => {
+
+        const tx: Tx = {
+          to: data.to,
+          value: data.value,
+          data: data.data,
+        };
+        transactions.push(tx);
+
+        this.gnosisService.sendTransactions(transactions);
+        this.loading = false;
+      }),
+      catchError((e) => {
+        this.loading = false;
+        console.log(e)
+        return of('')
+      }),
+      take(1),
+    ).subscribe();
   }
 
   ngOnDestroy() {
     this.gnosisService.removeListeners();
     this.subscription.unsubscribe();
-  }
-
-  toggleSlippage() {
-    this.displaySlippageSettings = !this.displaySlippageSettings;
   }
 
   private setAmounts(value: string): Observable<any> {
@@ -249,5 +302,9 @@ export class AppComponent implements OnDestroy {
 
     const percent = Math.abs((diff / this.fromTokenUsdCost) * 100);
     return `( -${ percent.toFixed(2) }% )`;
+  }
+
+  public toggleSlippage() {
+    this.displaySlippageSettings = !this.displaySlippageSettings;
   }
 }
