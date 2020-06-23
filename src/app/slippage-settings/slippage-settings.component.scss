@@ -1,13 +1,11 @@
+.mat-radio-label-content {
+  margin: 10px
+}
+
 .form-group {
   display: flex;
-  flex-direction: row;
-  height: 55px;
   * {
     margin: 5px;
-  }
-  button {
-    margin-top: 5px;
-    margin-bottom: 0;
   }
 }
 

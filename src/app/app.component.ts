@@ -34,8 +34,7 @@ export class AppComponent implements OnDestroy {
   private subscription = new Subscription();
 
   @LocalStorage('displaySlippageSettings', false) displaySlippageSettings;
-  @LocalStorage('slippage', 0.1) slippage;
-
+  @LocalStorage('slippage', '0.1') slippage;
   @LocalStorage('fromTokenSymbol', 'ETH') fromTokenSymbol: string;
   @LocalStorage('toTokenSymbol', 'DAI') toTokenSymbol: string;
   @LocalStorage('fromAmount', '1') fromAmount: string;
@@ -149,7 +148,7 @@ export class AppComponent implements OnDestroy {
           this.toTokenSymbol,
           this.fromAmountBN.toString(),
           walletAddress,
-          String(this.slippage),
+          this.slippage,
           true
         );
       }),

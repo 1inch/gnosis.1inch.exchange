@@ -1,80 +1,51 @@
-<div>
+<div [formGroup]="form">
 
-  <label class="slippage-header">
-    <span>Limit additional price slippage</span>&nbsp;
-    <span
-      matTooltip="Lowering this limit decreases your risk of front-running.
+  <mat-expansion-panel [(expanded)]="panelOpenState">
+
+    <mat-expansion-panel-header>
+
+      <mat-panel-title>
+        <span style="text-align: center; width: 100%;">
+          Price slippage: {{slippage}}%
+          <span
+            matTooltip="Lowering this limit decreases your risk of front-running.
           However, this makes it more likely that your transaction will fail due to normal price movements.">
                 <img src="assets/info.svg" style="width: 14px">
             </span>
-  </label>
+        </span>
 
-  <!--
-  <mat-radio-group aria-label="Select an option">
-    <mat-radio-button value="0.1">0.1 %</mat-radio-button>
-    <mat-radio-button value="0.5">0.5 %</mat-radio-button>
-    <mat-radio-button value="1">1 %</mat-radio-button>
-    <mat-radio-button value="3">3 %</mat-radio-button>
-    <mat-radio-button value="custom">Custom</mat-radio-button>
-  </mat-radio-group>
-  -->
+      </mat-panel-title>
 
-  <div class="form-group">
+    </mat-expansion-panel-header>
 
 
-    <button *ngIf="isSelected(0.1)" mat-stroked-button
-            (click)="selectSlippage(0.1)">0.1%
-    </button>
-    <button *ngIf="!isSelected(0.1)" mat-button
-            (click)="selectSlippage(0.1)">0.1%
-    </button>
+    <div class="form-group">
 
+      <mat-radio-group formControlName="slippageSelect" aria-label="Select an option" class="my-special-class">
+        <mat-radio-button value="0.1" (click)="selectSlippage('0.1')">0.1 %</mat-radio-button>
+        <mat-radio-button value="0.5" (click)="selectSlippage('0.5')">0.5 %</mat-radio-button>
+        <mat-radio-button value="1" (click)="selectSlippage('1')">1 %</mat-radio-button>
+        <mat-radio-button value="3" (click)="selectSlippage('3')">3 %</mat-radio-button>
+        <mat-radio-button value="custom" (click)="selectSlippage('0.2')">Custom</mat-radio-button>
+      </mat-radio-group>
 
-    <button *ngIf="isSelected(0.5)" mat-stroked-button
-            (click)="selectSlippage(0.5)">0.5%
-    </button>
-    <button *ngIf="!isSelected(0.5)" mat-button
-            (click)="selectSlippage(0.5)">0.5%
-    </button>
+    </div>
 
-
-    <button *ngIf="isSelected(1)" mat-stroked-button
-            (click)="selectSlippage(1)">1%
-    </button>
-    <button *ngIf="!isSelected(1)" mat-button
-            (click)="selectSlippage(1)">1%
-    </button>
-
-
-    <button *ngIf="isSelected(3)" mat-stroked-button
-            (click)="selectSlippage(3)">3%
-    </button>
-    <button *ngIf="!isSelected(3)" mat-button
-            (click)="selectSlippage(3)">3%
-    </button>
-
-
-    <mat-form-field style="width: 100%;">
-      <mat-label>Custom slippage %</mat-label>
-      <input matInput
-             [formControl]="slippageInput"
-             autocomplete="off"
-             placeholder="Custom %"
-             style="width: 100px;"
-             type="text">
-      <mat-error *ngIf="slippageInput.errors?.pattern">Not valid value!. Only numeric value is allowed!</mat-error>
-      <mat-error *ngIf="slippageInput.errors?.max">Max price slippage is 50%!</mat-error>
-    </mat-form-field>
-
-
-  </div>
-
-<!--  <ng-template #slippageErrorsTemplate>-->
-<!--    <div *ngIf="slippageInput.errors.pattern" class="text-warning">-->
-<!--      Not valid value!. Only numeric value is allowed!-->
-<!--    </div>-->
-<!--    <div *ngIf="slippageInput.errors.max" class="text-warning">-->
-<!--      Max price slippage is 50%!-->
-<!--    </div>-->
-<!--  </ng-template>-->
+    <div *ngIf="showCustomSlippageInput">
+      <mat-form-field style="width: 100%;" appearance="outline">
+        <mat-label>Custom slippage %</mat-label>
+        <input matInput
+               [formControl]="slippageInput"
+               autocomplete="off"
+               placeholder="Custom %"
+               style="width: 100px;"
+               type="text">
+        <mat-error *ngIf="slippageInput.errors?.pattern">Not valid value!. Only numeric value is allowed!</mat-error>
+        <mat-error *ngIf="slippageInput.errors?.max">Max price slippage is 50%!</mat-error>
+        <!--
+        <mat-error *ngIf="slippageInput.errors?.fraction">Fraction shouldn't have more than 2 decimal places!</mat-error>
+        -->
+      </mat-form-field>
+    </div>
+  </mat-expansion-panel>
 </div>

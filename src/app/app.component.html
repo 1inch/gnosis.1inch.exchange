@@ -178,10 +178,7 @@
 
             </ng-container>
 
-            <h4 *ngIf="!displaySlippageSettings" class="content-center col-span-all">Price
-              slippage: {{slippage.toString()}}
-              %</h4>
-            <div *ngIf="displaySlippageSettings" class="content-center col-span-all m-t m-b">
+            <div class="content-center col-span-all m-t m-b">
               <oi-slippage-settings [(slippage)]="slippage"></oi-slippage-settings>
             </div>
 
@@ -194,14 +191,6 @@
 
         </form>
 
-        <!--
-            <button mat-flat-button>Basic</button>-->
-        <!--
-            <button mat-flat-button color="accent">Accent</button>
-            <button mat-flat-button color="warn">Warn</button>
-            <button mat-flat-button disabled>Disabled</button>
-            <a mat-flat-button href="https://www.google.com/" target="_blank">Link</a>
-            -->
       </div>
     </ng-container>
   </ng-container>

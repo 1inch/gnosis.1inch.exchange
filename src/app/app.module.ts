@@ -19,6 +19,7 @@ import { MatRadioModule } from "@angular/material/radio";
 import { NgxWebstorageModule } from "ngx-webstorage";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { MatExpansionModule } from "@angular/material/expansion";
 
 
 @NgModule({
@@ -26,24 +27,25 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
     AppComponent,
     SlippageSettingsComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    MatButtonModule,
-    MatSelectModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatTooltipModule,
-    MatIconModule,
-    MatRadioModule,
-    NgxWebstorageModule.forRoot(),
-    MatAutocompleteModule,
-    NgxMatSelectSearchModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        MatButtonModule,
+        MatSelectModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatTooltipModule,
+        MatIconModule,
+        MatRadioModule,
+        NgxWebstorageModule.forRoot(),
+        MatAutocompleteModule,
+        NgxMatSelectSearchModule,
+        MatExpansionModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
