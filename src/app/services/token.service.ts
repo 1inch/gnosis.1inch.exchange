@@ -14,11 +14,7 @@ export class TokenService {
 
   public tokenHelper$: Observable<TokenHelper> = this.oneInchApiService.getTokens$()
     .pipe(
-      // startWith([]),
-      map((tokens: ISymbol2Token) => {
-
-        return new TokenHelper(tokens);
-      }),
+      map((tokens: ISymbol2Token) => new TokenHelper(tokens)),
       shareReplay({ bufferSize: 1, refCount: true }),
     );
 

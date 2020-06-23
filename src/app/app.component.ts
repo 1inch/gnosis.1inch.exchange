@@ -7,7 +7,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LocalStorage } from 'ngx-webstorage';
-import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
+import { combineLatest, interval, merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { ITokenDescriptor } from './services/token.helper';
 import { catchError, distinctUntilChanged, map, shareReplay, startWith, switchMap, take, tap } from 'rxjs/operators';
 import { Quote, SupportedExchanges, SwapData } from './services/1inch.api/1inch.api.dto';
@@ -18,6 +18,7 @@ import { environment } from '../environments/environment';
 import { ethers } from 'ethers';
 
 type TokenCost = { tokenUsdCost: number, tokenUsdCostView: string };
+type QuoteUpdate = { fromAmount: string, resetFields: boolean };
 
 const tokenAmountInputValidator = [
   Validators.pattern('^[0-9.]*$'),
@@ -30,7 +31,7 @@ const tokenAmountInputValidator = [
 })
 export class AppComponent implements OnDestroy {
 
-  private updateAmounts = new Subject<string>();
+  private updateAmounts = new Subject<QuoteUpdate>();
   private subscription = new Subscription();
 
   @LocalStorage('displaySlippageSettings', false) displaySlippageSettings;
@@ -126,15 +127,27 @@ export class AppComponent implements OnDestroy {
 
     const fromAmountChange$ = this.swapForm.controls.fromAmount.valueChanges.pipe(
       startWith(this.fromAmount),
-      distinctUntilChanged()
+      distinctUntilChanged(),
+      map((value: string) => ({
+        fromAmount: value,
+        resetFields: true
+      }))
     );
 
     const fromAmountListener$ = merge(fromAmountChange$, this.updateAmounts.asObservable())
       .pipe(
-        switchMap(((value: string) => this.setAmounts(value)))
+        switchMap((({ fromAmount, resetFields }) => this.setAmounts(fromAmount, resetFields)))
       );
 
+    const updateQuote$ = interval(20000).pipe(
+      tap(() => this.updateAmounts.next({
+        fromAmount: this.fromAmount,
+        resetFields: false
+      }))
+    );
+
     this.subscription.add(fromAmountListener$.subscribe());
+    // this.subscription.add(updateQuote$.subscribe());
     this.gnosisService.addListeners();
   }
 
@@ -206,9 +219,9 @@ export class AppComponent implements OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  private setAmounts(value: string): Observable<any> {
+  private setAmounts(value: string, resetFields: boolean): Observable<any> {
 
-    this.loading = true;
+    if (resetFields) { this.loading = true };
     this.fromAmount = value;
     return this.tokenService.tokenHelper$.pipe(
       switchMap((tokenHelper) => {
@@ -216,7 +229,6 @@ export class AppComponent implements OnDestroy {
         const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
         return this.getTokenCost(token, +value).pipe(
           map(({ tokenUsdCost, tokenUsdCostView }) => {
-
             this.fromTokenUsdCost = tokenUsdCost;
             this.fromTokenUsdCostView = tokenUsdCostView;
             return tokenHelper.parseAsset(this.fromTokenSymbol, value);
@@ -226,7 +238,7 @@ export class AppComponent implements OnDestroy {
       switchMap((valueBN: BigNumber) => {
 
         this.fromAmountBN = valueBN;
-        this.resetToTokenAmount();
+        if (resetFields) { this.resetToTokenAmount() };
         return this.oneInchApiService.getQuote$(
           this.fromTokenSymbol,
           this.toTokenSymbol,
@@ -243,8 +255,10 @@ export class AppComponent implements OnDestroy {
             const token = tokenHelper.getTokenBySymbol(this.toTokenSymbol);
             const formattedAsset = tokenHelper.formatUnits(this.toAmountBN, token.decimals);
             this.toAmount = formattedAsset;
+
             return this.getTokenCost(token, +formattedAsset).pipe(
               map(({ tokenUsdCost, tokenUsdCostView }) => {
+
                 this.toTokenUsdCost = tokenUsdCost;
                 this.toTokenUsdCostView = tokenUsdCostView;
                 return formattedAsset;
@@ -256,7 +270,7 @@ export class AppComponent implements OnDestroy {
       tap((toAmount: string) => {
 
         this.swapForm.controls.toAmount.setValue(toAmount);
-        this.loading = false;
+        if (resetFields) { this.loading = false; }
       })
     );
   }
@@ -316,7 +330,10 @@ export class AppComponent implements OnDestroy {
         const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
         this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixed(this.fromAmount, token.decimals));
         this.fromAmountBN = tokenHelper.parseUnits(this.fromAmount, token.decimals);
-        this.updateAmounts.next(this.fromAmount);
+        this.updateAmounts.next({
+          fromAmount: this.fromAmount,
+          resetFields: true
+        });
       }),
       take(1)
     ).subscribe();

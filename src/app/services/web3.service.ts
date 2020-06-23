@@ -12,17 +12,22 @@ const w = window as any;
 export class Web3Service {
 
   web3Subject$ = new Subject<Web3>();
-  web3$ = this.web3Subject$.asObservable();
+  web3$ = this.web3Subject$.asObservable().pipe(
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   constructor() {
     // need to subscribe first
     this.web3$.subscribe();
+    this.activate();
 
+    (window as any)?.ethereum?.on('accountsChanged', () => this.activate());
+  }
+
+  public activate(): void {
     this.activateWeb3().then(
       (w3) => this.web3Subject$.next(w3),
-      (e) => {
-        console.error(e);
-      }
+      (e) => console.error(e)
     );
   }
 
