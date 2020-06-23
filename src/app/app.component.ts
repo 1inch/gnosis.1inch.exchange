@@ -34,7 +34,6 @@ export class AppComponent implements OnDestroy {
   private updateAmounts = new Subject<QuoteUpdate>();
   private subscription = new Subscription();
 
-  @LocalStorage('displaySlippageSettings', false) displaySlippageSettings;
   @LocalStorage('slippage', '0.1') slippage;
   @LocalStorage('fromAmount', '1') fromAmount: string;
   @LocalStorage('fromTokenSymbol', 'ETH') _fromTokenSymbol: string;
@@ -367,10 +366,6 @@ export class AppComponent implements OnDestroy {
 
     const percent = Math.abs((diff / this.fromTokenUsdCost) * 100);
     return `( -${ percent.toFixed(2) }% )`;
-  }
-
-  public toggleSlippage() {
-    this.displaySlippageSettings = !this.displaySlippageSettings;
   }
 }
 
