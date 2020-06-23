@@ -39,40 +39,38 @@
                     </mat-option>
 
                     <mat-option *ngFor="let token of fromTokens" [value]="token.symbol">
-                      <ng-container *ngIf="token.symbol !== toTokenSymbol">
 
-                        <div *ngIf="token.symbol === fromTokenSymbol"
-                             class="token-preview-grid">
+                      <div *ngIf="token.symbol === fromTokenSymbol"
+                           class="token-preview-grid">
 
-                          <img
-                            [src]="getTokenLogoImage(token.address)"
-                            style="height: 24px;">
+                        <img
+                          [src]="getTokenLogoImage(token.address)"
+                          style="height: 24px;">
 
-                          <span *ngIf="token.symbol === fromTokenSymbol">{{token.symbol}}</span>
-                          <span></span>
+                        <span *ngIf="token.symbol === fromTokenSymbol">{{token.symbol}}</span>
+                        <span></span>
+                      </div>
+
+                      <div *ngIf="token.symbol !== fromTokenSymbol"
+                           class="token-preview-grid">
+
+                        <img
+                          [src]="getTokenLogoImage(token.address)"
+                          style="height: 24px; ">
+
+                        <div style="display: flex; flex-direction: column; height:36px">
+                          <span style="line-height:20px">{{token.symbol}}</span>
+                          <small style="line-height:16px" *ngIf="token.symbol !== fromTokenSymbol"
+                                 class="token-annotation over-hidden">{{token.name}}</small>
                         </div>
 
-                        <div *ngIf="token.symbol !== fromTokenSymbol"
-                             class="token-preview-grid">
-
-                          <img
-                            [src]="getTokenLogoImage(token.address)"
-                            style="height: 24px; ">
-
-                          <div style="display: flex; flex-direction: column; height:36px">
-                            <span style="line-height:20px">{{token.symbol}}</span>
-                            <small style="line-height:16px" *ngIf="token.symbol !== fromTokenSymbol"
-                                   class="token-annotation over-hidden">{{token.name}}</small>
-                          </div>
-
-                          <span *ngIf="token.symbol !== fromTokenSymbol">
+                        <span *ngIf="token.symbol !== fromTokenSymbol">
                       <small class="token-annotation">{{ token.formatedTokenBalance }}</small>
                       <small class="token-annotation">{{ token.formatedUSDBalance }}</small>
                     </span>
 
-                        </div>
+                      </div>
 
-                      </ng-container>
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
@@ -132,39 +130,37 @@
                     </mat-option>
 
                     <mat-option *ngFor="let token of toTokens" [value]="token.symbol">
-                      <ng-container *ngIf="token.symbol !== fromTokenSymbol">
 
-                        <div *ngIf="token.symbol === toTokenSymbol"
-                             class="token-preview-grid">
+                      <div *ngIf="token.symbol === toTokenSymbol"
+                           class="token-preview-grid">
 
-                          <img
-                            [src]="getTokenLogoImage(token.address)"
-                            style="height: 24px;">
+                        <img
+                          [src]="getTokenLogoImage(token.address)"
+                          style="height: 24px;">
 
-                          <span *ngIf="token.symbol === toTokenSymbol">{{token.symbol}}</span>
-                          <span></span>
+                        <span *ngIf="token.symbol === toTokenSymbol">{{token.symbol}}</span>
+                        <span></span>
+                      </div>
+
+                      <div *ngIf="token.symbol !== toTokenSymbol"
+                           class="token-preview-grid">
+
+                        <img
+                          [src]="getTokenLogoImage(token.address)"
+                          style="height: 24px; ">
+
+                        <div style="display: flex; flex-direction: column; height:36px">
+                          <span style="line-height:20px">{{token.symbol}}</span>
+                          <small style="line-height:16px" *ngIf="token.symbol !== toTokenSymbol"
+                                 class="token-annotation over-hidden">{{token.name}}</small>
                         </div>
 
-                        <div *ngIf="token.symbol !== toTokenSymbol"
-                             class="token-preview-grid">
-
-                          <img
-                            [src]="getTokenLogoImage(token.address)"
-                            style="height: 24px; ">
-
-                          <div style="display: flex; flex-direction: column; height:36px">
-                            <span style="line-height:20px">{{token.symbol}}</span>
-                            <small style="line-height:16px" *ngIf="token.symbol !== toTokenSymbol"
-                                   class="token-annotation over-hidden">{{token.name}}</small>
-                          </div>
-
-                          <span *ngIf="token.symbol !== toTokenSymbol">
+                        <span *ngIf="token.symbol !== toTokenSymbol">
                       <small class="token-annotation">{{ token.formatedTokenBalance }}</small>
                       <small class="token-annotation">{{ token.formatedUSDBalance }}</small>
                     </span>
 
-                        </div>
-                      </ng-container>
+                      </div>
 
                     </mat-option>
                   </mat-select>

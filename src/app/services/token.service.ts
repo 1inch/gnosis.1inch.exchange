@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { combineLatest, Observable, throwError } from 'rxjs';
 import { ISymbol2Token, ITokenDescriptor, TokenHelper } from './token.helper';
 import { OneInchApiService } from './1inch.api/1inch.api.service';
-import { map, mergeMap, shareReplay } from 'rxjs/operators';
+import { map, mergeMap, shareReplay, tap } from 'rxjs/operators';
 import { TokenData, TokenDataHelperService } from './token-data-helper.service';
 import { zeroValueBN } from '../utils';
 import { BigNumber } from 'ethers/utils';
@@ -26,7 +26,8 @@ export class TokenService {
 
         return new TokenHelper(tokens);
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({ bufferSize: 1, refCount: true }),
+      tap(() => console.log(123))
     );
 
   private tokens$ = this.tokenHelper$.pipe(
@@ -50,29 +51,24 @@ export class TokenService {
   ) {
   }
 
-  public getSortedTokens(): Observable<ITokenDescriptor[]> {
+  public getSortedTokens(walletAddress: string): Observable<ITokenDescriptor[]> {
 
     if (!this.tokenData$) {
-      return throwError('set token data first');
+      this.tokenData$ = this.tokens$.pipe(
+        mergeMap((symbols2Tokens: ISymbol2Token) => {
+
+          return this.tokenDataHelperService.getTokenBalancesAndPrices(
+            walletAddress,
+            symbols2Tokens
+          );
+        }),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
     }
 
     return combineLatest([this.tokenHelper$, this.tokens$, this.tokenData$]).pipe(
       map(([tokenHelper, symbols2Tokens, tokenData]) => {
         return this.sortTokens(tokenHelper, tokenData, symbols2Tokens);
-      }),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
-  }
-
-  public setTokenData(walletAddress: string): void {
-
-    this.tokenData$ = this.tokens$.pipe(
-      mergeMap((symbols2Tokens: ISymbol2Token) => {
-
-        return this.tokenDataHelperService.getTokenBalancesAndPrices(
-          walletAddress,
-          symbols2Tokens
-        );
       }),
       shareReplay({ bufferSize: 1, refCount: true })
     );

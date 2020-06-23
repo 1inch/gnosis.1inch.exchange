@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { OneInchApiService } from './services/1inch.api/1inch.api.service';
 import { GnosisService, Tx } from './services/gnosis.service';
 import { TokenPriceService } from './services/token-price.service';
@@ -9,7 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { LocalStorage } from 'ngx-webstorage';
 import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { ITokenDescriptor } from './services/token.helper';
-import { catchError, distinctUntilChanged, map, startWith, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, map, shareReplay, startWith, switchMap, take, tap } from 'rxjs/operators';
 import { Quote, SwapData } from './services/1inch.api/1inch.api.dto';
 import { BigNumber } from 'ethers/utils';
 import { bnToNumberSafe } from './utils';
@@ -29,8 +29,6 @@ const tokenAmountInputValidator = [
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnDestroy {
-
-  public title = '1inch.exchange';
 
   private updateAmounts = new Subject<string>();
   private subscription = new Subscription();
@@ -85,23 +83,18 @@ export class AppComponent implements OnDestroy {
 
     iconRegistry.addSvgIcon('settings', sanitizer.bypassSecurityTrustResourceUrl('assets/settings.svg'));
     iconRegistry.addSvgIcon('swap', sanitizer.bypassSecurityTrustResourceUrl('assets/swap.svg'));
-    // this.gnosisService.addListeners();
 
+    this.gnosisService.walletAddress$.subscribe();
     // this.gnosisService.isMainNet$.subscribe(console.log);
 
-    // this.sortedTokens$ = this.gnosisService.walletAddress$.pipe(
-    //   switchMap((walletAddress: string) => {
-    //
-    //     this.tokenService.setTokenData(walletAddress);
-    //     return this.tokenService.getSortedTokens();
-    //   })
-    // );
-
-    this.tokenService.setTokenData('0x66666600e43c6d9e1a249d29d58639dedfcd9ade');
-    this.sortedTokens$ = combineLatest([
-      this.tokenService.getSortedTokens(),
-      this.tokenService.tokenHelper$
-    ]).pipe(
+    this.sortedTokens$ = this.gnosisService.walletAddress$.pipe(
+      switchMap((walletAddress: string) => {
+        console.log({ walletAddress });
+        return combineLatest([
+          this.tokenService.getSortedTokens(walletAddress),
+          this.tokenService.tokenHelper$
+        ]);
+      }),
       map(([tokens, tokenHelper]) => {
 
         const fromTokenIndex = tokens.findIndex((x) => x.symbol === this.fromTokenSymbol);
@@ -114,7 +107,8 @@ export class AppComponent implements OnDestroy {
           tokens.push(tokenHelper.getTokenBySymbol(this.toTokenSymbol));
         }
         return tokens;
-      })
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     const filterTokens = (tokens: ITokenDescriptor[], value: string): ITokenDescriptor[] => {
@@ -159,6 +153,7 @@ export class AppComponent implements OnDestroy {
       );
 
     this.subscription.add(fromAmountListener$.subscribe());
+    this.gnosisService.addListeners();
   }
 
   public swap(): void {
@@ -210,6 +205,7 @@ export class AppComponent implements OnDestroy {
           data: data.data,
         };
         transactions.push(tx);
+        console.log(transactions);
 
         this.gnosisService.sendTransactions(transactions);
         this.loading = false;

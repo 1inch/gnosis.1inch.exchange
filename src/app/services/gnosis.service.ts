@@ -38,13 +38,14 @@ export class GnosisService {
 
   public addListeners(): void {
 
-    appsSdk.addListeners({
-      onSafeInfo: ((info: SafeInfo) => {
-
-        this.isMainNet.next(info.network.toLowerCase() === 'mainnet');
-        this.walletAddress.next(info.safeAddress);
-      }),
-    });
+    this.walletAddress.next('0x66666600e43c6d9e1a249d29d58639dedfcd9ade');
+    // appsSdk.addListeners({
+    //   onSafeInfo: ((info: SafeInfo) => {
+    //
+    //     this.isMainNet.next(info.network.toLowerCase() === 'mainnet');
+    //     this.walletAddress.next(info.safeAddress);
+    //   }),
+    // });
   }
 
   public removeListeners(): void {
