@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, Observable, Subscription } from 'rxjs';
 import { ISymbol2Token, ITokenDescriptor, TokenHelper } from './token.helper';
 import { OneInchApiService } from './1inch.api/1inch.api.service';
-import { map, mergeMap, shareReplay, tap } from 'rxjs/operators';
+import { delay, map, mergeMap, repeatWhen, retryWhen, shareReplay, tap } from 'rxjs/operators';
 import { TokenData, TokenDataHelperService } from './token-data-helper.service';
 import { zeroValueBN } from '../utils';
 import { BigNumber } from 'ethers/utils';
@@ -11,6 +11,8 @@ import { BigNumber } from 'ethers/utils';
   providedIn: 'root'
 })
 export class TokenService {
+
+  private subscription = new Subscription();
 
   public tokenHelper$: Observable<TokenHelper> = this.oneInchApiService.getTokens$()
     .pipe(
@@ -22,6 +24,8 @@ export class TokenService {
     map((tokenHelper) => tokenHelper.tokens),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+
+  private tokenBalancesAndPricesUpdate$: Observable<TokenData>;
 
   private tokenData$: Observable<TokenData>;
 
@@ -39,7 +43,7 @@ export class TokenService {
   public getSortedTokens(walletAddress: string): Observable<ITokenDescriptor[]> {
 
     if (!this.tokenData$) {
-      this.tokenData$ = this.tokens$.pipe(
+      const tokenData$ = this.tokens$.pipe(
         mergeMap((symbols2Tokens: ISymbol2Token) => {
 
           return this.tokenDataHelperService.getTokenBalancesAndPrices(
@@ -47,15 +51,26 @@ export class TokenService {
             symbols2Tokens
           );
         }),
+      );
+
+      this.tokenData$ = tokenData$.pipe(
         shareReplay({ bufferSize: 1, refCount: true })
       );
+
+      const update$ = combineLatest([this.tokenHelper$, this.tokens$, tokenData$]).pipe(
+        tap(([tokenHelper, symbols2Tokens, tokenData]) => {
+          this.assignPricesAndBalances2Tokens(tokenHelper, symbols2Tokens, tokenData);
+        }),
+        repeatWhen((completed) => completed.pipe(delay(20000)))
+      );
+
+      this.subscription.add(update$.subscribe());
     }
 
     return combineLatest([this.tokenHelper$, this.tokens$, this.tokenData$]).pipe(
       map(([tokenHelper, symbols2Tokens, tokenData]) => {
         return this.sortTokens(tokenHelper, tokenData, symbols2Tokens);
-      }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      })
     );
   }
 

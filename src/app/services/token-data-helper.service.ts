@@ -3,8 +3,8 @@ import { Web3Service } from './web3.service';
 import TokenHelperABI from '../abi/TokenHelperABI.json';
 import { environment } from '../../environments/environment';
 import { ISymbol2Token } from './token.helper';
-import { combineLatest, Observable } from 'rxjs';
-import { map, mergeMap, retry, take, tap } from 'rxjs/operators';
+import { combineLatest, Observable, of } from 'rxjs';
+import { catchError, map, mergeMap, retry, take, tap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 import { BigNumber } from 'ethers/utils';
 
@@ -76,6 +76,10 @@ export class TokenDataHelperService {
         }
       }),
       map(() => result),
+      catchError(() => of({
+        usdBalances: [],
+        balances: []
+      })),
       take(1)
     );
   }
