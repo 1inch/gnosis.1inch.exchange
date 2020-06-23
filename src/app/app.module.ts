@@ -17,6 +17,7 @@ import { SlippageSettingsComponent } from "./slippage-settings/slippage-settings
 import { MatIconModule } from "@angular/material/icon";
 import { MatRadioModule } from "@angular/material/radio";
 import { NgxWebstorageModule } from "ngx-webstorage";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
 
 
 @NgModule({
@@ -39,6 +40,7 @@ import { NgxWebstorageModule } from "ngx-webstorage";
     MatIconModule,
     MatRadioModule,
     NgxWebstorageModule.forRoot(),
+    MatAutocompleteModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -44,6 +44,7 @@ export class AppComponent implements OnDestroy {
   @LocalStorage('fromTokenSymbol', 'ETH') fromTokenSymbol: string;
   @LocalStorage('toTokenSymbol', 'DAI') toTokenSymbol: string;
   @LocalStorage('fromAmount', '1') fromAmount: string;
+
   toAmount: string;
   fromAmountBN: BigNumber;
   toAmountBN: BigNumber;
@@ -66,6 +67,9 @@ export class AppComponent implements OnDestroy {
   loading = false;
 
   sortedTokens$: Observable<ITokenDescriptor[]>;
+
+  autoCompleteCtrl = new FormControl();
+  filteredTokens$: Observable<ITokenDescriptor[]>;
 
   constructor(
     private oneInchApiService: OneInchApiService,
@@ -110,6 +114,26 @@ export class AppComponent implements OnDestroy {
         return tokens;
       })
     );
+
+    const filterTokens = (tokens: ITokenDescriptor[], value: string): ITokenDescriptor[] => {
+      const filterValue = value?.toLowerCase();
+      const x = tokens.filter(token => token.symbol?.toLowerCase().indexOf(filterValue) === 0);
+      return x;
+    }
+
+    this.filteredTokens$ = combineLatest([
+      this.sortedTokens$,
+      this.autoCompleteCtrl.valueChanges.pipe(
+        startWith('')
+      )
+    ]).pipe(
+      map((x) => {
+        const [tokens, filterText] = x;
+        return filterTokens(tokens, filterText);
+      })
+    );
+
+    this.filteredTokens$.subscribe();
 
     this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
 

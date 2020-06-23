@@ -1,4 +1,71 @@
+
+
+
+
 <ng-container *ngIf="(tokenService.tokenHelper$ | async); let tokenHelper">
+
+
+  <form class="example-form" style="margin:40px">
+    <mat-form-field class="example-full-width">
+      <input matInput
+             placeholder="State"
+             aria-label="State"
+             [matAutocomplete]="auto"
+             [formControl]="autoCompleteCtrl">
+
+      <mat-autocomplete #auto="matAutocomplete">
+
+        <mat-option *ngFor="let token of filteredTokens$ | async" [value]="token.symbol">
+          <ng-container *ngIf="token.symbol !== toTokenSymbol">
+
+            <div *ngIf="token.symbol === fromTokenSymbol"
+                 class="token-preview-grid">
+
+              <img
+                [src]="getTokenLogoImage(token.address)"
+                style="height: 24px;">
+
+              <span *ngIf="token.symbol === fromTokenSymbol">{{token.symbol}}</span>
+              <span></span>
+            </div>
+
+            <div *ngIf="token.symbol !== fromTokenSymbol"
+                 class="token-preview-grid">
+
+              <img
+                [src]="getTokenLogoImage(token.address)"
+                style="height: 24px; ">
+
+              <div style="display: flex; flex-direction: column; height:36px">
+                <span style="line-height:20px">{{token.symbol}}</span>
+                <small style="line-height:16px" *ngIf="token.symbol !== fromTokenSymbol"
+                       class="token-annotation over-hidden">{{token.name}}</small>
+              </div>
+
+              <span *ngIf="token.symbol !== fromTokenSymbol">
+                      <small class="token-annotation">{{ token.formatedTokenBalance }}</small>
+                      <small class="token-annotation">{{ token.formatedUSDBalance }}</small>
+                    </span>
+
+            </div>
+
+          </ng-container>
+        </mat-option>
+
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <br>
+
+    <!--
+    <mat-slide-toggle
+      [checked]="stateCtrl.disabled"
+      (change)="stateCtrl.disabled ? stateCtrl.enable() : stateCtrl.disable()">
+      Disable Input?
+    </mat-slide-toggle>
+
+    -->
+  </form>
 
   <div class="m-1" *ngIf="(sortedTokens$ | async); let tokens;">
 
