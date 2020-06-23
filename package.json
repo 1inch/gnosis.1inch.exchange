@@ -25,6 +25,7 @@
     "@angular/router": "~9.1.11",
     "@gnosis.pm/safe-apps-sdk": "^0.1.1",
     "ethers": "^4.0.44",
+    "ngx-mat-select-search": "^3.0.0",
     "ngx-webstorage": "^5.0.0",
     "rxjs": "^6.5.5",
     "tslib": "^1.10.0",

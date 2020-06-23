@@ -68,8 +68,10 @@ export class AppComponent implements OnDestroy {
 
   sortedTokens$: Observable<ITokenDescriptor[]>;
 
-  autoCompleteCtrl = new FormControl();
-  filteredTokens$: Observable<ITokenDescriptor[]>;
+  autoCompleteCtrlFromToken = new FormControl();
+  autoCompleteCtrlToToken = new FormControl();
+  filteredFromTokens$: Observable<ITokenDescriptor[]>;
+  filteredToTokens$: Observable<ITokenDescriptor[]>;
 
   constructor(
     private oneInchApiService: OneInchApiService,
@@ -95,7 +97,7 @@ export class AppComponent implements OnDestroy {
     //   })
     // );
 
-    this.tokenService.setTokenData('0x8ff423E6b3b473526A9E18f9056511aE409D3390');
+    this.tokenService.setTokenData('0x66666600e43c6d9e1a249d29d58639dedfcd9ade');
     this.sortedTokens$ = combineLatest([
       this.tokenService.getSortedTokens(),
       this.tokenService.tokenHelper$
@@ -117,23 +119,32 @@ export class AppComponent implements OnDestroy {
 
     const filterTokens = (tokens: ITokenDescriptor[], value: string): ITokenDescriptor[] => {
       const filterValue = value?.toLowerCase();
-      const x = tokens.filter(token => token.symbol?.toLowerCase().indexOf(filterValue) === 0);
-      return x;
-    }
+      return tokens.filter(token => token.symbol?.toLowerCase().indexOf(filterValue) === 0);
+    };
 
-    this.filteredTokens$ = combineLatest([
+    this.filteredFromTokens$ = combineLatest([
       this.sortedTokens$,
-      this.autoCompleteCtrl.valueChanges.pipe(
+      this.autoCompleteCtrlFromToken.valueChanges.pipe(
         startWith('')
       )
     ]).pipe(
       map((x) => {
         const [tokens, filterText] = x;
-        return filterTokens(tokens, filterText);
+        return filterTokens(tokens, filterText).slice(0, 50);
       })
     );
 
-    this.filteredTokens$.subscribe();
+    this.filteredToTokens$ = combineLatest([
+      this.sortedTokens$,
+      this.autoCompleteCtrlToToken.valueChanges.pipe(
+        startWith('')
+      )
+    ]).pipe(
+      map((x) => {
+        const [tokens, filterText] = x;
+        return filterTokens(tokens, filterText).slice(0, 50);
+      })
+    );
 
     this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
 

@@ -58,7 +58,7 @@ export class TokenService {
 
     return combineLatest([this.tokenHelper$, this.tokens$, this.tokenData$]).pipe(
       map(([tokenHelper, symbols2Tokens, tokenData]) => {
-        return this.sortTokens(tokenHelper, tokenData, symbols2Tokens, '');
+        return this.sortTokens(tokenHelper, tokenData, symbols2Tokens);
       }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
@@ -82,22 +82,10 @@ export class TokenService {
     tokenHelper: TokenHelper,
     tokenData: TokenData,
     symbols2Tokens: ISymbol2Token,
-    term: string = ''
   ): ITokenDescriptor[] {
 
     this.assignPricesAndBalances2Tokens(tokenHelper, symbols2Tokens, tokenData);
-
-    const tokens = Object.values(symbols2Tokens);
-    if (
-      term !== '' &&
-      tokens.findIndex((x) => x.symbol === term) === -1
-    ) {
-      return [];
-    }
-
-    return tokens
-      .sort((firstEl, secondEl) => sortSearchResults(term, firstEl, secondEl))
-      .slice(0, 50);
+    return Object.values(symbols2Tokens).sort(sortSearchResults);
   }
 
   private assignPricesAndBalances2Tokens(
@@ -144,7 +132,7 @@ export class TokenService {
 
 }
 
-function sortSearchResults(term, firstEl: ITokenDescriptor, secondEl: ITokenDescriptor) {
+function sortSearchResults(firstEl: ITokenDescriptor, secondEl: ITokenDescriptor) {
 
   if (!firstEl.usdBalance) {
     firstEl.usdBalance = 0;
@@ -160,11 +148,6 @@ function sortSearchResults(term, firstEl: ITokenDescriptor, secondEl: ITokenDesc
 
   if (!secondEl.balance) {
     secondEl.balance = zeroValueBN;
-  }
-
-  if (firstEl.symbol.toLowerCase() === term.toLowerCase()) {
-
-    return -1;
   }
 
   if (Number(firstEl.usdBalance) > Number(secondEl.usdBalance)) {

@@ -18,6 +18,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatRadioModule } from "@angular/material/radio";
 import { NgxWebstorageModule } from "ngx-webstorage";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 
 @NgModule({
@@ -41,6 +42,7 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
     MatRadioModule,
     NgxWebstorageModule.forRoot(),
     MatAutocompleteModule,
+    NgxMatSelectSearchModule
   ],
   providers: [],
   bootstrap: [AppComponent]
