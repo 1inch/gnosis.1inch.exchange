@@ -188,7 +188,6 @@ export class AppComponent implements OnDestroy {
           data: data.data,
         };
         transactions.push(tx);
-        console.log(transactions);
 
         this.gnosisService.sendTransactions(transactions);
         this.loading = false;

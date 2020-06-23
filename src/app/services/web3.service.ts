@@ -1,9 +1,8 @@
-import { defer, Observable, of, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Contract } from 'web3-eth-contract';
 import { Injectable } from '@angular/core';
-import { exhaustMap, map, shareReplay } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import Web3 from 'web3';
-import { fromPromise } from 'rxjs/internal-compatibility';
 
 const w = window as any;
 
@@ -13,17 +12,18 @@ const w = window as any;
 export class Web3Service {
 
   web3Subject$ = new Subject<Web3>();
-  web3$ = this.web3Subject$.asObservable().pipe(
-    shareReplay(1)
-  );
+  web3$ = this.web3Subject$.asObservable();
 
   constructor() {
+    // need to subscribe first
+    this.web3$.subscribe();
+
     this.activateWeb3().then(
       (w3) => this.web3Subject$.next(w3),
       (e) => {
         console.error(e);
       }
-    )
+    );
   }
 
   public async activateWeb3(): Promise<Web3> {

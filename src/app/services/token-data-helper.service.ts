@@ -60,12 +60,10 @@ export class TokenDataHelperService {
       index += step;
     } while (addresses.slice(index, index + step).length);
 
-    console.log({reqLen: requests.length})
     return combineLatest(requests).pipe(
       retry(3),
       tap((res) => {
 
-        console.log({ res });
         for (const data of res) {
 
           try {

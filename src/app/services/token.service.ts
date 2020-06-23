@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, throwError } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { ISymbol2Token, ITokenDescriptor, TokenHelper } from './token.helper';
 import { OneInchApiService } from './1inch.api/1inch.api.service';
 import { map, mergeMap, shareReplay, tap } from 'rxjs/operators';
@@ -23,10 +23,7 @@ export class TokenService {
     );
 
   private tokens$ = this.tokenHelper$.pipe(
-    map((tokenHelper) => {
-      console.log({tokens0: tokenHelper.tokens})
-      return tokenHelper.tokens;
-    }),
+    map((tokenHelper) => tokenHelper.tokens),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
@@ -54,7 +51,6 @@ export class TokenService {
             symbols2Tokens
           );
         }),
-        tap(console.log),
         shareReplay({ bufferSize: 1, refCount: true })
       );
     }
