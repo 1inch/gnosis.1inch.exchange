@@ -2,13 +2,12 @@
   <ng-container *ngIf="(filteredFromTokens$ | async); let fromTokens;">
     <ng-container *ngIf="(filteredToTokens$ | async); let toTokens;">
 
-      <div class="m-1">
-
-        <button mat-icon-button aria-label="settings" (click)="toggleSlippage()">
-          <mat-icon svgIcon="settings" [color]="displaySlippageSettings ? 'primary' : ''"></mat-icon>
-        </button>
+      <div class="m-1 content-center">
 
         <form class="example-form" [formGroup]="swapForm">
+          <button mat-icon-button aria-label="settings" (click)="toggleSlippage()">
+            <mat-icon svgIcon="settings" [color]="displaySlippageSettings ? 'primary' : ''"></mat-icon>
+          </button>
           <div class="swap-controls">
 
             <!--
