@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, Observable, of, throwError } from 'rxjs';
 import { BigNumber, bigNumberify } from 'ethers/utils';
-import { catchError, map, mergeMap, retry, shareReplay, take, tap } from 'rxjs/operators';
+import { catchError, map, mergeMap, retry, shareReplay, take } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 import { OneSplitService } from './one-split.service';
 import { environment } from '../../environments/environment';
@@ -89,7 +89,7 @@ export class TokenPriceService {
 
         return of(price);
       }),
-      catchError((e) => {
+      catchError(() => {
 
         return this.getTokenOneSplitPrice(
           tokenAddress,

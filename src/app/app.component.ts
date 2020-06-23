@@ -146,7 +146,7 @@ export class AppComponent implements OnDestroy {
     );
 
     this.subscription.add(fromAmountListener$.subscribe());
-    // this.subscription.add(updateQuote$.subscribe());
+    this.subscription.add(updateQuote$.subscribe());
     this.gnosisService.addListeners();
   }
 
@@ -220,7 +220,9 @@ export class AppComponent implements OnDestroy {
 
   private setAmounts(value: string, resetFields: boolean): Observable<any> {
 
-    if (resetFields) { this.loading = true };
+    if (resetFields) {
+      this.loading = true;
+    }
     this.fromAmount = value;
     return this.tokenService.tokenHelper$.pipe(
       switchMap((tokenHelper) => {
@@ -228,16 +230,20 @@ export class AppComponent implements OnDestroy {
         const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
         return this.getTokenCost(token, +value).pipe(
           map(({ tokenUsdCost, tokenUsdCostView }) => {
+
             this.fromTokenUsdCost = tokenUsdCost;
             this.fromTokenUsdCostView = tokenUsdCostView;
             return tokenHelper.parseAsset(this.fromTokenSymbol, value);
-          })
+          }),
+          take(1)
         );
       }),
       switchMap((valueBN: BigNumber) => {
 
         this.fromAmountBN = valueBN;
-        if (resetFields) { this.resetToTokenAmount() };
+        if (resetFields) {
+          this.resetToTokenAmount();
+        }
         return this.oneInchApiService.getQuote$(
           this.fromTokenSymbol,
           this.toTokenSymbol,
@@ -269,7 +275,9 @@ export class AppComponent implements OnDestroy {
       tap((toAmount: string) => {
 
         this.swapForm.controls.toAmount.setValue(toAmount);
-        if (resetFields) { this.loading = false; }
+        if (resetFields) {
+          this.loading = false;
+        }
       })
     );
   }
@@ -302,7 +310,8 @@ export class AppComponent implements OnDestroy {
 
         const usdPrice = bnToNumberSafe(priceBN) / 1e8;
         return this.calcTokenCost(tokenAmount, usdPrice);
-      })
+      }),
+      take(1)
     );
   }
 
@@ -327,7 +336,7 @@ export class AppComponent implements OnDestroy {
       tap((tokenHelper) => {
 
         const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
-        this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixed(this.fromAmount, token.decimals));
+        this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixed(this.fromAmount, token.decimals), { emitEvent: false });
         this.fromAmountBN = tokenHelper.parseUnits(this.fromAmount, token.decimals);
         this.updateAmounts.next({
           fromAmount: this.fromAmount,
