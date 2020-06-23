@@ -12,13 +12,6 @@ import { BigNumber } from 'ethers/utils';
 })
 export class TokenService {
 
-  public eth: ITokenDescriptor = {
-    address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-    symbol: 'ETH',
-    name: 'Ethereum',
-    decimals: 18
-  };
-
   public tokenHelper$: Observable<TokenHelper> = this.oneInchApiService.getTokens$()
     .pipe(
       // startWith([]),
@@ -27,12 +20,11 @@ export class TokenService {
         return new TokenHelper(tokens);
       }),
       shareReplay({ bufferSize: 1, refCount: true }),
-      tap(() => console.log(123))
     );
 
   private tokens$ = this.tokenHelper$.pipe(
     map((tokenHelper) => {
-
+      console.log({tokens0: tokenHelper.tokens})
       return tokenHelper.tokens;
     }),
     shareReplay({ bufferSize: 1, refCount: true })
@@ -62,6 +54,7 @@ export class TokenService {
             symbols2Tokens
           );
         }),
+        tap(console.log),
         shareReplay({ bufferSize: 1, refCount: true })
       );
     }

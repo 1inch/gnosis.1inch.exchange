@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { OneInchApiService } from './services/1inch.api/1inch.api.service';
 import { GnosisService, Tx } from './services/gnosis.service';
 import { TokenPriceService } from './services/token-price.service';
@@ -33,11 +33,8 @@ export class AppComponent implements OnDestroy {
   private updateAmounts = new Subject<string>();
   private subscription = new Subscription();
 
-  @LocalStorage('displaySlippageSettings', false)
-  displaySlippageSettings;
-
-  @LocalStorage('slippage', 0.1)
-  slippage;
+  @LocalStorage('displaySlippageSettings', false) displaySlippageSettings;
+  @LocalStorage('slippage', 0.1) slippage;
 
   @LocalStorage('fromTokenSymbol', 'ETH') fromTokenSymbol: string;
   @LocalStorage('toTokenSymbol', 'DAI') toTokenSymbol: string;
@@ -65,6 +62,7 @@ export class AppComponent implements OnDestroy {
   loading = false;
 
   sortedTokens$: Observable<ITokenDescriptor[]>;
+  public tokenCountInOnePack = 50;
 
   autoCompleteCtrlFromToken = new FormControl();
   autoCompleteCtrlToToken = new FormControl();
@@ -84,61 +82,19 @@ export class AppComponent implements OnDestroy {
     iconRegistry.addSvgIcon('settings', sanitizer.bypassSecurityTrustResourceUrl('assets/settings.svg'));
     iconRegistry.addSvgIcon('swap', sanitizer.bypassSecurityTrustResourceUrl('assets/swap.svg'));
 
+    // need to subscribe before addListener
     this.gnosisService.walletAddress$.subscribe();
     // this.gnosisService.isMainNet$.subscribe(console.log);
 
     this.sortedTokens$ = this.gnosisService.walletAddress$.pipe(
       switchMap((walletAddress: string) => {
-        console.log({ walletAddress });
-        return combineLatest([
-          this.tokenService.getSortedTokens(walletAddress),
-          this.tokenService.tokenHelper$
-        ]);
-      }),
-      map(([tokens, tokenHelper]) => {
-
-        const fromTokenIndex = tokens.findIndex((x) => x.symbol === this.fromTokenSymbol);
-        if (fromTokenIndex === -1) {
-          tokens.push(tokenHelper.getTokenBySymbol(this.fromTokenSymbol));
-        }
-
-        const toTokenIndex = tokens.findIndex((x) => x.symbol === this.toTokenSymbol);
-        if (toTokenIndex === -1) {
-          tokens.push(tokenHelper.getTokenBySymbol(this.toTokenSymbol));
-        }
-        return tokens;
+        return this.tokenService.getSortedTokens(walletAddress);
       }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    const filterTokens = (tokens: ITokenDescriptor[], value: string): ITokenDescriptor[] => {
-      const filterValue = value?.toLowerCase();
-      return tokens.filter(token => token.symbol?.toLowerCase().indexOf(filterValue) === 0);
-    };
-
-    this.filteredFromTokens$ = combineLatest([
-      this.sortedTokens$,
-      this.autoCompleteCtrlFromToken.valueChanges.pipe(
-        startWith('')
-      )
-    ]).pipe(
-      map((x) => {
-        const [tokens, filterText] = x;
-        return filterTokens(tokens, filterText).slice(0, 50);
-      })
-    );
-
-    this.filteredToTokens$ = combineLatest([
-      this.sortedTokens$,
-      this.autoCompleteCtrlToToken.valueChanges.pipe(
-        startWith('')
-      )
-    ]).pipe(
-      map((x) => {
-        const [tokens, filterText] = x;
-        return filterTokens(tokens, filterText).slice(0, 50);
-      })
-    );
+    this.filteredFromTokens$ = this.getFilteredTokens(this.autoCompleteCtrlFromToken);
+    this.filteredToTokens$ = this.getFilteredTokens(this.autoCompleteCtrlToToken);
 
     this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
 
@@ -278,6 +234,21 @@ export class AppComponent implements OnDestroy {
     );
   }
 
+  private getFilteredTokens(form: FormControl): Observable<ITokenDescriptor[]> {
+
+    return combineLatest([
+      this.sortedTokens$,
+      form.valueChanges.pipe(
+        startWith('')
+      ),
+    ]).pipe(
+      map((x) => {
+        const [tokens, filterText] = x;
+        return filterTokens(tokens, filterText);
+      })
+    );
+  }
+
   private getTokenCost(
     token: ITokenDescriptor,
     tokenAmount: number
@@ -355,4 +326,9 @@ export class AppComponent implements OnDestroy {
   public toggleSlippage() {
     this.displaySlippageSettings = !this.displaySlippageSettings;
   }
+}
+
+function filterTokens(tokens: ITokenDescriptor[], value: string): ITokenDescriptor[] {
+  const filterValue = value?.toLowerCase();
+  return tokens.filter(token => token.symbol?.toLowerCase().indexOf(filterValue) === 0);
 }

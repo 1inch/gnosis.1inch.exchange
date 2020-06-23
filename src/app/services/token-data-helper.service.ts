@@ -4,7 +4,7 @@ import TokenHelperABI from '../abi/TokenHelperABI.json';
 import { environment } from '../../environments/environment';
 import { ISymbol2Token } from './token.helper';
 import { combineLatest, Observable } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { map, mergeMap, retry, take, tap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 import { BigNumber } from 'ethers/utils';
 
@@ -61,6 +61,7 @@ export class TokenDataHelperService {
     } while (addresses.slice(index, index + step).length);
 
     return combineLatest(requests).pipe(
+      retry(3),
       tap((res) => {
 
         for (const data of res) {
@@ -74,7 +75,8 @@ export class TokenDataHelperService {
           }
         }
       }),
-      map(() => result)
+      map(() => result),
+      take(1)
     );
   }
 
