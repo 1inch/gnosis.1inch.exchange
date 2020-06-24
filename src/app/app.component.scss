@@ -91,6 +91,14 @@
   white-space: nowrap;
 }
 
+.setting-container {
+  display: grid;
+
+  grid-row-columns: 1fr 1fr;
+  grid-row-gap: 0px;
+  align-items: start;
+}
+
 
 //width: 100%;
 //grid-template-rows: 40px 1px 40px 1px;
