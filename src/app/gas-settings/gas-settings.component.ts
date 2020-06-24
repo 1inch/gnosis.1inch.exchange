@@ -32,6 +32,17 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
   @LocalStorage('txSpeed', 'fast')
   txSpeed;
 
+  get txSpeedWithFirstCapital(): string {
+
+    if (!this.txSpeed) {
+      return '';
+    }
+    const capitalLetter = this.txSpeed.slice(0, 1).toUpperCase();
+    const restOfTheString = this.txSpeed.slice(1);
+
+    return `${capitalLetter}${restOfTheString}`
+  }
+
   @LocalStorage('customGasPrice', '')
   customGasPrice;
 
@@ -131,7 +142,7 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
         this.lastSubmittedGasPrice = gasPrice;
         this.gasPriceChange.next(gasPrice);
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
   }
