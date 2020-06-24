@@ -45,7 +45,8 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
     txSpeedSelect: new FormControl(this.txSpeed),
     gasPriceInput: new FormControl(this.customGasPrice, [
       Validators.pattern('^[0-9.]*$'),
-      Validators.min(1)
+      Validators.min(1),
+      Validators.required
     ])
   });
 
