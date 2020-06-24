@@ -6,11 +6,11 @@
     <ng-container *ngIf="(filteredToTokens$ | async); let toTokens;">
       <ng-container *ngIf="tokenHelper.getTokenBySymbol(fromTokenSymbol); let fromToken">
 
-      <div class="m-1 content-center">
+        <div class="m-1 content-center">
 
-        <form [formGroup]="swapForm">
+          <form [formGroup]="swapForm">
 
-          <div class="swap-controls">
+            <div class="swap-controls">
 
               <div>
                 <small>&nbsp;</small>
@@ -80,107 +80,108 @@
                 <mat-form-field appearance="fill" class="w-100">
                   <mat-label>Amount</mat-label>
                   <input matInput placeholder="Amount" class="mat-input-wrapper" formControlName="fromAmount">
-                  <mat-hint *ngIf="fromTokenUsdCostView" align="end">≈ {{fromTokenUsdCostView}}</mat-hint>
+                  <mat-hint *ngIf="fromTokenUsdCostView && fromTokenUsdCost" align="end">
+                    ≈ {{fromTokenUsdCostView}}</mat-hint>
                 </mat-form-field>
               </div>
 
 
-            <div class="content-center">
-              <img *ngIf="loading" src="assets/loading.svg" height="50" width="50">
-              <button *ngIf="!loading" mat-icon-button aria-label="settings" (click)="flipTokens()">
-                <mat-icon svgIcon="swap"></mat-icon>
-              </button>
-            </div>
-
-            <ng-container>
-
-              <div>
-                <small class="w-100">&nbsp;</small>
-                <mat-form-field appearance="fill" class="w-100">
-                  <mat-label>Amount</mat-label>
-                  <input matInput placeholder="Amount" formControlName="toAmount" readonly="readonly">
-                  <mat-hint *ngIf="toTokenUsdCostView" align="end">
-                    ≈ {{toTokenUsdCostView}} {{fromToDiffInPercent}}
-                    <span *ngIf="fromTokenUsdCost * 0.9 > toTokenUsdCost"
-                          matTooltip="High slippage! More then 10% price drop."
-                          style="cursor: default; position: relative; top: 1px"
-                    >⚠️</span>
-                  </mat-hint>
-                </mat-form-field>
+              <div class="content-center">
+                <img *ngIf="loading" src="assets/loading.svg" height="50" width="50">
+                <button *ngIf="!loading" mat-icon-button aria-label="settings" (click)="flipTokens()">
+                  <mat-icon svgIcon="swap"></mat-icon>
+                </button>
               </div>
 
-              <div>
-                <small>&nbsp;</small>
-                <mat-form-field appearance="fill" class="w-100">
-                  <mat-label>To</mat-label>
+              <ng-container>
 
-                  <mat-select [(value)]="toTokenSymbol" (selectionChange)="onTokenChange()">
+                <div>
+                  <small class="w-100">&nbsp;</small>
+                  <mat-form-field appearance="fill" class="w-100">
+                    <mat-label>Amount</mat-label>
+                    <input matInput placeholder="Amount" formControlName="toAmount" readonly="readonly">
+                    <mat-hint *ngIf="toTokenUsdCostView && toTokenUsdCost" align="end">
+                      ≈ {{toTokenUsdCostView}} {{fromToDiffInPercent}}
+                      <span *ngIf="fromTokenUsdCost * 0.9 > toTokenUsdCost"
+                            matTooltip="High slippage! More then 10% price drop."
+                            style="cursor: default; position: relative; top: 1px"
+                      >⚠️</span>
+                    </mat-hint>
+                  </mat-form-field>
+                </div>
 
-                    <mat-option>
-                      <ngx-mat-select-search
-                        placeholderLabel='Try "DAI"'
-                        noEntriesFoundLabel="No tokens"
-                        [formControl]="autoCompleteCtrlToToken"
-                      ></ngx-mat-select-search>
-                    </mat-option>
+                <div>
+                  <small>&nbsp;</small>
+                  <mat-form-field appearance="fill" class="w-100">
+                    <mat-label>To</mat-label>
 
-                    <mat-option *ngFor="let token of toTokens; let i = index" [value]="token.symbol">
+                    <mat-select [(value)]="toTokenSymbol" (selectionChange)="onTokenChange()">
 
-                      <ng-container *ngIf="i < tokenCountInOnePack || token.symbol === toTokenSymbol">
+                      <mat-option>
+                        <ngx-mat-select-search
+                          placeholderLabel='Try "DAI"'
+                          noEntriesFoundLabel="No tokens"
+                          [formControl]="autoCompleteCtrlToToken"
+                        ></ngx-mat-select-search>
+                      </mat-option>
 
-                        <div *ngIf="token.symbol === toTokenSymbol"
-                             class="token-preview-grid">
+                      <mat-option *ngFor="let token of toTokens; let i = index" [value]="token.symbol">
 
-                          <img
-                            [src]="getTokenLogoImage(token.address)"
-                            style="height: 24px;">
+                        <ng-container *ngIf="i < tokenCountInOnePack || token.symbol === toTokenSymbol">
 
-                          <span *ngIf="token.symbol === toTokenSymbol">{{token.symbol}}</span>
-                          <span></span>
-                        </div>
+                          <div *ngIf="token.symbol === toTokenSymbol"
+                               class="token-preview-grid">
 
-                        <div *ngIf="token.symbol !== toTokenSymbol"
-                             class="token-preview-grid">
+                            <img
+                              [src]="getTokenLogoImage(token.address)"
+                              style="height: 24px;">
 
-                          <img
-                            [src]="getTokenLogoImage(token.address)"
-                            style="height: 24px; ">
-
-                          <div style="display: flex; flex-direction: column; height:36px">
-                            <span style="line-height:20px">{{token.symbol}}</span>
-                            <small style="line-height:16px" *ngIf="token.symbol !== toTokenSymbol"
-                                   class="token-annotation over-hidden">{{token.name}}</small>
+                            <span *ngIf="token.symbol === toTokenSymbol">{{token.symbol}}</span>
+                            <span></span>
                           </div>
 
-                          <span *ngIf="token.symbol !== toTokenSymbol">
+                          <div *ngIf="token.symbol !== toTokenSymbol"
+                               class="token-preview-grid">
+
+                            <img
+                              [src]="getTokenLogoImage(token.address)"
+                              style="height: 24px; ">
+
+                            <div style="display: flex; flex-direction: column; height:36px">
+                              <span style="line-height:20px">{{token.symbol}}</span>
+                              <small style="line-height:16px" *ngIf="token.symbol !== toTokenSymbol"
+                                     class="token-annotation over-hidden">{{token.name}}</small>
+                            </div>
+
+                            <span *ngIf="token.symbol !== toTokenSymbol">
                             <small class="token-annotation">{{ token.formatedTokenBalance }}</small>
                             <small class="token-annotation">{{ token.formatedUSDBalance }}</small>
                           </span>
 
-                        </div>
-                      </ng-container>
+                          </div>
+                        </ng-container>
 
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+              </ng-container>
+
+              <div class="content-center col-span-all m-t m-b">
+                <oi-slippage-settings [(slippage)]="slippage"></oi-slippage-settings>
               </div>
 
-            </ng-container>
+              <div class="content-center col-span-all">
+                <!--      <span class="t-center">some message</span>-->
+                <button [disabled]="hasErrors" mat-flat-button color="primary" (click)="swap()">SWAP NOW</button>
+              </div>
 
-            <div class="content-center col-span-all m-t m-b">
-              <oi-slippage-settings [(slippage)]="slippage"></oi-slippage-settings>
             </div>
 
-            <div class="content-center col-span-all">
-              <!--      <span class="t-center">some message</span>-->
-              <button mat-flat-button color="primary" (click)="swap()">SWAP NOW</button>
-            </div>
+          </form>
 
-          </div>
-
-        </form>
-
-      </div>
+        </div>
 
       </ng-container>
     </ng-container>

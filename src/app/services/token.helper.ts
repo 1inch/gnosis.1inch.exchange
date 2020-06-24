@@ -6,7 +6,7 @@ export interface ITokenDescriptor {
   name: string;
   address: string;
   decimals: number;
-  balance?: string | number | BigNumber;
+  balance?: BigNumber;
   usdBalance?: number;
   // TODO: fix typos server side
   formatedUSDBalance?: string | number;
