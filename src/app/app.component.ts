@@ -9,7 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { LocalStorage } from 'ngx-webstorage';
 import { combineLatest, interval, merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { ITokenDescriptor } from './services/token.helper';
-import { catchError, distinctUntilChanged, map, shareReplay, startWith, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, delay, distinctUntilChanged, map, repeatWhen, shareReplay, startWith, switchMap, take, tap } from 'rxjs/operators';
 import { Quote, SupportedExchanges, SwapData } from './services/1inch.api/1inch.api.dto';
 import { BigNumber } from 'ethers/utils';
 import { bnToNumberSafe } from './utils';
@@ -135,18 +135,15 @@ export class AppComponent implements OnDestroy {
 
     const fromAmountListener$ = merge(fromAmountChange$, this.updateAmounts.asObservable())
       .pipe(
-        switchMap((({ fromAmount, resetFields }) => this.setAmounts(fromAmount, resetFields)))
+        switchMap((({ fromAmount, resetFields }) => {
+          return this.setAmounts(fromAmount, resetFields).pipe(
+            // background refresh
+            repeatWhen((completed) => completed.pipe(delay(10000)))
+          );
+        })),
       );
 
-    const updateQuote$ = interval(20000).pipe(
-      tap(() => this.updateAmounts.next({
-        fromAmount: this.fromAmount,
-        resetFields: false
-      }))
-    );
-
     this.subscription.add(fromAmountListener$.subscribe());
-    this.subscription.add(updateQuote$.subscribe());
     this.gnosisService.addListeners();
   }
 
@@ -222,6 +219,7 @@ export class AppComponent implements OnDestroy {
 
     if (resetFields) {
       this.loading = true;
+      this.resetToTokenAmount();
     }
     this.fromAmount = value;
     return this.tokenService.tokenHelper$.pipe(
@@ -241,9 +239,6 @@ export class AppComponent implements OnDestroy {
       switchMap((valueBN: BigNumber) => {
 
         this.fromAmountBN = valueBN;
-        if (resetFields) {
-          this.resetToTokenAmount();
-        }
         return this.oneInchApiService.getQuote$(
           this.fromTokenSymbol,
           this.toTokenSymbol,
@@ -267,7 +262,8 @@ export class AppComponent implements OnDestroy {
                 this.toTokenUsdCost = tokenUsdCost;
                 this.toTokenUsdCostView = tokenUsdCostView;
                 return formattedAsset;
-              })
+              }),
+              take(1)
             );
           })
         );
@@ -275,9 +271,7 @@ export class AppComponent implements OnDestroy {
       tap((toAmount: string) => {
 
         this.swapForm.controls.toAmount.setValue(toAmount);
-        if (resetFields) {
-          this.loading = false;
-        }
+        this.loading = false;
       })
     );
   }
