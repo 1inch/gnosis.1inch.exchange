@@ -100,6 +100,8 @@ export class AppComponent implements OnDestroy {
     return this._toTokenSymbol;
   }
 
+  gasPriceBN: BigNumber;
+
   toAmount: string;
   fromAmountBN: BigNumber;
   toAmountBN: BigNumber;
@@ -239,7 +241,8 @@ export class AppComponent implements OnDestroy {
           const tx: Tx = {
             to: token.address,
             data: this.ethereumService.getApproveCallData(environment.TOKEN_SPENDER, ethers.constants.MaxUint256),
-            value: '0'
+            value: '0',
+            gasPrice: this.gasPriceBN.toString()
           };
           transactions.push(tx);
         }
@@ -260,6 +263,7 @@ export class AppComponent implements OnDestroy {
           to: data.to,
           value: data.value,
           data: data.data,
+          gasPrice: this.gasPriceBN.toString()
         };
         transactions.push(tx);
 
@@ -453,6 +457,7 @@ export class AppComponent implements OnDestroy {
     //this.txSpeedWithFirstCapital = capitalFirstChar(txSpeed);
     this.txSpeedWithFirstCapital = txSpeed.toUpperCase();
     this.gasPrice = gasPrice;
+    this.gasPriceBN = gasPriceBN;
   }
 }
 
