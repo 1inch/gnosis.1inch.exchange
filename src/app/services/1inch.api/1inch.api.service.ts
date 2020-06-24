@@ -9,6 +9,8 @@ import { exchanges, ISymbol2Token, Quote, SupportedExchanges, SwapData } from '.
 })
 export class OneInchApiService {
 
+  private url = 'https://gnosis.api.enterprise.1inch.exchange/v1.1';
+
   constructor(private http: HttpClient) {
   }
 
@@ -29,7 +31,7 @@ export class OneInchApiService {
       params = params.append('disabledExchangesList', disableExList);
     }
 
-    const url = 'https://api.1inch.exchange/v1.1/quote';
+    const url = this.url + '/quote';
 
     return this.http.get<Quote>(url, { params }).pipe(
       delayedRetry(1000)
@@ -57,7 +59,7 @@ export class OneInchApiService {
     params = params.append('disableEstimate', String(disableEstimate));
     params = params.append('disabledExchangesList', disableExList);
 
-    const url = 'https://api.1inch.exchange/v1.1/swap';
+    const url = this.url + '/swap';
 
     return this.http.get<SwapData>(url, { params }).pipe(
       delayedRetry(1000)
@@ -66,7 +68,7 @@ export class OneInchApiService {
 
   public getTokens$(): Observable<ISymbol2Token> {
 
-    const url = 'https://api.1inch.exchange/v1.1/tokens';
+    const url = this.url + '/tokens';
 
     return this.http.get<ISymbol2Token[]>(url).pipe(
       delayedRetry(1000)
