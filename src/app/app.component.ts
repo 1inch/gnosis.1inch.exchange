@@ -73,8 +73,8 @@ export class AppComponent implements OnDestroy {
   @LocalStorage('panelOpenState', false)
   panelOpenState: boolean;
 
-  @LocalStorage('gasPricePanelOpenState', false)
-  gasPricePanelOpenState: boolean;
+  // @LocalStorage('gasPricePanelOpenState', false)
+  // gasPricePanelOpenState: boolean;
 
   set fromTokenSymbol(symbol: string) {
     if (symbol === this.toTokenSymbol) {
@@ -100,7 +100,7 @@ export class AppComponent implements OnDestroy {
     return this._toTokenSymbol;
   }
 
-  gasPriceBN: BigNumber;
+  // gasPriceBN: BigNumber;
 
   toAmount: string;
   fromAmountBN: BigNumber;
@@ -241,8 +241,7 @@ export class AppComponent implements OnDestroy {
           const tx: Tx = {
             to: token.address,
             data: this.ethereumService.getApproveCallData(environment.TOKEN_SPENDER, ethers.constants.MaxUint256),
-            value: '0',
-            gasPrice: this.gasPriceBN.toString()
+            value: '0'
           };
           transactions.push(tx);
         }
@@ -262,8 +261,7 @@ export class AppComponent implements OnDestroy {
         const tx: Tx = {
           to: data.to,
           value: data.value,
-          data: data.data,
-          gasPrice: this.gasPriceBN.toString()
+          data: data.data
         };
         transactions.push(tx);
 
@@ -451,12 +449,12 @@ export class AppComponent implements OnDestroy {
     this.swapForm.controls.fromAmount.markAllAsTouched();
   }
 
-  onGasPriceChange(x: any): void {
-    const {gasPriceBN, gasPrice, txSpeed} = x;
-    this.txSpeedStr = txSpeed
-    this.gasPrice = gasPrice;
-    this.gasPriceBN = gasPriceBN;
-  }
+  // onGasPriceChange(x: any): void {
+  //   const {gasPriceBN, gasPrice, txSpeed} = x;
+  //   this.txSpeedStr = txSpeed
+  //   this.gasPrice = gasPrice;
+  //   this.gasPriceBN = gasPriceBN;
+  // }
 }
 
 function filterTokens(tokens: ITokenDescriptor[], value: string): ITokenDescriptor[] {
