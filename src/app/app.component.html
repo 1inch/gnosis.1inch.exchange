@@ -169,7 +169,7 @@
             </div>
 
             <div class="content-center col-span-all m-t m-b">
-              <oi-gas-settings [(slippage)]="slippage"></oi-gas-settings>
+              <oi-gas-settings (gasPriceChange)="onGasPriceChange($event)"></oi-gas-settings>
             </div>
 
             <div class="content-center col-span-all">

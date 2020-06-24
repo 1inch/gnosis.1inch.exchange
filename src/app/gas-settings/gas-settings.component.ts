@@ -2,15 +2,17 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input, OnChanges,
+  Input,
   OnDestroy,
   OnInit,
-  Output, SimpleChanges
+  Output,
 } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
-import { merge, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
+import { merge, Observable, of, Subscription } from 'rxjs';
+import { distinctUntilChanged, filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { LocalStorage } from "ngx-webstorage";
+
+export type TxSpeed = 'normal' | 'fast' | 'instant' | 'custom'
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -21,87 +23,106 @@ import { LocalStorage } from "ngx-webstorage";
 })
 export class GasSettingsComponent implements OnInit, OnDestroy {
 
-  public form = new FormGroup({
-    slippageSelect: new FormControl(''),
-    slippageInput: new FormControl('', [
-      Validators.pattern('^[0-9.]*$'),
-      Validators.max(50)
-    ])
-  });
   private subscription: Subscription;
 
-  get slippageInput(): AbstractControl {
-    return this.form.controls.slippageInput;
+  @LocalStorage('txSpeed', 'fast')
+  txSpeed;
+
+  @LocalStorage('customGasPrice', '')
+  customGasPrice;
+
+  public form = new FormGroup({
+    txSpeedSelect: new FormControl(this.txSpeed),
+    gasPriceInput: new FormControl(this.customGasPrice, [
+      Validators.pattern('^[0-9.]*$'),
+      Validators.min(1)
+    ])
+  });
+
+  private gasPrice$: Observable<string>;
+
+  get gasPriceInput(): AbstractControl {
+    return this.form.controls.gasPriceInput;
   }
 
-  get slippageSelect(): AbstractControl {
-    return this.form.controls.slippageSelect;
+  get txSpeedSelect(): AbstractControl {
+    return this.form.controls.txSpeedSelect;
   }
 
+  gasPriceValues = {
+    'normal': 42,
+    'fast': 48,
+    'instant': 59,
+  }
+
+  getGasPrice(txSpeed: TxSpeed): string {
+    return this.gasPriceValues[txSpeed];
+  }
 
   // Be aware, it's not actual double way binding at the moment.
   // Because component read value only once at initTime
   // That could be improved later on once we have demand fo this
   @Input()
-  slippage: string;
+  gasPrice: string;
 
   @Output()
-  slippageChange = new EventEmitter<string>();
+  gasPriceChange = new EventEmitter<string>();
 
-  @LocalStorage('panelOpenState', false)
-  panelOpenState: boolean;
+  lastSubmittedGasPrice: string
 
-  selectSlippage(slippage: string) {
+  @LocalStorage('gasPricePanelOpenState', false)
+  gasPricePanelOpenState: boolean;
 
-    if (this.isPreDefinedSlippageValue(slippage)) {
-      this.showCustomSlippageInput = false;
-      this.form.setValue({
-        slippageSelect: slippage,
-        slippageInput: ''
-      });
-    }
-    else {
-      this.slippageSelect.setValue('custom');
-      this.slippageInput.setValue(slippage);
-      this.showCustomSlippageInput = true;
-    }
+  selectTxSpeed(txSpeed: TxSpeed) {
+
+    const price = this.getGasPrice(txSpeed);
+    this.form.setValue({
+      txSpeedSelect: txSpeed,
+      gasPriceInput: this.customGasPrice
+    });
+
+    // if (this.isPreDefinedSlippageValue(txSpeed)) {
+    //   this.showCustomSlippageInput = false;
+    //   this.form.setValue({
+    //     gasPriceSelect: txSpeed,
+    //     gasPriceInput: ''
+    //   });
+    // }
+    // else {
+    //   this.gasPriceSelect.setValue('custom');
+    //   this.gasPriceInput.setValue(txSpeed);
+    //   this.showCustomSlippageInput = true;
+    // }
   }
 
-  isPreDefinedSlippageValue(value: string): boolean {
-    return ['0.1', '0.5', '1', '3'].indexOf(value) !== -1;
-  }
-
-  showCustomSlippageInput: boolean
+  // isPreDefinedSlippageValue(value: string): boolean {
+  //   return ['0.1', '0.5', '1', '3'].indexOf(value) !== -1;
+  // }
 
   ngOnInit(): void {
 
-    console.log('set=' + this.slippage)
-    this.selectSlippage(this.slippage);
+    this.gasPrice$ = this.txSpeedSelect.valueChanges.pipe(
+      switchMap((txSpeed: TxSpeed) => {
 
-    const slippageInput$ = this.slippageInput.valueChanges.pipe(
-      filter((x) => !this.slippageInput.errors),
-      map(x => {
-        // In case user input empty string, take latest selected or maximal
-        return x === ''
-          ? this.slippageSelect.value || 3
-          : +x;
-      })
+        if (txSpeed !== 'custom') {
+          return of(this.getGasPrice(txSpeed))
+        }
+
+        return this.gasPriceInput.valueChanges.pipe(
+          filter((x) => !this.gasPriceInput.errors),
+          tap((value) => this.customGasPrice = value)
+        )
+      }),
+      tap((gasPrice: string) => {
+        this.lastSubmittedGasPrice = gasPrice;
+        this.gasPriceChange.next(gasPrice);
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    const slippageSelect$ = this.slippageSelect.valueChanges.pipe(
-      filter(x => x !== 'custom')
-    );
-
-    this.subscription = merge(slippageSelect$, slippageInput$).pipe(
-      distinctUntilChanged(),
-      tap((latest: string) => {
-        this.slippage = latest;
-        this.slippageChange.next(latest);
-      })
-    ).subscribe();
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    //this.subscription.unsubscribe();
   }
 }

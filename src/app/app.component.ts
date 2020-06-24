@@ -377,6 +377,11 @@ export class AppComponent implements OnDestroy {
     const percent = Math.abs((diff / this.fromTokenUsdCost) * 100);
     return `( -${ percent.toFixed(2) }% )`;
   }
+
+  onGasPriceChange(gasPrice: string): void {
+    // TODO: think of validation
+    console.log(gasPrice);
+  }
 }
 
 function filterTokens(tokens: ITokenDescriptor[], value: string): ITokenDescriptor[] {

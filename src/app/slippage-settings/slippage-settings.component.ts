@@ -83,8 +83,8 @@ export class SlippageSettingsComponent implements OnInit, OnDestroy {
       map(x => {
         // In case user input empty string, take latest selected or maximal
         return x === ''
-          ? this.slippageSelect.value || 3
-          : +x;
+          ? this.slippageSelect.value || '3'
+          : x;
       })
     );
 
