@@ -1,3 +1,6 @@
+<div *ngIf="openLoader" class="spinner-box">
+  <div class="spinner"></div>
+</div>
 <ng-container *ngIf="(tokenService.tokenHelper$ | async); let tokenHelper">
   <ng-container *ngIf="(filteredFromTokens$ | async); let fromTokens;">
     <ng-container *ngIf="(filteredToTokens$ | async); let toTokens;">
@@ -109,7 +112,7 @@
                 <small class="w-100">&nbsp;</small>
                 <mat-form-field appearance="fill" class="w-100">
                   <mat-label>Amount</mat-label>
-                  <input matInput placeholder="Amount" formControlName="toAmount">
+                  <input readonly="readonly" matInput placeholder="Amount" formControlName="toAmount">
                   <mat-hint *ngIf="toTokenUsdCostView" align="end">
                     ≈ {{toTokenUsdCostView}} {{fromToDiffInPercent}}
                     <span *ngIf="fromTokenUsdCost * 0.9 > toTokenUsdCost"

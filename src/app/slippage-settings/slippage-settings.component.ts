@@ -1,16 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input, OnChanges,
-  OnDestroy,
-  OnInit,
-  Output, SimpleChanges
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { merge, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
-import { LocalStorage } from "ngx-webstorage";
+import { distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
+import { LocalStorage } from 'ngx-webstorage';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -59,8 +51,7 @@ export class SlippageSettingsComponent implements OnInit, OnDestroy {
         slippageSelect: slippage,
         slippageInput: ''
       });
-    }
-    else {
+    } else {
       this.slippageSelect.setValue('custom');
       this.slippageInput.setValue(slippage);
       this.showCustomSlippageInput = true;
@@ -71,11 +62,11 @@ export class SlippageSettingsComponent implements OnInit, OnDestroy {
     return ['0.1', '0.5', '1', '3'].indexOf(value) !== -1;
   }
 
-  showCustomSlippageInput: boolean
+  showCustomSlippageInput: boolean;
 
   ngOnInit(): void {
 
-    console.log('set=' + this.slippage)
+    console.log('set=' + this.slippage);
     this.selectSlippage(this.slippage);
 
     const slippageInput$ = this.slippageInput.valueChanges.pipe(

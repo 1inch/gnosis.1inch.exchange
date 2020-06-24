@@ -31,6 +31,7 @@ const tokenAmountInputValidator = [
 })
 export class AppComponent implements OnDestroy {
 
+  public openLoader = true;
   private updateAmounts = new Subject<QuoteUpdate>();
   private subscription = new Subscription();
 
@@ -115,6 +116,9 @@ export class AppComponent implements OnDestroy {
     this.sortedTokens$ = this.gnosisService.walletAddress$.pipe(
       switchMap((walletAddress: string) => {
         return this.tokenService.getSortedTokens(walletAddress);
+      }),
+      tap(() => {
+        this.openLoader = false;
       }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
