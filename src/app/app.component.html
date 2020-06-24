@@ -4,26 +4,13 @@
 <ng-container *ngIf="(tokenService.tokenHelper$ | async); let tokenHelper">
   <ng-container *ngIf="(filteredFromTokens$ | async); let fromTokens;">
     <ng-container *ngIf="(filteredToTokens$ | async); let toTokens;">
+      <ng-container *ngIf="tokenHelper.getTokenBySymbol(fromTokenSymbol); let fromToken">
 
       <div class="m-1 content-center">
 
         <form [formGroup]="swapForm">
 
           <div class="swap-controls">
-
-            <!--
-            <div class="example-label">Flat</div>
-            <div class="example-button-row">
-              <button mat-flat-button>Basic</button>
-              <button mat-flat-button color="primary">Primary</button>
-              <button mat-flat-button color="accent">Accent</button>
-              <button mat-flat-button color="warn">Warn</button>
-              <button mat-flat-button disabled>Disabled</button>
-              <a mat-flat-button href="https://www.google.com/" target="_blank">Link</a>
-            </div>
-            -->
-
-            <ng-container *ngIf="tokenHelper.getTokenBySymbol(fromTokenSymbol); let fromToken">
 
               <div>
                 <small>&nbsp;</small>
@@ -97,7 +84,6 @@
                 </mat-form-field>
               </div>
 
-            </ng-container>
 
             <div class="content-center">
               <img *ngIf="loading" src="assets/loading.svg" height="50" width="50">
@@ -112,7 +98,7 @@
                 <small class="w-100">&nbsp;</small>
                 <mat-form-field appearance="fill" class="w-100">
                   <mat-label>Amount</mat-label>
-                  <input readonly="readonly" matInput placeholder="Amount" formControlName="toAmount">
+                  <input matInput placeholder="Amount" formControlName="toAmount" readonly="readonly">
                   <mat-hint *ngIf="toTokenUsdCostView" align="end">
                     ≈ {{toTokenUsdCostView}} {{fromToDiffInPercent}}
                     <span *ngIf="fromTokenUsdCost * 0.9 > toTokenUsdCost"
@@ -195,6 +181,8 @@
         </form>
 
       </div>
+
+      </ng-container>
     </ng-container>
   </ng-container>
 </ng-container>
