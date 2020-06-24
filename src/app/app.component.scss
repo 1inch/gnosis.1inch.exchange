@@ -19,10 +19,6 @@
     align-items: center;
     div {
       width: 100%;
-
-      * {
-        width: 100%;
-      }
     }
   }
 
@@ -64,6 +60,7 @@
 }
 
 .max-balance {
+  margin-right: 10px;
   cursor: pointer;
 }
 
