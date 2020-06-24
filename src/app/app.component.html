@@ -1,6 +1,7 @@
 <div *ngIf="openLoader" class="spinner-box">
   <div class="spinner"></div>
 </div>
+
 <ng-container *ngIf="(tokenService.tokenHelper$ | async); let tokenHelper">
   <ng-container *ngIf="(filteredFromTokens$ | async); let fromTokens;">
     <ng-container *ngIf="(filteredToTokens$ | async); let toTokens;">
@@ -170,6 +171,10 @@
 
               <div class="content-center col-span-all m-t m-b">
                 <oi-slippage-settings [(slippage)]="slippage"></oi-slippage-settings>
+              </div>
+
+              <div class="content-center col-span-all m-t m-b">
+                <oi-gas-settings (gasPriceChange)="onGasPriceChange($event)"></oi-gas-settings>
               </div>
 
               <div class="content-center col-span-all">

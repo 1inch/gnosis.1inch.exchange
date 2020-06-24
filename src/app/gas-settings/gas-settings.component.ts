@@ -39,7 +39,7 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
     ])
   });
 
-  private gasPrice$: Observable<string>;
+  gasPrice$: Observable<string>;
 
   get gasPriceInput(): AbstractControl {
     return this.form.controls.gasPriceInput;
