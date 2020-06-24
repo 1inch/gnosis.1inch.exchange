@@ -154,3 +154,48 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-option-text.mat-option-text {
   white-space: normal;
 }
+
+.spinner-box {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  top: 0;
+  z-index: 99999;
+  background: #fff; /* fallback for old browsers */
+}
+
+.spinner {
+  display: flex;
+  margin: 0 auto;
+  width: 50%;
+  height: 50%;
+  position: relative;
+  background: url('assets/logo.svg') no-repeat center center;
+  background-size: contain;
+  -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+  animation: sk-bounce 2.0s infinite ease-in-out;
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+@-webkit-keyframes sk-bounce {
+  0%, 100% {
+    -webkit-transform: scale(0.9)
+  }
+  50% {
+    -webkit-transform: scale(1.0)
+  }
+}
+
+@keyframes sk-bounce {
+  0%, 100% {
+    transform: scale(0.9);
+    -webkit-transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+  }
+}

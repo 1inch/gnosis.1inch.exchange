@@ -6,7 +6,7 @@ export interface ITokenDescriptor {
   name: string;
   address: string;
   decimals: number;
-  balance?: string | number | BigNumber;
+  balance?: BigNumber;
   usdBalance?: number;
   // TODO: fix typos server side
   formatedUSDBalance?: string | number;
@@ -38,15 +38,15 @@ export class TokenHelper {
   public parseAsset(symbol: string, amount): BigNumber {
 
     if (symbol === 'ETH') {
-      return ethers.utils.parseEther(this.toFixed(amount, 18));
+      return ethers.utils.parseEther(this.toFixedSafe(amount, 18));
     }
 
     const token = this.tokens[symbol];
-    return ethers.utils.parseUnits(this.toFixed(amount, token.decimals), token.decimals);
+    return ethers.utils.parseUnits(this.toFixedSafe(amount, token.decimals), token.decimals);
   }
 
   public parseUnits(amount, decimals): BigNumber {
-    const fixed = this.toFixed(amount, decimals);
+    const fixed = this.toFixedSafe(amount, decimals);
     return ethers.utils.parseUnits(fixed, decimals);
   }
 

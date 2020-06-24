@@ -3,13 +3,25 @@ import { OneInchApiService } from './services/1inch.api/1inch.api.service';
 import { GnosisService, Tx } from './services/gnosis.service';
 import { TokenPriceService } from './services/token-price.service';
 import { TokenService } from './services/token.service';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LocalStorage } from 'ngx-webstorage';
 import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
-import { ITokenDescriptor } from './services/token.helper';
-import { catchError, delay, distinctUntilChanged, map, repeatWhen, shareReplay, startWith, switchMap, take, tap } from 'rxjs/operators';
+import { ITokenDescriptor, TokenHelper } from './services/token.helper';
+import {
+  catchError,
+  debounceTime,
+  delay,
+  distinctUntilChanged,
+  map,
+  repeatWhen,
+  shareReplay,
+  startWith,
+  switchMap,
+  take,
+  tap
+} from 'rxjs/operators';
 import { Quote, SupportedExchanges, SwapData } from './services/1inch.api/1inch.api.dto';
 import { BigNumber } from 'ethers/utils';
 import { bnToNumberSafe } from './utils';
@@ -20,10 +32,14 @@ import { ethers } from 'ethers';
 type TokenCost = { tokenUsdCost: number, tokenUsdCostView: string };
 type QuoteUpdate = { fromAmount: string, resetFields: boolean };
 
-const tokenAmountInputValidator = [
-  Validators.pattern('^[0-9.]*$'),
-  Validators.minLength(0)
-];
+export function maxBn(tokenHelper: TokenHelper, balance: BigNumber, decimals: number): ValidatorFn {
+
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    const parsedAsset = tokenHelper.parseUnits(control.value, decimals);
+    const forbidden = parsedAsset.gt(balance);
+    return forbidden ? { maxBalance: { value: control.value } } : null;
+  };
+}
 
 @Component({
   selector: 'app-root',
@@ -32,6 +48,7 @@ const tokenAmountInputValidator = [
 })
 export class AppComponent implements OnDestroy {
 
+  public openLoader = true;
   private updateAmounts = new Subject<QuoteUpdate>();
   private subscription = new Subscription();
 
@@ -42,7 +59,6 @@ export class AppComponent implements OnDestroy {
 
   @LocalStorage('disabledExchanges', [SupportedExchanges.AirSwap])
   disabledExchanges: SupportedExchanges[];
-
 
 
   set fromTokenSymbol(symbol: string) {
@@ -78,13 +94,27 @@ export class AppComponent implements OnDestroy {
   toTokenUsdCost: number;
   toTokenUsdCostView: string | undefined;
 
+  tokenAmountInputValidator = [
+    Validators.pattern(/^\d*\.{0,1}\d*$/),
+    Validators.minLength(0),
+    Validators.required
+  ];
+
   swapForm = new FormGroup({
-    fromAmount: new FormControl('', tokenAmountInputValidator),
-    toAmount: new FormControl('', tokenAmountInputValidator),
+    fromAmount: new FormControl('', this.tokenAmountInputValidator),
+    toAmount: new FormControl('', [...this.tokenAmountInputValidator]),
   });
 
   get fromAmountCtrl(): AbstractControl {
     return this.swapForm.controls.fromAmount;
+  }
+
+  get hasErrors(): boolean {
+    const errors = this.fromAmountCtrl.errors;
+    if (!errors) {
+      return false;
+    }
+    return Object.keys(errors)?.length > 0;
   }
 
   usdFormatter = new Intl.NumberFormat('en-US', {
@@ -120,8 +150,17 @@ export class AppComponent implements OnDestroy {
     // this.gnosisService.isMainNet$.subscribe(console.log);
 
     this.sortedTokens$ = this.gnosisService.walletAddress$.pipe(
-      switchMap((walletAddress: string) => {
-        return this.tokenService.getSortedTokens(walletAddress);
+      switchMap((walletAddress) => {
+        return combineLatest([
+          this.tokenService.getSortedTokens(walletAddress),
+          this.tokenService.tokenHelper$
+        ]);
+      }),
+      map(([tokens, tokenHelper]) => {
+
+        this.updateFromAmountValidator(tokenHelper);
+        this.openLoader = false;
+        return tokens;
       }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
@@ -133,6 +172,7 @@ export class AppComponent implements OnDestroy {
 
     const fromAmountChange$ = this.swapForm.controls.fromAmount.valueChanges.pipe(
       startWith(this.fromAmount),
+      debounceTime(200),
       distinctUntilChanged(),
       map((value: string) => ({
         fromAmount: value,
@@ -337,12 +377,14 @@ export class AppComponent implements OnDestroy {
       tap((tokenHelper) => {
 
         const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
-        this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixed(this.fromAmount, token.decimals), { emitEvent: false });
+        this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixedSafe(this.fromAmount, token.decimals), { emitEvent: false });
         this.fromAmountBN = tokenHelper.parseUnits(this.fromAmount, token.decimals);
         this.updateAmounts.next({
           fromAmount: this.fromAmount,
           resetFields: true
         });
+        this.tokenAmountInputValidator.pop();
+        this.updateFromAmountValidator(tokenHelper);
       }),
       take(1)
     ).subscribe();
@@ -376,6 +418,15 @@ export class AppComponent implements OnDestroy {
 
     const percent = Math.abs((diff / this.fromTokenUsdCost) * 100);
     return `( -${ percent.toFixed(2) }% )`;
+  }
+
+  private updateFromAmountValidator(tokenHelper: TokenHelper): void {
+    const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
+    const newValidatorFn = maxBn(tokenHelper, token.balance, token.decimals);
+    this.tokenAmountInputValidator.push(newValidatorFn);
+    this.swapForm.controls.fromAmount.setValidators(this.tokenAmountInputValidator);
+    this.swapForm.controls.fromAmount.updateValueAndValidity();
+    this.swapForm.controls.fromAmount.markAllAsTouched();
   }
 
   onGasPriceChange(gasPrice: string): void {
