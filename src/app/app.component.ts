@@ -62,7 +62,7 @@ export class AppComponent implements OnDestroy {
   private updateAmounts = new Subject<QuoteUpdate>();
   private subscription = new Subscription();
 
-  @LocalStorage('slippage', '0.1') slippage;
+  @LocalStorage('slippage', '3') slippage;
   @LocalStorage('fromAmount', '1') fromAmount: string;
   @LocalStorage('fromTokenSymbol', 'ETH') _fromTokenSymbol: string;
   @LocalStorage('toTokenSymbol', 'DAI') _toTokenSymbol: string;
@@ -205,7 +205,7 @@ export class AppComponent implements OnDestroy {
         switchMap((({fromAmount, resetFields}) => {
           return this.setAmounts(fromAmount, resetFields).pipe(
             // background refresh
-            repeatWhen((completed) => completed.pipe(delay(10000)))
+            repeatWhen((completed) => completed.pipe(delay(20000)))
           );
         }))
       );
