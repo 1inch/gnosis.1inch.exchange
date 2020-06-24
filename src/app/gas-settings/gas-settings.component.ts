@@ -1,18 +1,22 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output, } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
-import { merge, Observable, of, Subscription } from 'rxjs';
-import { distinctUntilChanged, filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { LocalStorage } from "ngx-webstorage";
+import { Observable, of, Subscription } from 'rxjs';
+import { filter, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { LocalStorage } from 'ngx-webstorage';
+import { BigNumber, bigNumberify } from 'ethers/utils';
+import { GasPriceApiService } from '../services/gas-price.api/gas-price.api.service';
+import { bnToNumberSafe, zeroValueBN } from '../utils';
+import { GasPriceBN } from '../services/gas-price.api/gas-price.api.dto';
 
 export type TxSpeed = 'normal' | 'fast' | 'instant' | 'custom'
+type GasPrice = {
+  normal: number,
+  fast: number,
+  instant: number,
+  normalBN: BigNumber,
+  fastBN: BigNumber,
+  instantBN: BigNumber
+}
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -49,26 +53,27 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
     return this.form.controls.txSpeedSelect;
   }
 
-  gasPriceValues = {
-    'normal': 42,
-    'fast': 48,
-    'instant': 59,
-  }
+  private gasPriceValues: GasPrice = {
+    normal: 0,
+    fast: 0,
+    instant: 0,
+    normalBN: zeroValueBN,
+    fastBN: zeroValueBN,
+    instantBN: zeroValueBN
+  };
 
   getGasPrice(txSpeed: TxSpeed): string {
-    return this.gasPriceValues[txSpeed];
+    return this.gasPriceValues[txSpeed + 'BN'];
   }
 
   // Be aware, it's not actual double way binding at the moment.
   // Because component read value only once at initTime
   // That could be improved later on once we have demand fo this
-  @Input()
-  gasPrice: string;
 
   @Output()
   gasPriceChange = new EventEmitter<string>();
 
-  lastSubmittedGasPrice: string
+  lastSubmittedGasPrice: string;
 
   @LocalStorage('gasPricePanelOpenState', false)
   gasPricePanelOpenState: boolean;
@@ -99,19 +104,28 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
   //   return ['0.1', '0.5', '1', '3'].indexOf(value) !== -1;
   // }
 
+  constructor(private gasPriceApiService: GasPriceApiService) {
+    this.gasPriceApiService.gasPrice.pipe(
+      tap((gasPrice: GasPriceBN) => {
+
+        // this.gasPriceValues.normal
+      })
+    )
+  }
+
   ngOnInit(): void {
 
     this.gasPrice$ = this.txSpeedSelect.valueChanges.pipe(
       switchMap((txSpeed: TxSpeed) => {
 
         if (txSpeed !== 'custom') {
-          return of(this.getGasPrice(txSpeed))
+          return of(this.getGasPrice(txSpeed));
         }
 
         return this.gasPriceInput.valueChanges.pipe(
           filter((x) => !this.gasPriceInput.errors),
           tap((value) => this.customGasPrice = value)
-        )
+        );
       }),
       tap((gasPrice: string) => {
         this.lastSubmittedGasPrice = gasPrice;
@@ -125,4 +139,12 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     //this.subscription.unsubscribe();
   }
+}
+
+function parseGasPrice(gasPrice: BigNumber): number {
+  return Math.round(bnToNumberSafe(gasPrice) / 1e9);
+}
+
+function formatGasPrice(gasPrice: string): BigNumber {
+  return bigNumberify(gasPrice * 100 * 1e9 / 100);
 }

@@ -1,3 +1,5 @@
+import { BigNumber } from 'ethers/utils';
+
 export interface GasPricePoaNetwork {
   health: boolean;
   'block_number': number;
@@ -35,4 +37,10 @@ export interface GasPrice {
   instant: number;
   standard: number;
   slow: number;
+}
+
+export interface GasPriceBN {
+  fast: BigNumber;
+  instant: BigNumber;
+  standard: BigNumber;
 }

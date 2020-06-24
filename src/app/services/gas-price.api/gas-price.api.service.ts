@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { catchError, delay, map, mergeMap, retryWhen, tap } from 'rxjs/operators';
-import { interval, Observable, of, throwError } from 'rxjs';
+import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, interval, Observable, of } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { GasPrice, GasPriceOneInch, GasPricePoaNetwork, GasPriceUpVest } from './gas-price.api.dto';
+import { GasPrice, GasPriceBN, GasPriceOneInch, GasPricePoaNetwork, GasPriceUpVest } from './gas-price.api.dto';
 import { ethers } from 'ethers';
 
 const badResponse = {
@@ -16,16 +16,18 @@ const badResponse = {
 @Injectable({
   providedIn: 'root'
 })
-export class OneInchApiService {
+export class GasPriceApiService {
 
   private GAS_PRICE_URL = 'http://gas-price.1inch.exchange';
   private GAS_PRICE_URL2 = 'https://gasprice.poa.network';
   private GAS_PRICE_URL3 = 'https://fees.upvest.co/estimate_eth_fees';
   private CORS_PROXY_URL = 'https://corsproxy.1inch.exchange/';
 
-  public fastGasPrice = new ethers.utils.BigNumber(Math.trunc(6 * 100)).mul(1e7);
-  public standardGasPrice = new ethers.utils.BigNumber(Math.trunc(11 * 100)).mul(1e7);
-  public instantGasPrice = new ethers.utils.BigNumber(Math.trunc(21 * 100)).mul(1e7);
+  public gasPrice = new BehaviorSubject<GasPriceBN>({
+    fast: new ethers.utils.BigNumber(Math.trunc(6 * 100)).mul(1e7),
+    standard: new ethers.utils.BigNumber(Math.trunc(11 * 100)).mul(1e7),
+    instant: new ethers.utils.BigNumber(Math.trunc(21 * 100)).mul(1e7)
+  });
 
   constructor(private http: HttpClient) {
     interval(30000).pipe(
@@ -36,10 +38,11 @@ export class OneInchApiService {
         const instant = formatGasPrice(gasPrice.instant);
         const standard = formatGasPrice(gasPrice.standard);
 
-        this.fastGasPrice = ethers.utils.bigNumberify(Math.trunc(fast));
-        this.standardGasPrice = ethers.utils.bigNumberify(Math.trunc(standard));
-        this.instantGasPrice = ethers.utils.bigNumberify(Math.trunc(instant));
-
+        this.gasPrice.next({
+          fast: ethers.utils.bigNumberify(Math.trunc(fast)),
+          standard: ethers.utils.bigNumberify(Math.trunc(standard)),
+          instant: ethers.utils.bigNumberify(Math.trunc(instant))
+        });
       })
     ).subscribe();
   }
@@ -126,18 +129,4 @@ export class OneInchApiService {
 
 function formatGasPrice(gasPrice: number): number {
   return gasPrice * 100 * 1e9 / 100;
-}
-
-const DEFAULT_MAX_RETRIES = 1;
-
-function delayedRetry(delayMs: number, maxRetry = DEFAULT_MAX_RETRIES) {
-  let retries = maxRetry;
-
-  return (src: Observable<any>) =>
-    src.pipe(
-      retryWhen((errors: Observable<any>) => errors.pipe(
-        delay(delayMs),
-        mergeMap(error => retries-- > 0 ? of(error) : throwError(error))
-      ))
-    );
 }
