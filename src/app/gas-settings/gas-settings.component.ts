@@ -108,16 +108,14 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
           return of(this.getGasPrice(txSpeed));
         }
 
-        return concat(
-          of(this.gasPriceInput.value),
-          this.gasPriceInput.valueChanges.pipe(
+        return this.gasPriceInput.valueChanges.pipe(
+            startWith(this.gasPriceInput.value),
             filter(() => !this.gasPriceInput.errors),
             map((value) => {
               this.customGasPrice = value;
               return [formatGasPrice(value), value];
             })
-          )
-        );
+          );
 
       }),
       map(([gasPriceBN, gasPrice]) => {
