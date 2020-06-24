@@ -169,13 +169,20 @@
 
               </ng-container>
 
-              <div class="content-center col-span-all m-t m-b">
-                <oi-slippage-settings [(slippage)]="slippage"></oi-slippage-settings>
+
+
+              <div class="setting-container content-center col-span-all m-t m-b">
+
+                <div>
+                  <oi-slippage-settings [(slippage)]="slippage"></oi-slippage-settings>
+                </div>
+
+                <div>
+                  <oi-gas-settings (gasPriceChange)="onGasPriceChange($event)"></oi-gas-settings>
+                </div>
               </div>
 
-              <div class="content-center col-span-all m-t m-b">
-                <oi-gas-settings (gasPriceChange)="onGasPriceChange($event)"></oi-gas-settings>
-              </div>
+
 
               <div class="content-center col-span-all">
                 <!--      <span class="t-center">some message</span>-->
