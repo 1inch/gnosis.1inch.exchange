@@ -341,7 +341,7 @@ export class AppComponent implements OnDestroy {
       tap((tokenHelper) => {
 
         const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
-        this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixed(this.fromAmount, token.decimals), { emitEvent: false });
+        this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixedSafe(this.fromAmount, token.decimals), { emitEvent: false });
         this.fromAmountBN = tokenHelper.parseUnits(this.fromAmount, token.decimals);
         this.updateAmounts.next({
           fromAmount: this.fromAmount,

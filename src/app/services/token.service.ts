@@ -110,7 +110,7 @@ export class TokenService {
         token.symbol,
         token.balance as BigNumber
       );
-      token.formatedTokenBalance = tokenHelper.toFixed(
+      token.formatedTokenBalance = tokenHelper.toFixedSafe(
         formattedTokenBalance,
         token.decimals
       );
