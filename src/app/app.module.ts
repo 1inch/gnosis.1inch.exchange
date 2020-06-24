@@ -20,12 +20,14 @@ import { NgxWebstorageModule } from 'ngx-webstorage';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { GasSettingsComponent } from "src/app/gas-settings/gas-settings.component";
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    SlippageSettingsComponent
+    SlippageSettingsComponent,
+    GasSettingsComponent
   ],
   imports: [
     BrowserModule,
