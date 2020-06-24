@@ -9,17 +9,17 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { SlippageSettingsComponent } from "./slippage-settings/slippage-settings.component";
-import { MatIconModule } from "@angular/material/icon";
-import { MatRadioModule } from "@angular/material/radio";
-import { NgxWebstorageModule } from "ngx-webstorage";
-import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { SlippageSettingsComponent } from './slippage-settings/slippage-settings.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
+import { NgxWebstorageModule } from 'ngx-webstorage';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { MatExpansionModule } from "@angular/material/expansion";
+import { MatExpansionModule } from '@angular/material/expansion';
 
 
 @NgModule({
@@ -27,25 +27,25 @@ import { MatExpansionModule } from "@angular/material/expansion";
     AppComponent,
     SlippageSettingsComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        HttpClientModule,
-        BrowserAnimationsModule,
-        MatButtonModule,
-        MatSelectModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatFormFieldModule,
-        MatTooltipModule,
-        MatIconModule,
-        MatRadioModule,
-        NgxWebstorageModule.forRoot(),
-        MatAutocompleteModule,
-        NgxMatSelectSearchModule,
-        MatExpansionModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatSelectModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatTooltipModule,
+    MatIconModule,
+    MatRadioModule,
+    NgxWebstorageModule.forRoot(),
+    MatAutocompleteModule,
+    NgxMatSelectSearchModule,
+    MatExpansionModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

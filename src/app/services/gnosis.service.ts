@@ -1,4 +1,4 @@
-import initSdk, { SafeInfo } from '@gnosis.pm/safe-apps-sdk';
+import initSdk from '@gnosis.pm/safe-apps-sdk';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';

@@ -7,7 +7,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LocalStorage } from 'ngx-webstorage';
-import { combineLatest, interval, merge, Observable, of, Subject, Subscription } from 'rxjs';
+import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { ITokenDescriptor } from './services/token.helper';
 import { catchError, delay, distinctUntilChanged, map, repeatWhen, shareReplay, startWith, switchMap, take, tap } from 'rxjs/operators';
 import { Quote, SupportedExchanges, SwapData } from './services/1inch.api/1inch.api.dto';
@@ -140,7 +140,7 @@ export class AppComponent implements OnDestroy {
             // background refresh
             repeatWhen((completed) => completed.pipe(delay(10000)))
           );
-        })),
+        }))
       );
 
     this.subscription.add(fromAmountListener$.subscribe());
