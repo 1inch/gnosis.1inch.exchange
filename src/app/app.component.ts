@@ -3,7 +3,7 @@ import { OneInchApiService } from './services/1inch.api/1inch.api.service';
 import { GnosisService, Tx } from './services/gnosis.service';
 import { TokenPriceService } from './services/token-price.service';
 import { TokenService } from './services/token.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LocalStorage } from 'ngx-webstorage';
@@ -22,6 +22,7 @@ type QuoteUpdate = { fromAmount: string, resetFields: boolean };
 
 const tokenAmountInputValidator = [
   Validators.pattern('^[0-9.]*$'),
+  Validators.minLength(0)
 ];
 
 @Component({
@@ -41,6 +42,8 @@ export class AppComponent implements OnDestroy {
 
   @LocalStorage('disabledExchanges', [SupportedExchanges.AirSwap])
   disabledExchanges: SupportedExchanges[];
+
+
 
   set fromTokenSymbol(symbol: string) {
     if (symbol === this.toTokenSymbol) {
@@ -79,6 +82,10 @@ export class AppComponent implements OnDestroy {
     fromAmount: new FormControl('', tokenAmountInputValidator),
     toAmount: new FormControl('', tokenAmountInputValidator),
   });
+
+  get fromAmountCtrl(): AbstractControl {
+    return this.swapForm.controls.fromAmount;
+  }
 
   usdFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
