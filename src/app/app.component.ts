@@ -32,12 +32,22 @@ import { ethers } from 'ethers';
 type TokenCost = { tokenUsdCost: number, tokenUsdCostView: string };
 type QuoteUpdate = { fromAmount: string, resetFields: boolean };
 
+function capitalFirstChar(str: string): string {
+  if (!str) {
+    return '';
+  }
+  const capitalLetter = str.slice(0, 1).toUpperCase();
+  const restOfTheString = str.slice(1);
+
+  return `${capitalLetter}${restOfTheString}`;
+}
+
 export function maxBn(tokenHelper: TokenHelper, balance: BigNumber, decimals: number): ValidatorFn {
 
   return (control: AbstractControl): { [key: string]: any } | null => {
     const parsedAsset = tokenHelper.parseUnits(control.value, decimals);
     const forbidden = parsedAsset.gt(balance);
-    return forbidden ? { maxBalance: { value: control.value } } : null;
+    return forbidden ? {maxBalance: {value: control.value}} : null;
   };
 }
 
@@ -137,6 +147,9 @@ export class AppComponent implements OnDestroy {
   filteredFromTokens$: Observable<ITokenDescriptor[]>;
   filteredToTokens$: Observable<ITokenDescriptor[]>;
 
+  gasPrice = '';
+  txSpeedWithFirstCapital = ''
+
   constructor(
     private oneInchApiService: OneInchApiService,
     private gnosisService: GnosisService,
@@ -167,13 +180,13 @@ export class AppComponent implements OnDestroy {
         this.openLoader = false;
         return tokens;
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
     this.filteredFromTokens$ = this.getFilteredTokens(this.autoCompleteCtrlFromToken);
     this.filteredToTokens$ = this.getFilteredTokens(this.autoCompleteCtrlToToken);
 
-    this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
+    this.swapForm.controls.fromAmount.setValue(this.fromAmount, {emitEvent: false});
 
     const fromAmountChange$ = this.swapForm.controls.fromAmount.valueChanges.pipe(
       startWith(this.fromAmount),
@@ -187,7 +200,7 @@ export class AppComponent implements OnDestroy {
 
     const fromAmountListener$ = merge(fromAmountChange$, this.updateAmounts.asObservable())
       .pipe(
-        switchMap((({ fromAmount, resetFields }) => {
+        switchMap((({fromAmount, resetFields}) => {
           return this.setAmounts(fromAmount, resetFields).pipe(
             // background refresh
             repeatWhen((completed) => completed.pipe(delay(10000)))
@@ -279,7 +292,7 @@ export class AppComponent implements OnDestroy {
 
         const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
         return this.getTokenCost(token, +value).pipe(
-          map(({ tokenUsdCost, tokenUsdCostView }) => {
+          map(({tokenUsdCost, tokenUsdCostView}) => {
 
             this.fromTokenUsdCost = tokenUsdCost;
             this.fromTokenUsdCostView = tokenUsdCostView;
@@ -309,7 +322,7 @@ export class AppComponent implements OnDestroy {
             this.toAmount = formattedAsset;
 
             return this.getTokenCost(token, +formattedAsset).pipe(
-              map(({ tokenUsdCost, tokenUsdCostView }) => {
+              map(({tokenUsdCost, tokenUsdCostView}) => {
 
                 this.toTokenUsdCost = tokenUsdCost;
                 this.toTokenUsdCostView = tokenUsdCostView;
@@ -365,9 +378,9 @@ export class AppComponent implements OnDestroy {
     try {
       const tokenUsdCost = tokenAmount * tokenPrice;
       const tokenUsdCostView = this.usdFormatter.format(tokenUsdCost);
-      return { tokenUsdCost, tokenUsdCostView };
+      return {tokenUsdCost, tokenUsdCostView};
     } catch (e) {
-      return { tokenUsdCost: 0, tokenUsdCostView: '0' };
+      return {tokenUsdCost: 0, tokenUsdCostView: '0'};
     }
   }
 
@@ -382,7 +395,7 @@ export class AppComponent implements OnDestroy {
       tap((tokenHelper) => {
 
         const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
-        this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixedSafe(this.fromAmount, token.decimals), { emitEvent: false });
+        this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixedSafe(this.fromAmount, token.decimals), {emitEvent: false});
         this.fromAmountBN = tokenHelper.parseUnits(this.fromAmount, token.decimals);
         this.updateAmounts.next({
           fromAmount: this.fromAmount,
@@ -400,7 +413,7 @@ export class AppComponent implements OnDestroy {
     this._fromTokenSymbol = this._toTokenSymbol;
     this._toTokenSymbol = fts;
     this.fromAmount = this.toAmount;
-    this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
+    this.swapForm.controls.fromAmount.setValue(this.fromAmount, {emitEvent: false});
     this.fromTokenUsdCost = this.toTokenUsdCost;
     this.fromTokenUsdCostView = this.toTokenUsdCostView;
     this.onTokenChange();
@@ -411,7 +424,7 @@ export class AppComponent implements OnDestroy {
   }
 
   public getTokenLogoImage(tokenAddress: string): string {
-    return `https://1inch.exchange/assets/tokens/${ tokenAddress.toLowerCase() }.png`;
+    return `https://1inch.exchange/assets/tokens/${tokenAddress.toLowerCase()}.png`;
   }
 
   get fromToDiffInPercent() {
@@ -422,7 +435,7 @@ export class AppComponent implements OnDestroy {
     }
 
     const percent = Math.abs((diff / this.fromTokenUsdCost) * 100);
-    return `( -${ percent.toFixed(2) }% )`;
+    return `( -${percent.toFixed(2)}% )`;
   }
 
   private updateFromAmountValidator(tokenHelper: TokenHelper): void {
@@ -434,8 +447,8 @@ export class AppComponent implements OnDestroy {
     this.swapForm.controls.fromAmount.markAllAsTouched();
   }
 
-  onGasPriceChange(gasPrice: BigNumber): void {
-    // TODO: think of validation
+  onGasPriceChange({gasPriceBN, gasPrice, txSpeed}): void {
+    this.txSpeedWithFirstCapital = capitalFirstChar(txSpeed);
     console.log(gasPrice);
   }
 }

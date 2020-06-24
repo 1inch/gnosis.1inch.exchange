@@ -8,7 +8,13 @@ import { GasPriceApiService } from '../services/gas-price.api/gas-price.api.serv
 import { bnToNumberSafe, zeroValueBN } from '../utils';
 import { GasPriceBN } from '../services/gas-price.api/gas-price.api.dto';
 
-export type TxSpeed = 'normal' | 'fast' | 'instant' | 'custom'
+export type TxSpeed = 'normal' | 'fast' | 'instant' | 'custom';
+export type GasPriceChangeDto = {
+  gasPriceBN: BigNumber;
+  gasPrice: string;
+  txSpeed: TxSpeed
+};
+
 type GasPrice = {
   normal: number,
   fast: number,
@@ -31,17 +37,6 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
 
   @LocalStorage('txSpeed', 'fast')
   txSpeed;
-
-  get txSpeedWithFirstCapital(): string {
-
-    if (!this.txSpeed) {
-      return '';
-    }
-    const capitalLetter = this.txSpeed.slice(0, 1).toUpperCase();
-    const restOfTheString = this.txSpeed.slice(1);
-
-    return `${ capitalLetter }${ restOfTheString }`;
-  }
 
   @LocalStorage('customGasPrice', '')
   customGasPrice;
@@ -85,7 +80,7 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
   // That could be improved later on once we have demand fo this
 
   @Output()
-  gasPriceChange = new EventEmitter<BigNumber>();
+  gasPriceChange = new EventEmitter<GasPriceChangeDto>();
 
   lastSubmittedGasPrice: string | number;
 
@@ -125,7 +120,11 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
       }),
       map(([gasPriceBN, gasPrice]) => {
         this.lastSubmittedGasPrice = gasPrice;
-        this.gasPriceChange.next(gasPriceBN);
+        this.gasPriceChange.next({
+          gasPriceBN,
+          gasPrice,
+          txSpeed: this.txSpeedSelect.value
+        });
         return gasPrice;
       }),
       shareReplay({ bufferSize: 1, refCount: true })
