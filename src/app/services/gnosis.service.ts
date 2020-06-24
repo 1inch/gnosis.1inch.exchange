@@ -39,14 +39,14 @@ export class GnosisService {
     public addListeners(): void {
 
         // this.walletAddress.next('0x66666600e43c6d9e1a249d29d58639dedfcd9ade');
-        // this.walletAddress.next('0x3a13D9b322F391a1AFab36a1d242C24F3250bA48');
-        appsSdk.addListeners({
-            onSafeInfo: ((info: SafeInfo) => {
-
-                this.isMainNet.next(info.network.toLowerCase() === 'mainnet');
-                this.walletAddress.next(info.safeAddress);
-            })
-        });
+        this.walletAddress.next('0x3a13D9b322F391a1AFab36a1d242C24F3250bA48');
+        // appsSdk.addListeners({
+        //     onSafeInfo: ((info: SafeInfo) => {
+        //
+        //         this.isMainNet.next(info.network.toLowerCase() === 'mainnet');
+        //         this.walletAddress.next(info.safeAddress);
+        //     })
+        // });
     }
 
     public removeListeners(): void {

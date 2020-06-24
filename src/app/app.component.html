@@ -7,7 +7,7 @@
     <ng-container *ngIf="(filteredToTokens$ | async); let toTokens;">
       <ng-container *ngIf="tokenHelper.getTokenBySymbol(fromTokenSymbol); let fromToken">
 
-        <div class="m-1 content-center">
+        <div>
 
           <form [formGroup]="swapForm">
 
@@ -15,7 +15,7 @@
 
               <div>
                 <small>&nbsp;</small>
-                <mat-form-field appearance="fill" class="w-100">
+                <mat-form-field appearance="fill" style="position: relative; top: -16px" class="w-100">
                   <mat-label>From</mat-label>
 
                   <mat-select [(value)]="fromTokenSymbol" (selectionChange)="onTokenChange()">
@@ -71,7 +71,7 @@
               </div>
 
 
-              <div>
+              <div class="t-1">
                 <div class="w-100 t-right">
                   <small class="max-balance" style="color: rgba(0, 0, 0, 0.6);"
                          (click)="setMaxAmount(fromToken)">
@@ -87,7 +87,7 @@
               </div>
 
 
-              <div class="content-center">
+              <div class="content-center t-1">
                 <img *ngIf="loading" src="assets/loading.svg" height="50" width="50">
                 <button *ngIf="!loading" mat-icon-button aria-label="settings" (click)="flipTokens()">
                   <mat-icon svgIcon="swap"></mat-icon>
@@ -96,7 +96,7 @@
 
               <ng-container>
 
-                <div>
+                <div class="t-1">
                   <small class="w-100">&nbsp;</small>
                   <mat-form-field appearance="fill" class="w-100">
                     <mat-label>Amount</mat-label>
@@ -111,7 +111,7 @@
                   </mat-form-field>
                 </div>
 
-                <div>
+                <div class="t-1">
                   <small>&nbsp;</small>
                   <mat-form-field appearance="fill" class="w-100">
                     <mat-label>To</mat-label>
@@ -170,7 +170,7 @@
               </ng-container>
 
 
-              <div class="content-center col-span-all m-t m-b">
+              <div class="content-center col-span-all m-b">
                 <mat-accordion class="example-headers-align" multi>
 
 
@@ -213,13 +213,13 @@
 
 
                 </mat-accordion>
+
+                  <div class="content-center col-span-all">
+                      <!--      <span class="t-center">some message</span>-->
+                      <button [disabled]="hasErrors" mat-flat-button color="primary" (click)="swap()">SWAP NOW</button>
+                  </div>
               </div>
 
-
-              <div class="content-center col-span-all">
-                <!--      <span class="t-center">some message</span>-->
-                <button [disabled]="hasErrors" mat-flat-button color="primary" (click)="swap()">SWAP NOW</button>
-              </div>
 
             </div>
 
