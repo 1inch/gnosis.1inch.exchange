@@ -1,40 +1,38 @@
+<div [formGroup]="form">
+  <div class="form-group">
 
+    <mat-radio-group formControlName="txSpeedSelect" aria-label="Select an option" class="d-flex-col">
+      <mat-radio-button value="normal" (click)="selectTxSpeed('normal')">
+        Normal: {{getGasPrice('normal')[1]}} Gwei
+      </mat-radio-button>
+      <mat-radio-button value="fast" (click)="selectTxSpeed('fast')">
+        Fast: {{getGasPrice('fast')[1]}} Gwei
+      </mat-radio-button>
+      <mat-radio-button value="instant" (click)="selectTxSpeed('instant')">
+        Instant {{getGasPrice('instant')[1]}} Gwei
+      </mat-radio-button>
+      <mat-radio-button value="custom" (click)="selectTxSpeed('custom')">Custom</mat-radio-button>
+    </mat-radio-group>
 
-    <div [formGroup]="form">
-    <div class="form-group">
+  </div>
 
-      <mat-radio-group formControlName="txSpeedSelect" aria-label="Select an option" class="d-flex-col">
-        <mat-radio-button value="normal" (click)="selectTxSpeed('normal')">
-          Normal: {{getGasPrice('normal')[1]}} Gwei
-        </mat-radio-button>
-        <mat-radio-button value="fast" (click)="selectTxSpeed('fast')">
-          Fast: {{getGasPrice('fast')[1]}} Gwei
-        </mat-radio-button>
-        <mat-radio-button value="instant" (click)="selectTxSpeed('instant')">
-          Instant {{getGasPrice('instant')[1]}} Gwei
-        </mat-radio-button>
-        <mat-radio-button value="custom" (click)="selectTxSpeed('custom')">Custom</mat-radio-button>
-      </mat-radio-group>
-
-    </div>
-
-    <div *ngIf="txSpeedSelect.value === 'custom' ">
-      <mat-form-field style="width: 100%;" appearance="outline">
-        <mat-label>Custom gas price Gwei</mat-label>
-        <input matInput
-               [formControl]="gasPriceInput"
-               autocomplete="off"
-               placeholder="Custom gas price"
-               style="width: 100px;"
-               type="text">
-        <mat-error *ngIf="gasPriceInput.errors?.pattern">Not valid value!. Only numeric value is allowed!</mat-error>
-        <mat-error *ngIf="gasPriceInput.errors?.min">Gas Price can't be less than 1 GWEI</mat-error>
-        <!--
-        <mat-error *ngIf="gasPriceInput.errors?.fraction">Fraction shouldn't have more than 2 decimal places!</mat-error>
-        -->
-      </mat-form-field>
-    </div>
-    </div>
+  <div *ngIf="txSpeedSelect.value === 'custom' ">
+    <mat-form-field style="width: 100%;" appearance="outline">
+      <mat-label>Custom gas price Gwei</mat-label>
+      <input matInput
+             [formControl]="gasPriceInput"
+             autocomplete="off"
+             placeholder="Custom gas price"
+             style="width: 100px;"
+             type="text">
+      <mat-error *ngIf="gasPriceInput.errors?.pattern">Not valid value!. Only numeric value is allowed!</mat-error>
+      <mat-error *ngIf="gasPriceInput.errors?.min">Gas Price can't be less than 1 GWEI</mat-error>
+      <!--
+      <mat-error *ngIf="gasPriceInput.errors?.fraction">Fraction shouldn't have more than 2 decimal places!</mat-error>
+      -->
+    </mat-form-field>
+  </div>
+</div>
 
 
 

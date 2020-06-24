@@ -447,9 +447,12 @@ export class AppComponent implements OnDestroy {
     this.swapForm.controls.fromAmount.markAllAsTouched();
   }
 
-  onGasPriceChange({gasPriceBN, gasPrice, txSpeed}): void {
-    this.txSpeedWithFirstCapital = capitalFirstChar(txSpeed);
-    console.log(gasPrice);
+  onGasPriceChange(x: any): void {
+    const {gasPriceBN, gasPrice, txSpeed} = x;
+    // console.log(x);
+    //this.txSpeedWithFirstCapital = capitalFirstChar(txSpeed);
+    this.txSpeedWithFirstCapital = txSpeed.toUpperCase();
+    this.gasPrice = gasPrice;
   }
 }
 

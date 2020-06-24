@@ -82,8 +82,6 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
   @Output()
   gasPriceChange = new EventEmitter<GasPriceChangeDto>();
 
-  lastSubmittedGasPrice: string | number;
-
   selectTxSpeed(txSpeed: TxSpeed) {
 
     this.txSpeed = txSpeed;
@@ -119,7 +117,6 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
         );
       }),
       map(([gasPriceBN, gasPrice]) => {
-        this.lastSubmittedGasPrice = gasPrice;
         this.gasPriceChange.next({
           gasPriceBN,
           gasPrice,
@@ -128,6 +125,10 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
         return gasPrice;
       }),
       shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    this.subscription.add(
+      this.gasPrice$.subscribe()
     );
   }
 
