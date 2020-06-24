@@ -6,7 +6,7 @@
 
       <mat-panel-title>
         <span style="text-align: center; width: 100%;">
-          Gas Price: {{gasPrice$ | async}} Gwei
+          Gas Price - {{txSpeedWithFirstCapital}}: {{gasPrice$ | async}} Gwei
           <span matTooltip="Higher gas price, faster transaction..">
                 &nbsp;<img src="assets/info.svg" style="width: 14px">
             </span>
@@ -19,7 +19,7 @@
 
     <div class="form-group">
 
-      <mat-radio-group formControlName="txSpeedSelect" aria-label="Select an option" class="my-special-class">
+      <mat-radio-group formControlName="txSpeedSelect" aria-label="Select an option" class="d-flex-col">
         <mat-radio-button value="normal" (click)="selectTxSpeed('normal')">
           Normal: {{getGasPrice('normal')}} Gwei
         </mat-radio-button>
