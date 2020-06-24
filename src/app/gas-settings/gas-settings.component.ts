@@ -120,19 +120,9 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
   // }
 
   constructor(private gasPriceApiService: GasPriceApiService) {
+    this.setValues(this.gasPriceApiService.gasPrice.value);
     const gasChangesListener$ = this.gasPriceApiService.gasPrice.pipe(
-      tap((gasPrice: GasPriceBN) => {
-
-        this.gasPriceValues.normalBN = gasPrice.standard;
-        this.gasPriceValues.fastBN = gasPrice.fast;
-        this.gasPriceValues.instantBN = gasPrice.instant;
-
-        this.gasPriceValues.normal = parseGasPrice(gasPrice.standard);
-        this.gasPriceValues.fast = parseGasPrice(gasPrice.fast);
-        this.gasPriceValues.instant = parseGasPrice(gasPrice.instant);
-
-        this.txSpeedSelect.setValue(this.txSpeed);
-      })
+      tap((gasPrice: GasPriceBN) => this.setValues(gasPrice))
     );
     this.subscription.add(gasChangesListener$.subscribe());
   }
@@ -161,11 +151,23 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
       }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
-
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  private setValues(gasPrice: GasPriceBN): void {
+
+    this.gasPriceValues.normalBN = gasPrice.standard;
+    this.gasPriceValues.fastBN = gasPrice.fast;
+    this.gasPriceValues.instantBN = gasPrice.instant;
+
+    this.gasPriceValues.normal = parseGasPrice(gasPrice.standard);
+    this.gasPriceValues.fast = parseGasPrice(gasPrice.fast);
+    this.gasPriceValues.instant = parseGasPrice(gasPrice.instant);
+
+    this.txSpeedSelect.setValue(this.txSpeed);
   }
 }
 
