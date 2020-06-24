@@ -40,9 +40,6 @@ export class SlippageSettingsComponent implements OnInit, OnDestroy {
   @Output()
   slippageChange = new EventEmitter<string>();
 
-  @LocalStorage('panelOpenState', false)
-  panelOpenState: boolean;
-
   selectSlippage(slippage: string) {
 
     if (this.isPreDefinedSlippageValue(slippage)) {

@@ -86,9 +86,6 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
 
   lastSubmittedGasPrice: string;
 
-  @LocalStorage('gasPricePanelOpenState', false)
-  gasPricePanelOpenState: boolean;
-
   selectTxSpeed(txSpeed: TxSpeed) {
 
     const price = this.getGasPrice(txSpeed);
@@ -148,7 +145,7 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    //this.subscription.unsubscribe();
+    // this.subscription.unsubscribe();
   }
 }
 
@@ -157,5 +154,5 @@ function parseGasPrice(gasPrice: BigNumber): number {
 }
 
 function formatGasPrice(gasPrice: string): BigNumber {
-  return bigNumberify(gasPrice * 100 * 1e9 / 100);
+  return bigNumberify(1000);
 }

@@ -1,24 +1,5 @@
-<div [formGroup]="form">
 
-  <mat-expansion-panel [(expanded)]="panelOpenState">
-
-    <mat-expansion-panel-header>
-
-      <mat-panel-title>
-        <span style="text-align: center; width: 100%;">
-          Price slippage: {{slippage}}%
-          <span
-            matTooltip="Lowering this limit decreases your risk of front-running.
-          However, this makes it more likely that your transaction will fail due to normal price movements.">
-                <img src="assets/info.svg" style="width: 14px">
-            </span>
-        </span>
-
-      </mat-panel-title>
-
-    </mat-expansion-panel-header>
-
-
+  <div [formGroup]="form">
     <div class="form-group">
 
       <mat-radio-group formControlName="slippageSelect" aria-label="Select an option" class="my-special-class">
@@ -47,5 +28,8 @@
         -->
       </mat-form-field>
     </div>
-  </mat-expansion-panel>
-</div>
+  </div>
+
+
+
+

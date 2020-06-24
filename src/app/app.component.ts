@@ -60,6 +60,11 @@ export class AppComponent implements OnDestroy {
   @LocalStorage('disabledExchanges', [SupportedExchanges.AirSwap])
   disabledExchanges: SupportedExchanges[];
 
+  @LocalStorage('panelOpenState', false)
+  panelOpenState: boolean;
+
+  @LocalStorage('gasPricePanelOpenState', false)
+  gasPricePanelOpenState: boolean;
 
   set fromTokenSymbol(symbol: string) {
     if (symbol === this.toTokenSymbol) {

@@ -1,22 +1,6 @@
-<div [formGroup]="form">
-
-  <mat-expansion-panel [(expanded)]="gasPricePanelOpenState">
-
-    <mat-expansion-panel-header>
-
-      <mat-panel-title>
-        <span style="text-align: center; width: 100%;">
-          Gas Price - {{txSpeedWithFirstCapital}}: {{gasPrice$ | async}} Gwei
-          <span matTooltip="Higher gas price, faster transaction..">
-                &nbsp;<img src="assets/info.svg" style="width: 14px">
-            </span>
-        </span>
-
-      </mat-panel-title>
-
-    </mat-expansion-panel-header>
 
 
+    <div [formGroup]="form">
     <div class="form-group">
 
       <mat-radio-group formControlName="txSpeedSelect" aria-label="Select an option" class="d-flex-col">
@@ -50,6 +34,7 @@
         -->
       </mat-form-field>
     </div>
+    </div>
 
-  </mat-expansion-panel>
-</div>
+
+
