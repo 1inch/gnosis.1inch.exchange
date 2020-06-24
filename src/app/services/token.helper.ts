@@ -91,21 +91,12 @@ export class TokenHelper {
   }
 
   public getTokenByAddress(address: string): ITokenDescriptor {
-
-    return this.tokens[Object.keys(this.tokens).filter((value => {
-
-      try {
-
-        if (this.tokens[value].address.toLowerCase() === address.toLowerCase()) {
-
-          return true;
-        }
-      } catch (e) {
-
-      }
-
-      return false;
-    }))[0]];
+    const symbols = Object.keys(this.tokens);
+    const indexOfTokenSymbol = symbols.findIndex((symbol) => (
+      this.tokens[symbol]?.address?.toLowerCase() === address?.toLowerCase())
+    );
+    const tokenSymbol = symbols[indexOfTokenSymbol];
+    return this.tokens[tokenSymbol];
   }
 
   public getTokenBySymbol(symbol: string): ITokenDescriptor {
@@ -122,12 +113,10 @@ export class TokenHelper {
     const token = this.tokens[symbol];
 
     if (!token || !token.decimals) {
-
       return amount.toString();
-    } else {
-
-      return this.formatUnits(amount, token.decimals);
     }
+
+    return this.formatUnits(amount, token.decimals);
   }
 
   public formatUnits(value: BigNumber | string, decimals: number): string {

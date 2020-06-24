@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { ISymbol2Token, ITokenDescriptor, TokenHelper } from './token.helper';
 import { OneInchApiService } from './1inch.api/1inch.api.service';
-import { delay, map, mergeMap, repeatWhen, retryWhen, shareReplay, tap } from 'rxjs/operators';
+import { delay, map, mergeMap, repeatWhen, shareReplay, tap } from 'rxjs/operators';
 import { TokenData, TokenDataHelperService } from './token-data-helper.service';
 import { zeroValueBN } from '../utils';
 import { BigNumber } from 'ethers/utils';

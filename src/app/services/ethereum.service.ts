@@ -9,47 +9,47 @@ import { ethAddresses, zeroValueBN } from '../utils';
 
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class EthereumService extends Erc20Helper {
 
-    constructor(web3Service: Web3Service) {
-      super(web3Service);
+  constructor(web3Service: Web3Service) {
+    super(web3Service);
+  }
+
+  public getBalance(
+    walletAddress: string,
+    contractAddress = ethAddresses[0],
+    blockNumber?: number
+  ): Observable<BigNumber> {
+
+    if (ethAddresses.indexOf(contractAddress) === -1) {
+
+      return this.getErc20Balance(
+        contractAddress,
+        walletAddress,
+        blockNumber
+      );
     }
 
-    public getBalance(
-        walletAddress: string,
-        contractAddress = ethAddresses[0],
-        blockNumber?: number
-    ): Observable<BigNumber> {
+    return this.web3Service.web3$.pipe(
+      mergeMap((web3) => {
 
-        if (ethAddresses.indexOf(contractAddress) === -1) {
+        const call$ = web3.eth.getBalance(
+          walletAddress,
+          blockNumber || 'latest'
+        ).then((bal) => {
 
-            return this.getErc20Balance(
-                contractAddress,
-                walletAddress,
-                blockNumber
-            );
-        }
+          return BigNumber.isBigNumber(bal) ? bal : bigNumberify(bal);
+        });
 
-        return this.web3Service.web3$.pipe(
-            mergeMap((web3) => {
+        return fromPromise(call$) as Observable<BigNumber>;
+      }),
+      catchError(() => {
 
-                const call$ = web3.eth.getBalance(
-                    walletAddress,
-                    blockNumber || 'latest'
-                ).then((bal) => {
-
-                    return BigNumber.isBigNumber(bal) ? bal : bigNumberify(bal);
-                });
-
-                return fromPromise(call$) as Observable<BigNumber>;
-            }),
-            catchError(() => {
-
-                return of(zeroValueBN);
-            }),
-            take(1)
-        );
-    }
+        return of(zeroValueBN);
+      }),
+      take(1)
+    );
+  }
 }
