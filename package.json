@@ -41,7 +41,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
     "codelyzer": "^5.1.2",
-    "ipfs-http-client": "^44.3.0",
+    "ipfs": "^0.47.0",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~5.0.0",

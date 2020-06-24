@@ -13,7 +13,7 @@ const ipfs = IpfsHttpClient({
 
 const run = async () => {
 
-    for await (const file of ipfs.add(globSource(path.resolve(__dirname, '../dist/gnosis-app'), { recursive: true, pin: true }))) {
+    for await (const file of ipfs.add(globSource(path.resolve(__dirname, '../dist/gnosis-app'), { recursive: true, pin: true, timeout: 1000000 }))) {
         console.log(file)
     }
 
