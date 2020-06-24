@@ -95,29 +95,11 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
   selectTxSpeed(txSpeed: TxSpeed) {
 
     this.txSpeed = txSpeed;
-    // const price = this.getGasPrice(txSpeed);
     this.form.setValue({
       txSpeedSelect: txSpeed,
       gasPriceInput: this.customGasPrice
     });
-
-    // if (this.isPreDefinedSlippageValue(txSpeed)) {
-    //   this.showCustomSlippageInput = false;
-    //   this.form.setValue({
-    //     gasPriceSelect: txSpeed,
-    //     gasPriceInput: ''
-    //   });
-    // }
-    // else {
-    //   this.gasPriceSelect.setValue('custom');
-    //   this.gasPriceInput.setValue(txSpeed);
-    //   this.showCustomSlippageInput = true;
-    // }
   }
-
-  // isPreDefinedSlippageValue(value: string): boolean {
-  //   return ['0.1', '0.5', '1', '3'].indexOf(value) !== -1;
-  // }
 
   constructor(private gasPriceApiService: GasPriceApiService) {
     this.setValues(this.gasPriceApiService.gasPrice.value);
