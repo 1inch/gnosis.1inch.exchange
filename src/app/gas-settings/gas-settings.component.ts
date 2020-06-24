@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output, } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of, Subscription } from 'rxjs';
-import { filter, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { LocalStorage } from 'ngx-webstorage';
 import { BigNumber, bigNumberify } from 'ethers/utils';
 import { GasPriceApiService } from '../services/gas-price.api/gas-price.api.service';
@@ -27,7 +27,7 @@ type GasPrice = {
 })
 export class GasSettingsComponent implements OnInit, OnDestroy {
 
-  private subscription: Subscription;
+  private subscription = new Subscription();
 
   @LocalStorage('txSpeed', 'fast')
   txSpeed;
@@ -40,7 +40,7 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
     const capitalLetter = this.txSpeed.slice(0, 1).toUpperCase();
     const restOfTheString = this.txSpeed.slice(1);
 
-    return `${capitalLetter}${restOfTheString}`
+    return `${ capitalLetter }${ restOfTheString }`;
   }
 
   @LocalStorage('customGasPrice', '')
@@ -73,8 +73,11 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
     instantBN: zeroValueBN
   };
 
-  getGasPrice(txSpeed: TxSpeed): string {
-    return this.gasPriceValues[txSpeed + 'BN'];
+  getGasPrice(txSpeed: TxSpeed): [BigNumber, string] {
+    return [
+      this.gasPriceValues[txSpeed + 'BN'],
+      this.gasPriceValues[txSpeed],
+    ];
   }
 
   // Be aware, it's not actual double way binding at the moment.
@@ -82,16 +85,17 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
   // That could be improved later on once we have demand fo this
 
   @Output()
-  gasPriceChange = new EventEmitter<string>();
+  gasPriceChange = new EventEmitter<BigNumber>();
 
-  lastSubmittedGasPrice: string;
+  lastSubmittedGasPrice: string | number;
 
   @LocalStorage('gasPricePanelOpenState', false)
   gasPricePanelOpenState: boolean;
 
   selectTxSpeed(txSpeed: TxSpeed) {
 
-    const price = this.getGasPrice(txSpeed);
+    this.txSpeed = txSpeed;
+    // const price = this.getGasPrice(txSpeed);
     this.form.setValue({
       txSpeedSelect: txSpeed,
       gasPriceInput: this.customGasPrice
@@ -116,12 +120,21 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
   // }
 
   constructor(private gasPriceApiService: GasPriceApiService) {
-    this.gasPriceApiService.gasPrice.pipe(
+    const gasChangesListener$ = this.gasPriceApiService.gasPrice.pipe(
       tap((gasPrice: GasPriceBN) => {
 
-        // this.gasPriceValues.normal
+        this.gasPriceValues.normalBN = gasPrice.standard;
+        this.gasPriceValues.fastBN = gasPrice.fast;
+        this.gasPriceValues.instantBN = gasPrice.instant;
+
+        this.gasPriceValues.normal = parseGasPrice(gasPrice.standard);
+        this.gasPriceValues.fast = parseGasPrice(gasPrice.fast);
+        this.gasPriceValues.instant = parseGasPrice(gasPrice.instant);
+
+        this.txSpeedSelect.setValue(this.txSpeed);
       })
-    )
+    );
+    this.subscription.add(gasChangesListener$.subscribe());
   }
 
   ngOnInit(): void {
@@ -134,21 +147,25 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
         }
 
         return this.gasPriceInput.valueChanges.pipe(
-          filter((x) => !this.gasPriceInput.errors),
-          tap((value) => this.customGasPrice = value)
+          filter(() => !this.gasPriceInput.errors),
+          map((value) => {
+            this.customGasPrice = value;
+            return [formatGasPrice(value), value];
+          })
         );
       }),
-      tap((gasPrice: string) => {
+      map(([gasPriceBN, gasPrice]) => {
         this.lastSubmittedGasPrice = gasPrice;
-        this.gasPriceChange.next(gasPrice);
+        this.gasPriceChange.next(gasPriceBN);
+        return gasPrice;
       }),
-      shareReplay({bufferSize: 1, refCount: true})
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
   }
 
   ngOnDestroy() {
-    //this.subscription.unsubscribe();
+    this.subscription.unsubscribe();
   }
 }
 
@@ -157,5 +174,5 @@ function parseGasPrice(gasPrice: BigNumber): number {
 }
 
 function formatGasPrice(gasPrice: string): BigNumber {
-  return bigNumberify(gasPrice * 100 * 1e9 / 100);
+  return bigNumberify(+gasPrice * 100 * 1e9 / 100);
 }

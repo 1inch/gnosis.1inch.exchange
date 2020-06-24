@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
-import { BehaviorSubject, interval, Observable, of } from 'rxjs';
+import { BehaviorSubject, interval, Observable, of, timer } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { GasPrice, GasPriceBN, GasPriceOneInch, GasPricePoaNetwork, GasPriceUpVest } from './gas-price.api.dto';
 import { ethers } from 'ethers';
@@ -30,7 +30,7 @@ export class GasPriceApiService {
   });
 
   constructor(private http: HttpClient) {
-    interval(30000).pipe(
+    timer(0, 30000).pipe(
       mergeMap(() => this.getGasPrice()),
       tap((gasPrice: GasPrice) => {
 

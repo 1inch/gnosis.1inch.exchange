@@ -21,13 +21,13 @@
 
       <mat-radio-group formControlName="txSpeedSelect" aria-label="Select an option" class="d-flex-col">
         <mat-radio-button value="normal" (click)="selectTxSpeed('normal')">
-          Normal: {{getGasPrice('normal')}} Gwei
+          Normal: {{getGasPrice('normal')[1]}} Gwei
         </mat-radio-button>
         <mat-radio-button value="fast" (click)="selectTxSpeed('fast')">
-          Fast: {{getGasPrice('fast')}} Gwei
+          Fast: {{getGasPrice('fast')[1]}} Gwei
         </mat-radio-button>
         <mat-radio-button value="instant" (click)="selectTxSpeed('instant')">
-          Instant {{getGasPrice('instant')}} Gwei
+          Instant {{getGasPrice('instant')[1]}} Gwei
         </mat-radio-button>
         <mat-radio-button value="custom" (click)="selectTxSpeed('custom')">Custom</mat-radio-button>
       </mat-radio-group>

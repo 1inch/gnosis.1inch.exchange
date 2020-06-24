@@ -429,7 +429,7 @@ export class AppComponent implements OnDestroy {
     this.swapForm.controls.fromAmount.markAllAsTouched();
   }
 
-  onGasPriceChange(gasPrice: string): void {
+  onGasPriceChange(gasPrice: BigNumber): void {
     // TODO: think of validation
     console.log(gasPrice);
   }
