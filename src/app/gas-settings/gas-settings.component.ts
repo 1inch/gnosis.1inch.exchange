@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output, } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, of, Subscription } from 'rxjs';
-import { filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { concat, Observable, of, Subscription } from 'rxjs';
+import { filter, map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { LocalStorage } from 'ngx-webstorage';
 import { BigNumber, bigNumberify } from 'ethers/utils';
 import { GasPriceApiService } from '../services/gas-price.api/gas-price.api.service';
@@ -103,18 +103,22 @@ export class GasSettingsComponent implements OnInit, OnDestroy {
 
     this.gasPrice$ = this.txSpeedSelect.valueChanges.pipe(
       switchMap((txSpeed: TxSpeed) => {
-
+        console.log(`txSpeed=`, txSpeed);
         if (txSpeed !== 'custom') {
           return of(this.getGasPrice(txSpeed));
         }
 
-        return this.gasPriceInput.valueChanges.pipe(
-          filter(() => !this.gasPriceInput.errors),
-          map((value) => {
-            this.customGasPrice = value;
-            return [formatGasPrice(value), value];
-          })
+        return concat(
+          of(this.gasPriceInput.value),
+          this.gasPriceInput.valueChanges.pipe(
+            filter(() => !this.gasPriceInput.errors),
+            map((value) => {
+              this.customGasPrice = value;
+              return [formatGasPrice(value), value];
+            })
+          )
         );
+
       }),
       map(([gasPriceBN, gasPrice]) => {
         this.gasPriceChange.next({

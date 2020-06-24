@@ -32,15 +32,15 @@ import { ethers } from 'ethers';
 type TokenCost = { tokenUsdCost: number, tokenUsdCostView: string };
 type QuoteUpdate = { fromAmount: string, resetFields: boolean };
 
-function capitalFirstChar(str: string): string {
-  if (!str) {
-    return '';
-  }
-  const capitalLetter = str.slice(0, 1).toUpperCase();
-  const restOfTheString = str.slice(1);
-
-  return `${capitalLetter}${restOfTheString}`;
-}
+// function capitalFirstChar(str: string): string {
+//   if (!str) {
+//     return '';
+//   }
+//   const capitalLetter = str.slice(0, 1).toUpperCase();
+//   const restOfTheString = str.slice(1);
+//
+//   return `${capitalLetter}${restOfTheString}`;
+// }
 
 export function maxBn(tokenHelper: TokenHelper, balance: BigNumber, decimals: number): ValidatorFn {
 
@@ -148,7 +148,7 @@ export class AppComponent implements OnDestroy {
   filteredToTokens$: Observable<ITokenDescriptor[]>;
 
   gasPrice = '';
-  txSpeedWithFirstCapital = ''
+  txSpeedStr = ''
 
   constructor(
     private oneInchApiService: OneInchApiService,
@@ -451,7 +451,7 @@ export class AppComponent implements OnDestroy {
     const {gasPriceBN, gasPrice, txSpeed} = x;
     // console.log(x);
     //this.txSpeedWithFirstCapital = capitalFirstChar(txSpeed);
-    this.txSpeedWithFirstCapital = txSpeed.toUpperCase();
+    this.txSpeedStr = txSpeed.toUpperCase();
     this.gasPrice = gasPrice;
   }
 }
