@@ -449,9 +449,7 @@ export class AppComponent implements OnDestroy {
 
   onGasPriceChange(x: any): void {
     const {gasPriceBN, gasPrice, txSpeed} = x;
-    // console.log(x);
-    //this.txSpeedWithFirstCapital = capitalFirstChar(txSpeed);
-    this.txSpeedStr = txSpeed.toUpperCase();
+    this.txSpeedStr = txSpeed
     this.gasPrice = gasPrice;
   }
 }
