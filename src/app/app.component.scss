@@ -1,5 +1,5 @@
 .container {
-  //margin:0px;
+    //margin:0px;
 }
 
 .top-layout {
@@ -28,11 +28,25 @@
         }
     }
 }
+
 .pretty-font {
     font-family: 'Baloo Bhai', cursive;
 }
+
 sup.pretty-font {
     font-size: 0.45em;
+}
+
+ol {
+    margin-top: 0;
+    padding: 0 0 0 20px;
+    list-style-type: decimal;
+    font-size: 1.1em;
+}
+
+ol li {
+    margin: 0 10px;
+    padding: 0 10px;
 }
 
 .swap-controls {
@@ -40,6 +54,7 @@ sup.pretty-font {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+
     div {
         width: 100%;
     }
@@ -71,55 +86,55 @@ sup.pretty-font {
     //}
 
 
-  //@media (min-width: 500px) {
-  //  display: grid;
-  //  grid-template-columns: 100px 200px 40px 200px 100px;
-  //  grid-template-rows: auto auto auto;
-  //  grid-column-gap: 10px;
-  //  .col-span-all {
-  //    grid-column: 1 / 6;
-  //  }
-  //}
-  //@media (max-width: 768px) {
-  //  display: flex;
-  //  flex-direction: column;
-  //  align-items: center;
-  //  div {
-  //    width: 100%;
-  //  }
-  //}
+    //@media (min-width: 500px) {
+    //  display: grid;
+    //  grid-template-columns: 100px 200px 40px 200px 100px;
+    //  grid-template-rows: auto auto auto;
+    //  grid-column-gap: 10px;
+    //  .col-span-all {
+    //    grid-column: 1 / 6;
+    //  }
+    //}
+    //@media (max-width: 768px) {
+    //  display: flex;
+    //  flex-direction: column;
+    //  align-items: center;
+    //  div {
+    //    width: 100%;
+    //  }
+    //}
 
 }
 
 .content-center {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .t-center {
-  text-align: center;
+    text-align: center;
 }
 
 .t-right {
-  text-align: right;
+    text-align: right;
 }
 
 .t-left {
-  text-align: left;
+    text-align: left;
 }
 
 .m-1 {
-  margin: 16px;
+    margin: 16px;
 }
 
 .m-t {
-  margin-top: 16px;
+    margin-top: 16px;
 }
 
 .m-b {
-  margin-bottom: 16px;
+    margin-bottom: 16px;
 }
 
 .m-b2 {
@@ -127,45 +142,45 @@ sup.pretty-font {
 }
 
 .w-100 {
-  width: 100%;
+    width: 100%;
 }
 
 .max-balance {
-  margin-right: 10px;
-  cursor: pointer;
+    margin-right: 10px;
+    cursor: pointer;
 }
 
 .max-balance:hover {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.6)
+    border-bottom: 1px solid rgba(0, 0, 0, 0.6)
 }
 
 .token-annotation {
-  display: block;
-  height: 14px;
-  line-height: 14px;
-  opacity: 0.7
+    display: block;
+    height: 14px;
+    line-height: 14px;
+    opacity: 0.7
 }
 
 .token-preview-grid {
-  margin-top: 5px;
-  margin-bottom: 5px;
-  display: grid;
-  grid-template-columns: 30px 80px 1fr;
-  justify-content: center;
-  column-gap: 5px;
-  align-items: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: grid;
+    grid-template-columns: 30px 80px 1fr;
+    justify-content: center;
+    column-gap: 5px;
+    align-items: center;
 }
 
 .over-hidden {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .setting-container {
-  display: grid;
-  grid-row-gap: 0;
-  align-items: start;
+    display: grid;
+    grid-row-gap: 0;
+    align-items: start;
 }
 
 
