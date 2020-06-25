@@ -30,7 +30,7 @@ import { environment } from '../environments/environment';
 import { ethers } from 'ethers';
 
 type TokenCost = { tokenUsdCost: number, tokenUsdCostView: string };
-type QuoteUpdate = { fromAmount: string, resetFields: boolean };
+type QuoteUpdate = { fromAmount: string };
 
 // function capitalFirstChar(str: string): string {
 //   if (!str) {
@@ -202,8 +202,8 @@ export class AppComponent implements OnDestroy {
 
     const fromAmountListener$ = merge(fromAmountChange$, this.updateAmounts.asObservable())
       .pipe(
-        switchMap((({fromAmount, resetFields}) => {
-          return this.setAmounts(fromAmount, resetFields).pipe(
+        switchMap((({fromAmount}) => {
+          return this.setAmounts(fromAmount).pipe(
             // background refresh
             repeatWhen((completed) => completed.pipe(delay(20000)))
           );
@@ -282,12 +282,8 @@ export class AppComponent implements OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  private setAmounts(value: string, resetFields: boolean): Observable<any> {
+  private setAmounts(value: string): Observable<any> {
 
-    if (resetFields) {
-      this.loading = true;
-      this.resetToTokenAmount();
-    }
     this.fromAmount = value;
     return this.tokenService.tokenHelper$.pipe(
       switchMap((tokenHelper) => {
@@ -400,8 +396,7 @@ export class AppComponent implements OnDestroy {
         this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixedSafe(this.fromAmount, token.decimals), {emitEvent: false});
         this.fromAmountBN = tokenHelper.parseUnits(this.fromAmount, token.decimals);
         this.updateAmounts.next({
-          fromAmount: this.fromAmount,
-          resetFields: true
+          fromAmount: this.fromAmount
         });
         this.tokenAmountInputValidator.pop();
         this.updateFromAmountValidator(tokenHelper);
