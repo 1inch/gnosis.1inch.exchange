@@ -169,6 +169,13 @@
               </ng-container>
 
 
+            <div class="content-center col-span-all">
+                <!--      <span class="t-center">some message</span>-->
+                <button [disabled]="hasErrors"
+                        class="m-b2 w-100"
+                        mat-flat-button color="primary" (click)="swap()">SWAP NOW</button>
+            </div>
+
               <div class="content-center col-span-all m-b">
                 <mat-accordion class="example-headers-align" multi>
 
@@ -213,13 +220,6 @@
 
 
                 </mat-accordion>
-
-                  <div class="content-center col-span-all">
-                      <!--      <span class="t-center">some message</span>-->
-                      <button [disabled]="hasErrors"
-                              class="m-t swap-btn-left w-100"
-                              mat-flat-button color="primary" (click)="swap()">SWAP NOW</button>
-                  </div>
               </div>
 
                 </form>
@@ -241,10 +241,6 @@
                 <p> 4. You might need to wait couple of seconds while 1inch searching for the best prices for you.</p>
                 <p> 5. In case you are not satisfied with amount of asset that you get, try change source asset amount - you might better price on smaller amount</p>
                 <p> 6. When your are all set don't hesitate and press <b>SWAP NOW</b></p>
-
-                <button [disabled]="hasErrors"
-                        class="m-t" style="width: 320px"
-                        mat-flat-button color="primary" (click)="swap()">SWAP NOW</button>
 
             </div>
 
