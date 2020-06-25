@@ -7,11 +7,24 @@
     <ng-container *ngIf="(filteredToTokens$ | async); let toTokens;">
       <ng-container *ngIf="tokenHelper.getTokenBySymbol(fromTokenSymbol); let fromToken">
 
-        <div>
+        <div class="top-layout">
 
-          <form [formGroup]="swapForm">
+            <div class="description-container">
+                <div>
+                    <img src="assets/logo.svg" width="80px" height="80px">
+                    <h1 style="margin-top: 20px;font-size: 3em;">1inch.exchange</h1>
+                </div>
+                <h4>DEX aggregator that offer best price</h4>
+                <p> • Select "From" token</p>
+                <p> • Select "To" token</p>
+                <p> • Enter amount of asset that you want to swap</p>
+                <p> • You might need to wait couple of seconds while 1inch searching for the best prices for you.</p>
+                <p> • In case you are not satisfied with amount of asset that you get, try change source asset amount - you might better price on smaller amount</p>
+                <p> • When your are all set don't hesitate and press <b>SWAP NOW</b></p>
+            </div>
 
             <div class="swap-controls">
+                <form [formGroup]="swapForm">
 
               <div>
                 <small>&nbsp;</small>
@@ -192,38 +205,39 @@
                     <oi-slippage-settings [(slippage)]="slippage"></oi-slippage-settings>
                   </mat-expansion-panel>
 
+               <!--
+                  <mat-expansion-panel [(expanded)]="gasPricePanelOpenState">
 
-<!--                  <mat-expansion-panel [(expanded)]="gasPricePanelOpenState">-->
+                    <mat-expansion-panel-header>
 
-<!--                    <mat-expansion-panel-header>-->
+                      <mat-panel-title>
+                        <span style="text-align: center; width: 100%; text-transform: capitalize">
+                          {{txSpeedStr}} Gas Price: <b>{{gasPrice}} Gwei</b>
+                            <span matTooltip="Higher gas price, faster transaction..">
+                                &nbsp;<img src="assets/info.svg" style="width: 14px">
+                            </span>
+                        </span>
 
-<!--                      <mat-panel-title>-->
-<!--                        <span style="text-align: center; width: 100%; text-transform: capitalize">-->
-<!--                          {{txSpeedStr}} Gas Price: <b>{{gasPrice}} Gwei</b>-->
-<!--                            <span matTooltip="Higher gas price, faster transaction..">-->
-<!--                                &nbsp;<img src="assets/info.svg" style="width: 14px">-->
-<!--                            </span>-->
-<!--                        </span>-->
+                      </mat-panel-title>
 
-<!--                      </mat-panel-title>-->
-
-<!--                    </mat-expansion-panel-header>-->
-<!--                    <oi-gas-settings (gasPriceChange)="onGasPriceChange($event)"></oi-gas-settings>-->
-<!--                  </mat-expansion-panel>-->
+                    </mat-expansion-panel-header>
+                    <oi-gas-settings (gasPriceChange)="onGasPriceChange($event)"></oi-gas-settings>
+                  </mat-expansion-panel>
+               -->
 
 
                 </mat-accordion>
 
                   <div class="content-center col-span-all">
                       <!--      <span class="t-center">some message</span>-->
-                      <button [disabled]="hasErrors" mat-flat-button color="primary" (click)="swap()">SWAP NOW</button>
+                      <button [disabled]="hasErrors"
+                              class="m-t"
+                              mat-flat-button color="primary" (click)="swap()">SWAP NOW</button>
                   </div>
               </div>
 
-
+                </form>
             </div>
-
-          </form>
 
         </div>
 
