@@ -21,10 +21,6 @@
             grid-column: 2;
             grid-row: 1;
         }
-
-        .swap-btn-left {
-            display: none
-        }
     }
     @media (max-width: 740px) {
         .description-container {
@@ -33,7 +29,7 @@
     }
 }
 .pretty-font {
-    font-family: 'Baloo Bhai 2', cursive;
+    font-family: 'Baloo Bhai', cursive;
 }
 
 .swap-controls {
@@ -121,6 +117,10 @@
 
 .m-b {
   margin-bottom: 16px;
+}
+
+.m-b2 {
+    margin-bottom: 32px;
 }
 
 .w-100 {
