@@ -11,11 +11,7 @@ const w = window as any;
 })
 export class Web3Service {
 
-    public rpcUrl = 'https://ethereum.1inch.exchange/';
-
-    private authPart1 = 'd2ViMzpzbGRna2psc2RrajIzOTg0NzV1b3doc2pkbmdsc25na2xqaHNka2d6bzM0';
-    private authPart2 = 'dXpoanRsbnNkbGduc2RsZ2pvc2R1em93NG5sZ3NuZGdrbGpoc2R1Z3p1aW93bmV0';
-    private authPart3 = 'Z3NqZG5nb3V6c2RvZ2pubHNkaGpnb3Nq';
+    public rpcUrl = 'https://web3-node.1inch.exchange/';
 
     private web3Subject$ = new Subject<Web3>();
     web3$ = this.web3Subject$.asObservable().pipe(
@@ -43,17 +39,7 @@ export class Web3Service {
         //     await w.ethereum.enable();
         // }
         // return web3;
-        const opt = {
-            withCredentials: true,
-            headers: [
-                {
-                    name: 'Authorization',
-                    value: 'Basic ' + this.authPart1 + this.authPart2 + this.authPart3
-                }
-            ]
-        };
-        const provider = new Web3.providers.HttpProvider(this.rpcUrl, opt);
-        return new Web3(provider);
+        return new Web3(this.rpcUrl);
     }
 
     public getInstance(abi: any[], address: string): Observable<Contract> {
@@ -66,7 +52,6 @@ export class Web3Service {
                     address
                 )) as Contract;
             }),
-            // catchError( () => { }) ???
         );
     }
 
