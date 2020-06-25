@@ -8,6 +8,11 @@
 
         display: grid;
         grid-template-columns: 320px 1fr;
+        p {
+            font-size: 12px;
+            line-height: 14px;
+            margin-top: 4px;
+        }
 
         .description-container {
             padding: 20px;
