@@ -285,6 +285,7 @@ export class AppComponent implements OnDestroy {
   private setAmounts(value: string): Observable<any> {
 
     this.fromAmount = value;
+    this.loading = true;
     return this.tokenService.tokenHelper$.pipe(
       switchMap((tokenHelper) => {
 
