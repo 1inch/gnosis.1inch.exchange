@@ -96,21 +96,6 @@
               <ng-container>
 
                 <div class="t-1">
-                  <small class="w-100">&nbsp;</small>
-                  <mat-form-field appearance="fill" class="w-100">
-                    <mat-label>Amount</mat-label>
-                    <input matInput placeholder="Amount" formControlName="toAmount" readonly="readonly">
-                    <mat-hint *ngIf="toTokenUsdCostView && toTokenUsdCost" align="end">
-                      ≈ {{toTokenUsdCostView}} {{fromToDiffInPercent}}
-                      <span *ngIf="fromTokenUsdCost * 0.9 > toTokenUsdCost"
-                            matTooltip="High slippage! More then 10% price drop."
-                            style="cursor: default; position: relative; top: 1px"
-                      >⚠️</span>
-                    </mat-hint>
-                  </mat-form-field>
-                </div>
-
-                <div class="t-1">
                   <small>&nbsp;</small>
                   <mat-form-field appearance="fill" class="w-100">
                     <mat-label>To</mat-label>
@@ -165,6 +150,21 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
+
+                <div class="t-1">
+                      <small class="w-100">&nbsp;</small>
+                      <mat-form-field appearance="fill" class="w-100">
+                          <mat-label>Amount</mat-label>
+                          <input matInput placeholder="Amount" formControlName="toAmount" readonly="readonly">
+                          <mat-hint *ngIf="toTokenUsdCostView && toTokenUsdCost" align="end">
+                              ≈ {{toTokenUsdCostView}} {{fromToDiffInPercent}}
+                              <span *ngIf="fromTokenUsdCost * 0.9 > toTokenUsdCost"
+                                    matTooltip="High slippage! More then 10% price drop."
+                                    style="cursor: default; position: relative; top: 1px"
+                              >⚠️</span>
+                          </mat-hint>
+                      </mat-form-field>
+                  </div>
 
               </ng-container>
 
