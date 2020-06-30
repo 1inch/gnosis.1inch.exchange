@@ -20,36 +20,42 @@ import { NgxWebstorageModule } from 'ngx-webstorage';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { GasSettingsComponent } from "src/app/gas-settings/gas-settings.component";
+import { GasSettingsComponent } from 'src/app/gas-settings/gas-settings.component';
+import { APP_BASE_HREF } from '@angular/common';
 
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    SlippageSettingsComponent,
-    GasSettingsComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    MatButtonModule,
-    MatSelectModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatTooltipModule,
-    MatIconModule,
-    MatRadioModule,
-    NgxWebstorageModule.forRoot(),
-    MatAutocompleteModule,
-    NgxMatSelectSearchModule,
-    MatExpansionModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        SlippageSettingsComponent,
+        GasSettingsComponent
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        MatButtonModule,
+        MatSelectModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatTooltipModule,
+        MatIconModule,
+        MatRadioModule,
+        NgxWebstorageModule.forRoot(),
+        MatAutocompleteModule,
+        NgxMatSelectSearchModule,
+        MatExpansionModule
+    ],
+    providers: [
+        {
+            provide: APP_BASE_HREF,
+            useValue: window['base-href']
+        }
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule {
 }
