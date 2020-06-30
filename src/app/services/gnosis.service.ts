@@ -2,6 +2,7 @@ import initSdk, { SafeInfo } from '@gnosis.pm/safe-apps-sdk';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 const appsSdk = initSdk();
 
@@ -37,8 +38,11 @@ export class GnosisService {
     }
 
     public addListeners(): void {
+        if (!environment.production) {
+            this.walletAddress.next('0x3a13D9b322F391a1AFab36a1d242C24F3250bA48');
+            return;
+        }
 
-        // this.walletAddress.next('0x3a13D9b322F391a1AFab36a1d242C24F3250bA48');
         appsSdk.addListeners({
             onSafeInfo: ((info: SafeInfo) => {
 
