@@ -49,12 +49,7 @@ import { APP_BASE_HREF } from '@angular/common';
         NgxMatSelectSearchModule,
         MatExpansionModule
     ],
-    providers: [
-        {
-            provide: APP_BASE_HREF,
-            useValue: window['base-href']
-        }
-    ],
+    providers: [],
     bootstrap: [AppComponent]
 })
 export class AppModule {
