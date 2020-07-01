@@ -154,8 +154,8 @@ export class AppComponent implements OnDestroy {
     filteredFromTokens$: Observable<ITokenDescriptor[]>;
     filteredToTokens$: Observable<ITokenDescriptor[]>;
 
-    gasPrice = '';
-    txSpeedStr = ''
+    // gasPrice = '';
+    // txSpeedStr = ''
 
     twitterIcon = faTwitter;
     youtubeIcon = faYoutube;
