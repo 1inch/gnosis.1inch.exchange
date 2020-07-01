@@ -149,9 +149,9 @@
                                                         </div>
 
                                                         <span *ngIf="token.symbol !== toTokenSymbol">
-                            <small class="token-annotation">{{ token.formatedTokenBalance }}</small>
-                            <small class="token-annotation">{{ token.formatedUSDBalance }}</small>
-                          </span>
+                                                            <small class="token-annotation">{{ token.formatedTokenBalance }}</small>
+                                                            <small class="token-annotation">{{ token.formatedUSDBalance }}</small>
+                                                          </span>
 
                                                     </div>
                                                 </ng-container>
@@ -240,6 +240,22 @@
                             </div>
 
                         </form>
+                        <div class="content-inline-center">
+                            <a class="icon" href="https://twitter.com/1inchExchange" title="1inch Twitter Account"
+                               target="_blank">
+                                <fa-icon size="lg" [icon]="twitterIcon"></fa-icon>
+                            </a>
+                            <a class="icon" href="https://www.youtube.com/channel/UCk0nvK4bHpteQXZKv7lkq5w"
+                               title="1inch Youtube Channel" target="_blank">
+                                <fa-icon size="lg" [icon]="youtubeIcon"></fa-icon>
+                            </a>
+                            <a class="icon" href="https://t.me/OneInchExchange" title="1inch Telegram Channel" target="_blank">
+                                <fa-icon size="lg" [icon]="telegramIcon"></fa-icon>
+                            </a>
+                            <a class="icon" href="https://github.com/CryptoManiacsZone" title="1inch Github" target="_blank">
+                                <fa-icon size="lg" [icon]="githubIcon"></fa-icon>
+                            </a>
+                        </div>
                     </div>
 
                     <div class="description-container">

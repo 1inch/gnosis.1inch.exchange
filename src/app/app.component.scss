@@ -114,6 +114,13 @@ ol li {
     align-items: center;
 }
 
+.content-inline-center {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
 .support {
     color: rgba(0, 0, 0, 0.6);
     border-bottom: 1px solid rgba(0, 0, 0, 0.6);
@@ -159,7 +166,7 @@ ol li {
 }
 
 .max-balance:hover {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.6)
+    border-bottom: 1px solid rgba(0, 0, 0, 0.6);
 }
 
 .token-annotation {
@@ -202,4 +209,10 @@ ol li {
 .t-1 {
     position: relative;
     top: -15px
+}
+
+.icon {
+    display: inline-flex;
+    padding: 1rem 1rem;
+    color: rgba(0, 0, 0, 0.8);
 }

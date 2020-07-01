@@ -21,7 +21,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { GasSettingsComponent } from 'src/app/gas-settings/gas-settings.component';
-import { APP_BASE_HREF } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 
 @NgModule({
@@ -47,7 +47,8 @@ import { APP_BASE_HREF } from '@angular/common';
         NgxWebstorageModule.forRoot(),
         MatAutocompleteModule,
         NgxMatSelectSearchModule,
-        MatExpansionModule
+        MatExpansionModule,
+        FontAwesomeModule
     ],
     providers: [],
     bootstrap: [AppComponent]

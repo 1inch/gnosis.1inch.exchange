@@ -9,6 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { LocalStorage } from 'ngx-webstorage';
 import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { ITokenDescriptor, TokenHelper } from './services/token.helper';
+import { faGithub, faTelegramPlane, faTwitter, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import {
     catchError,
     debounceTime,
@@ -155,6 +156,11 @@ export class AppComponent implements OnDestroy {
 
     gasPrice = '';
     txSpeedStr = ''
+
+    twitterIcon = faTwitter;
+    youtubeIcon = faYoutube;
+    telegramIcon = faTelegramPlane;
+    githubIcon = faGithub;
 
     constructor(
         private oneInchApiService: OneInchApiService,
