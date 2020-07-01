@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, Observable, of, throwError } from 'rxjs';
-import { BigNumber, bigNumberify } from 'ethers/utils';
+import { BigNumber, bigNumberify, parseUnits } from 'ethers/utils';
 import { catchError, map, mergeMap, retry, shareReplay, take } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
 import { OneSplitService } from './one-split.service';
@@ -10,6 +10,7 @@ import { Web3Service } from './web3.service';
 import ChainLinkDaiUsdAggregatorABI from '../abi/ChainLinkDaiUsdAggregatorABI.json';
 import TokenHelperABI from '../abi/TokenHelperABI.json';
 import { RefreshingReplaySubject, zeroValueBN } from '../utils';
+import { CoinGeckoService } from './coin-gecko.service';
 
 const DAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
@@ -38,7 +39,8 @@ export class TokenPriceService {
 
   constructor(
     private oneSplitService: OneSplitService,
-    private web3Service: Web3Service
+    private web3Service: Web3Service,
+    private coinGeckoService: CoinGeckoService
   ) {
   }
 
@@ -68,38 +70,51 @@ export class TokenPriceService {
     return this.usdPriceCache$[tokenAddress];
   }
 
-  public getTokenPriceBN(
-    tokenAddress: string,
-    tokenDecimals: number,
-    blockNumber?: number | 'latest',
-    oneSplitAddress = environment.ONE_SPLIT_CONTRACT_ADDRESS
-  ): Observable<BigNumber> {
+    public getTokenPriceBN(
+        tokenAddress: string,
+        tokenDecimals: number,
+        blockNumber?: number | 'latest',
+        oneSplitAddress = environment.ONE_SPLIT_CONTRACT_ADDRESS,
+        useOffChain = true
+    ): Observable<BigNumber> {
 
-    return this.getTokenPriceFromHelper(
-      tokenAddress,
-      tokenDecimals,
-      blockNumber,
-      oneSplitAddress
-    ).pipe(
-      mergeMap((price: BigNumber) => {
+        const onChainPrice$ = this.getTokenPriceFromHelper(
+            tokenAddress,
+            tokenDecimals,
+            blockNumber,
+            oneSplitAddress
+        ).pipe(
+            mergeMap((price: BigNumber) => {
 
-        if (price.eq(0)) {
-          return throwError('try fetch price directly from OneSplit');
+                if (price.eq(0)) {
+                    return throwError('try fetch price directly from OneSplit');
+                }
+
+                return of(price);
+            }),
+            catchError(() => {
+
+                return this.getTokenOneSplitPrice(
+                    tokenAddress,
+                    tokenDecimals,
+                    blockNumber,
+                    oneSplitAddress
+                );
+            })
+        );
+
+        if (!useOffChain) {
+            return onChainPrice$;
         }
 
-        return of(price);
-      }),
-      catchError(() => {
-
-        return this.getTokenOneSplitPrice(
-          tokenAddress,
-          tokenDecimals,
-          blockNumber,
-          oneSplitAddress
+        const offChainPrice$ = this.coinGeckoService.getUSDPrice(tokenAddress).pipe(
+            map((price: number) => parseUnits(String(price), 8)),
         );
-      })
-    );
-  }
+
+        return offChainPrice$.pipe(
+            catchError(() => onChainPrice$)
+        );
+    }
 
   public getTokenOneSplitPrice(
     tokenAddress: string,
