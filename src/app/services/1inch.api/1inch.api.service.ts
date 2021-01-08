@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { delay, mergeMap, retryWhen } from 'rxjs/operators';
+import {delay, map, mergeMap, retryWhen} from 'rxjs/operators';
 import { Observable, of, throwError } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { exchanges, ISymbol2Token, Quote, SupportedExchanges, SwapData } from './1inch.api.dto';
@@ -9,27 +9,21 @@ import { exchanges, ISymbol2Token, Quote, SupportedExchanges, SwapData } from '.
 })
 export class OneInchApiService {
 
-  private url = 'https://gnosis.api.enterprise.1inch.exchange/v1.1';
+  private url = 'https://gnosis.api.enterprise.1inch.exchange/v2.0';
 
   constructor(private http: HttpClient) {
   }
 
   public getQuote$(
-    fromTokenSymbol: string,
-    toTokenSymbol: string,
+    fromTokenAddress: string,
+    toTokenAddress: string,
     amount: string,
-    disabledExchangesList: SupportedExchanges[] = []
   ): Observable<Quote> {
 
-    const disableExList = disabledExchangesList.map((i) => exchanges[i]).join(',');
-
     let params = new HttpParams();
-    params = params.append('fromTokenSymbol', fromTokenSymbol);
-    params = params.append('toTokenSymbol', toTokenSymbol);
+    params = params.append('fromTokenAddress', fromTokenAddress);
+    params = params.append('toTokenAddress', toTokenAddress);
     params = params.append('amount', amount);
-    if (disabledExchangesList.length !== 0) {
-      params = params.append('disabledExchangesList', disableExList);
-    }
 
     const url = this.url + '/quote';
 
@@ -39,25 +33,21 @@ export class OneInchApiService {
   }
 
   public getSwapData$(
-    fromTokenSymbol: string,
-    toTokenSymbol: string,
+    fromTokenAddress: string,
+    toTokenAddress: string,
     amount: string,
     fromWalletAddress: string,
     slippage = '1',
     disableEstimate = false,
-    disabledExchangesList: SupportedExchanges[] = []
   ): Observable<SwapData> {
 
-    const disableExList = disabledExchangesList.map((i) => exchanges[i]).join(',');
-
     let params = new HttpParams();
-    params = params.append('fromTokenSymbol', fromTokenSymbol);
-    params = params.append('toTokenSymbol', toTokenSymbol);
+    params = params.append('fromTokenAddress', fromTokenAddress);
+    params = params.append('toTokenAddress', toTokenAddress);
     params = params.append('amount', amount);
     params = params.append('fromAddress', fromWalletAddress);
     params = params.append('slippage', slippage);
     params = params.append('disableEstimate', String(disableEstimate));
-    params = params.append('disabledExchangesList', disableExList);
 
     const url = this.url + '/swap';
 
@@ -70,8 +60,10 @@ export class OneInchApiService {
 
     const url = this.url + '/tokens';
 
-    return this.http.get<ISymbol2Token[]>(url).pipe(
+    return this.http.get<{tokens: ISymbol2Token}>(url).pipe(
       delayedRetry(1000)
+    ).pipe(
+        map((x) => x.tokens)
     );
   }
 }

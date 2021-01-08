@@ -1,72 +1,83 @@
 export interface Token {
-  symbol: string;
-  name: string;
-  decimals: number;
-  address: string;
+    symbol: string;
+    name: string;
+    decimals: number;
+    address: string;
+    logoURI: string;
 }
 
 export interface ISymbol2Token {
-  [symbol: string]: Token;
+    [symbol: string]: Token;
 }
 
 export interface Exchange {
-  name: string;
-  part: number;
+    name: string;
+    part: number;
 }
 
 export interface Quote {
-  fromToken: Token;
-  toToken: Token;
-  toTokenAmount: string;
-  fromTokenAmount: string;
-  exchanges: Exchange[];
+    fromToken: Token;
+    toToken: Token;
+    toTokenAmount: string;
+    fromTokenAmount: string;
+    protocols: any[][][];
+    estimatedGas: number;
+}
+
+export interface Tx {
+    from: string;
+    to: string;
+    data: string;
+    value: string;
+    gasPrice: string;
+    gas: number;
 }
 
 export interface SwapData {
-  from: string;
-  to: string;
-  gas: string;
-  gasPrice: string;
-  value: string;
-  data: string;
+    fromToken: Token;
+    toToken: Token;
+    toTokenAmount: string;
+    fromTokenAmount: string;
+    protocols: any[][][];
+    tx: Tx;
 }
 
 export enum SupportedExchanges {
-  WETH,
-  MultiSplit,
-  Mooniswap,
-  Chai,
-  BETH,
-  Compound,
-  Aave,
-  ChMinter,
-  iearn,
-  Fulcrum,
-  MakerDAO,
-  Oasis,
-  Kyber,
-  Uniswap,
-  MultiUniswap,
-  Balancer,
-  Synthetix,
-  Bancor,
-  PMM,
-  CurveFi,
-  CurveFiV2,
-  CurveFiIearn,
-  CurveFiBUSD,
-  CurveFiSUSD,
-  CurveFiPAX,
-  CurveFirenBTC,
-  CurveFiTBTC,
-  dForceSwap,
-  PMM2,
-  UniswapV2,
-  ZeroXRelays,
-  ZeroXAPI,
-  dForce,
-  AirSwap,
-  Idle
+    WETH,
+    MultiSplit,
+    Mooniswap,
+    Chai,
+    BETH,
+    Compound,
+    Aave,
+    ChMinter,
+    iearn,
+    Fulcrum,
+    MakerDAO,
+    Oasis,
+    Kyber,
+    Uniswap,
+    MultiUniswap,
+    Balancer,
+    Synthetix,
+    Bancor,
+    PMM,
+    CurveFi,
+    CurveFiV2,
+    CurveFiIearn,
+    CurveFiBUSD,
+    CurveFiSUSD,
+    CurveFiPAX,
+    CurveFirenBTC,
+    CurveFiTBTC,
+    dForceSwap,
+    PMM2,
+    UniswapV2,
+    ZeroXRelays,
+    ZeroXAPI,
+    dForce,
+    AirSwap,
+    Idle
 }
 
 // tslint:disable-next-line:max-line-length

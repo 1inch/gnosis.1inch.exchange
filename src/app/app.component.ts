@@ -1,15 +1,15 @@
-import { Component, OnDestroy } from '@angular/core';
-import { OneInchApiService } from './services/1inch.api/1inch.api.service';
-import { GnosisService, Tx } from './services/gnosis.service';
-import { TokenPriceService } from './services/token-price.service';
-import { TokenService } from './services/token.service';
-import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
-import { LocalStorage } from 'ngx-webstorage';
-import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
-import { ITokenDescriptor, TokenHelper } from './services/token.helper';
-import { faGithub, faTelegramPlane, faTwitter, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import {Component, OnDestroy} from '@angular/core';
+import {OneInchApiService} from './services/1inch.api/1inch.api.service';
+import {GnosisService, Tx} from './services/gnosis.service';
+import {TokenPriceService} from './services/token-price.service';
+import {TokenService} from './services/token.service';
+import {AbstractControl, FormControl, FormGroup, ValidatorFn, Validators} from '@angular/forms';
+import {MatIconRegistry} from '@angular/material/icon';
+import {DomSanitizer} from '@angular/platform-browser';
+import {LocalStorage} from 'ngx-webstorage';
+import {combineLatest, forkJoin, merge, Observable, of, Subject, Subscription} from 'rxjs';
+import {ITokenDescriptor, TokenHelper} from './services/token.helper';
+import {faGithub, faTelegramPlane, faTwitter, faYoutube} from '@fortawesome/free-brands-svg-icons';
 import {
     catchError,
     debounceTime,
@@ -23,12 +23,12 @@ import {
     take,
     tap
 } from 'rxjs/operators';
-import { Quote, SupportedExchanges, SwapData } from './services/1inch.api/1inch.api.dto';
-import { BigNumber } from 'ethers/utils';
-import { bnToNumberSafe } from './utils';
-import { EthereumService } from './services/ethereum.service';
-import { environment } from '../environments/environment';
-import { ethers } from 'ethers';
+import {Quote, SwapData} from './services/1inch.api/1inch.api.dto';
+import {BigNumber} from 'ethers/utils';
+import {bnToNumberSafe} from './utils';
+import {EthereumService} from './services/ethereum.service';
+import {environment} from '../environments/environment';
+import {ethers} from 'ethers';
 
 type TokenCost = { tokenUsdCost: number, tokenUsdCostView: string };
 type QuoteUpdate = { fromAmount: string };
@@ -48,7 +48,7 @@ export function maxBn(tokenHelper: TokenHelper, balance: BigNumber, decimals: nu
     return (control: AbstractControl): { [key: string]: any } | null => {
         const parsedAsset = tokenHelper.parseUnits(control.value, decimals);
         const forbidden = parsedAsset.gt(balance);
-        return forbidden ? { maxBalance: { value: control.value } } : null;
+        return forbidden ? {maxBalance: {value: control.value}} : null;
     };
 }
 
@@ -67,9 +67,6 @@ export class AppComponent implements OnDestroy {
     @LocalStorage('fromAmount', '1') fromAmount: string;
     @LocalStorage('fromTokenSymbol', 'ETH') _fromTokenSymbol: string;
     @LocalStorage('toTokenSymbol', 'DAI') _toTokenSymbol: string;
-
-    @LocalStorage('disabledExchanges', [SupportedExchanges.AirSwap])
-    disabledExchanges: SupportedExchanges[];
 
     @LocalStorage('panelOpenState', false)
     panelOpenState: boolean;
@@ -192,13 +189,13 @@ export class AppComponent implements OnDestroy {
                 this.openLoader = false;
                 return tokens;
             }),
-            shareReplay({ bufferSize: 1, refCount: true })
+            shareReplay({bufferSize: 1, refCount: true})
         );
 
         this.filteredFromTokens$ = this.getFilteredTokens(this.autoCompleteCtrlFromToken);
         this.filteredToTokens$ = this.getFilteredTokens(this.autoCompleteCtrlToToken);
 
-        this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
+        this.swapForm.controls.fromAmount.setValue(this.fromAmount, {emitEvent: false});
 
         const fromAmountChange$ = this.swapForm.controls.fromAmount.valueChanges.pipe(
             startWith(this.fromAmount),
@@ -212,7 +209,7 @@ export class AppComponent implements OnDestroy {
 
         const fromAmountListener$ = merge(fromAmountChange$, this.updateAmounts.asObservable())
             .pipe(
-                switchMap((({ fromAmount }) => {
+                switchMap((({fromAmount}) => {
                     return this.setAmounts(fromAmount).pipe(
                         // background refresh
                         repeatWhen((completed) => completed.pipe(delay(20000)))
@@ -238,14 +235,20 @@ export class AppComponent implements OnDestroy {
             switchMap(([addr, tokenHelper]) => {
                 walletAddress = addr;
                 token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
-                return this.ethereumService.isTokenApproved(
+                const toToken = tokenHelper.getTokenBySymbol(this.toTokenSymbol);
+                const isTokenApproved$ = this.ethereumService.isTokenApproved(
                     token.address,
                     walletAddress,
                     environment.TOKEN_SPENDER,
                     this.fromAmountBN
                 );
+                return forkJoin({
+                    isApproved: isTokenApproved$,
+                    fromToken: of(token),
+                    toToken: of(toToken)
+                });
             }),
-            switchMap((isApproved: boolean) => {
+            switchMap(({isApproved, fromToken, toToken}) => {
 
                 if (!isApproved) {
                     const tx: Tx = {
@@ -257,21 +260,21 @@ export class AppComponent implements OnDestroy {
                 }
 
                 return this.oneInchApiService.getSwapData$(
-                    this.fromTokenSymbol,
-                    this.toTokenSymbol,
+                    fromToken.address,
+                    toToken.address,
                     this.fromAmountBN.toString(),
                     walletAddress,
                     this.slippage,
-                    true,
-                    this.disabledExchanges
+                    true
                 );
             }),
             tap((data: SwapData) => {
 
                 const tx: Tx = {
-                    to: data.to,
-                    value: data.value,
-                    data: data.data
+                    to: data.tx.to,
+                    value: data.tx.value,
+                    data: data.tx.data,
+                    gasPrice: data.tx.gasPrice
                 };
                 transactions.push(tx);
 
@@ -300,9 +303,10 @@ export class AppComponent implements OnDestroy {
         return this.tokenService.tokenHelper$.pipe(
             switchMap((tokenHelper) => {
 
-                const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
-                return this.getTokenCost(token, +value).pipe(
-                    map(({ tokenUsdCost, tokenUsdCostView }) => {
+                const fromToken = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
+                const toToken = tokenHelper.getTokenBySymbol(this.toTokenSymbol);
+                const cost$ = this.getTokenCost(fromToken, +value).pipe(
+                    map(({tokenUsdCost, tokenUsdCostView}) => {
 
                         this.fromTokenUsdCost = tokenUsdCost;
                         this.fromTokenUsdCostView = tokenUsdCostView;
@@ -310,15 +314,19 @@ export class AppComponent implements OnDestroy {
                     }),
                     take(1)
                 );
+                return forkJoin({
+                    fromToken: of(fromToken),
+                    toToken: of(toToken),
+                    valueBN: cost$
+                });
             }),
-            switchMap((valueBN: BigNumber) => {
+            switchMap(({valueBN, fromToken, toToken}) => {
 
                 this.fromAmountBN = valueBN;
                 return this.oneInchApiService.getQuote$(
-                    this.fromTokenSymbol,
-                    this.toTokenSymbol,
-                    this.fromAmountBN.toString(),
-                    this.disabledExchanges
+                    fromToken.address,
+                    toToken.address,
+                    this.fromAmountBN.toString()
                 );
             }),
             switchMap((quote: Quote) => {
@@ -332,7 +340,7 @@ export class AppComponent implements OnDestroy {
                         this.toAmount = formattedAsset;
 
                         return this.getTokenCost(token, +formattedAsset).pipe(
-                            map(({ tokenUsdCost, tokenUsdCostView }) => {
+                            map(({tokenUsdCost, tokenUsdCostView}) => {
 
                                 this.toTokenUsdCost = tokenUsdCost;
                                 this.toTokenUsdCostView = tokenUsdCostView;
@@ -388,9 +396,9 @@ export class AppComponent implements OnDestroy {
         try {
             const tokenUsdCost = tokenAmount * tokenPrice;
             const tokenUsdCostView = this.usdFormatter.format(tokenUsdCost);
-            return { tokenUsdCost, tokenUsdCostView };
+            return {tokenUsdCost, tokenUsdCostView};
         } catch (e) {
-            return { tokenUsdCost: 0, tokenUsdCostView: '0' };
+            return {tokenUsdCost: 0, tokenUsdCostView: '0'};
         }
     }
 
@@ -405,7 +413,7 @@ export class AppComponent implements OnDestroy {
             tap((tokenHelper) => {
 
                 const token = tokenHelper.getTokenBySymbol(this.fromTokenSymbol);
-                this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixedSafe(this.fromAmount, token.decimals), { emitEvent: false });
+                this.swapForm.controls.fromAmount.setValue(tokenHelper.toFixedSafe(this.fromAmount, token.decimals), {emitEvent: false});
                 this.fromAmountBN = tokenHelper.parseUnits(this.fromAmount, token.decimals);
                 this.updateAmounts.next({
                     fromAmount: this.fromAmount
@@ -422,7 +430,7 @@ export class AppComponent implements OnDestroy {
         this._fromTokenSymbol = this._toTokenSymbol;
         this._toTokenSymbol = fts;
         this.fromAmount = this.toAmount;
-        this.swapForm.controls.fromAmount.setValue(this.fromAmount, { emitEvent: false });
+        this.swapForm.controls.fromAmount.setValue(this.fromAmount, {emitEvent: false});
         this.fromTokenUsdCost = this.toTokenUsdCost;
         this.fromTokenUsdCostView = this.toTokenUsdCostView;
         this.onTokenChange();
@@ -432,8 +440,8 @@ export class AppComponent implements OnDestroy {
         this.swapForm.controls.fromAmount.setValue(fromToken.formatedTokenBalance);
     }
 
-    public getTokenLogoImage(tokenAddress: string): string {
-        return `https://1inch.exchange/assets/tokens/${ tokenAddress.toLowerCase() }.png`;
+    public getTokenLogoImage(token: ITokenDescriptor): string {
+        return token.logoURI || 'https://etherscan.io/images/main/empty-token.png';
     }
 
     get fromToDiffInPercent() {
@@ -444,7 +452,7 @@ export class AppComponent implements OnDestroy {
         }
 
         const percent = Math.abs((diff / this.fromTokenUsdCost) * 100);
-        return `( -${ percent.toFixed(2) }% )`;
+        return `( -${percent.toFixed(2)}% )`;
     }
 
     private updateFromAmountValidator(tokenHelper: TokenHelper): void {
