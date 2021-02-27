@@ -25,7 +25,7 @@ import {
 } from 'rxjs/operators';
 import {Quote, SwapData} from './services/1inch.api/1inch.api.dto';
 import {BigNumber} from 'ethers/utils';
-import {bnToNumberSafe} from './utils';
+import {bnToNumberSafe, removePositiveSlippage} from './utils';
 import {EthereumService} from './services/ethereum.service';
 import {environment} from '../environments/environment';
 import {ethers} from 'ethers';
@@ -273,7 +273,7 @@ export class AppComponent implements OnDestroy {
                 const tx: Tx = {
                     to: data.tx.to,
                     value: data.tx.value,
-                    data: data.tx.data,
+                    data: removePositiveSlippage(data.tx.data, data.toToken.address),
                     gasPrice: data.tx.gasPrice
                 };
                 transactions.push(tx);

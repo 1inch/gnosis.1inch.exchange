@@ -1,5 +1,5 @@
 {
-    "name": "1inch.exchange",
+    "name": "1inch.exchange (positive slippage removed)",
     "description": "DEX aggregator with the best prices on the market",
     "iconPath": "assets/1inch.png",
     "providedBy": {"name": "1inch corporation", "url": "https://1inch.exchange"}

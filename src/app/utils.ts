@@ -12,6 +12,21 @@ export function bnToNumberSafe(val: BigNumber): number {
   return parseInt(hex, 16);
 }
 
+export function removePositiveSlippage(data: string, toToken: string): string {
+  // 4470bdb947 followed by the sell token seems to indicate the positive slippage capture.
+  // The word after seems to correspond to the "guaranteed" buy amount (if proceeds are higher, 
+  // the difference is captured by the protocol). By setting this amount to max uint we make
+  // sure that no positive slippage is extracted.
+  const regexp = RegExp("4470bdb947000000000000000000000000" + toToken.substring(2,42));
+  const match = data.match(regexp)
+  if (match) {
+    // replace min guaranteed amount
+    const guaranteed_min_amount_section = match.index + 74;
+    return data.substring(0, guaranteed_min_amount_section) + "ff".repeat(32) + data.substring(guaranteed_min_amount_section + 64, data.length)
+  }
+  return data;
+}
+
 export const zeroValueBN = bigNumberify(0);
 
 export class RefreshingReplaySubject<T> extends ReplaySubject<T> {
