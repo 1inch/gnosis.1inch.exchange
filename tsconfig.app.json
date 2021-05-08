@@ -1,17 +1,20 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "./out-tsc/app",
-    "types": []
-  },
-  "files": [
-    "src/main.ts",
-    "src/polyfills.ts"
-  ],
-  "include": [
-    "src/**/*.d.ts"
-  ],
-  "externals":[{
-    "xmlhttprequest":"{XMLHttpRequest:XMLHttpRequest}"
-  }]
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "outDir": "./out-tsc/app",
+        "downlevelIteration": true,
+        "types": []
+    },
+    "files": [
+        "src/main.ts",
+        "src/polyfills.ts"
+    ],
+    "include": [
+        "src/**/*.d.ts"
+    ],
+    "externals": [
+        {
+            "xmlhttprequest": "{XMLHttpRequest:XMLHttpRequest}"
+        }
+    ]
 }

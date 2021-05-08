@@ -16,7 +16,7 @@ export interface UsdPrice {
 export class CoinGeckoService {
 
     private endpoint = 'https://api.coingecko.com/api/v3';
-    private ethUsdPriceEndpoint = `${ this.endpoint }/simple/price?ids=ethereum&vs_currencies=usd`
+    private ethUsdPriceEndpoint = `${ this.endpoint }/simple/price?ids=ethereum&vs_currencies=usd`;
 
     constructor(
         private httpClient: HttpClient,

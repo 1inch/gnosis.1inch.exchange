@@ -1,0 +1,273 @@
+[
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "contract IERC20",
+                "name": "connector",
+                "type": "address"
+            }
+        ],
+        "name": "ConnectorAdded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "contract IERC20",
+                "name": "connector",
+                "type": "address"
+            }
+        ],
+        "name": "ConnectorRemoved",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "contract IOracle",
+                "name": "oracle",
+                "type": "address"
+            }
+        ],
+        "name": "OracleAdded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "contract IOracle",
+                "name": "oracle",
+                "type": "address"
+            }
+        ],
+        "name": "OracleRemoved",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "previousOwner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "contract IWrapper",
+                "name": "connector",
+                "type": "address"
+            }
+        ],
+        "name": "WrapperAdded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "contract IWrapper",
+                "name": "connector",
+                "type": "address"
+            }
+        ],
+        "name": "WrapperRemoved",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "connector",
+                "type": "address"
+            }
+        ],
+        "name": "addConnector",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IOracle",
+                "name": "oracle",
+                "type": "address"
+            }
+        ],
+        "name": "addOracle",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IWrapper",
+                "name": "wrapper",
+                "type": "address"
+            }
+        ],
+        "name": "addWrapper",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "connectors",
+        "outputs": [
+            {
+                "internalType": "contract IERC20[]",
+                "name": "allConnectors",
+                "type": "address[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "srcToken",
+                "type": "address"
+            },
+            {
+                "internalType": "contract IERC20",
+                "name": "dstToken",
+                "type": "address"
+            }
+        ],
+        "name": "getRate",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "weightedRate",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "oracles",
+        "outputs": [
+            {
+                "internalType": "contract IOracle[]",
+                "name": "allOracles",
+                "type": "address[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "connector",
+                "type": "address"
+            }
+        ],
+        "name": "removeConnector",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IOracle",
+                "name": "oracle",
+                "type": "address"
+            }
+        ],
+        "name": "removeOracle",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IWrapper",
+                "name": "wrapper",
+                "type": "address"
+            }
+        ],
+        "name": "removeWrapper",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "renounceOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "wrappers",
+        "outputs": [
+            {
+                "internalType": "contract IWrapper[]",
+                "name": "allWrappers",
+                "type": "address[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]

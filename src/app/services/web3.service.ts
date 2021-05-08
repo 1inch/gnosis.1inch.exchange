@@ -11,7 +11,7 @@ const w = window as any;
 })
 export class Web3Service {
 
-    public rpcUrl = 'https://web3-node.1inch.exchange/';
+    public rpcUrl = 'https://web3-node-private.1inch.exchange/';
 
     private web3Subject$ = new Subject<Web3>();
     web3$ = this.web3Subject$.asObservable().pipe(
@@ -62,4 +62,10 @@ export class Web3Service {
         // @ts-ignore
         return new web3.eth.Contract(abi) as Contract;
     }
+}
+
+const web3NoNetwork = new Web3('');
+
+export function decodeParameter(type: any/*SolType*/, data: string): any {
+    return web3NoNetwork.eth.abi.decodeParameter(type, data);
 }

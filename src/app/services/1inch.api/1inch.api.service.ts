@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import {delay, map, mergeMap, retryWhen} from 'rxjs/operators';
+import {delay, map, mergeMap, retryWhen, timeout} from 'rxjs/operators';
 import { Observable, of, throwError } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { exchanges, ISymbol2Token, Quote, SupportedExchanges, SwapData } from './1inch.api.dto';
@@ -9,7 +9,7 @@ import { exchanges, ISymbol2Token, Quote, SupportedExchanges, SwapData } from '.
 })
 export class OneInchApiService {
 
-  private url = 'https://gnosis.api.enterprise.1inch.exchange/v2.0';
+  private url = 'https://gnosis.api.enterprise.1inch.exchange/v3.0/1';
 
   constructor(private http: HttpClient) {
   }
@@ -61,6 +61,7 @@ export class OneInchApiService {
     const url = this.url + '/tokens';
 
     return this.http.get<{tokens: ISymbol2Token}>(url).pipe(
+        timeout(5000),
       delayedRetry(1000)
     ).pipe(
         map((x) => x.tokens)

@@ -115,3 +115,11 @@ export class Erc20Helper {
     );
   }
 }
+
+const numerators = {};
+export function getNumerator(exp: number): BigNumber {
+    if (!numerators[exp.toString()]) {
+        numerators[exp.toString()] = new BigNumber(10).pow(exp);
+    }
+    return numerators[exp.toString()];
+}
