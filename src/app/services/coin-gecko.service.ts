@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 export type Price = { usd: number };
 
 export interface UsdPrice {
-    [tokenAddress: string]: Price
+    [tokenAddress: string]: Price;
 }
 
 @Injectable({
